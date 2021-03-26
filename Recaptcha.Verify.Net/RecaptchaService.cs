@@ -20,7 +20,7 @@ namespace Recaptcha.Verify.Net
         /// Recaptcha service constructor.
         /// </summary>
         /// <param name="recaptchaOptions">Recaptcha options.</param>
-        /// <param name="recaptchaClient">Recaptcha Http client.</param>
+        /// <param name="recaptchaClient">Recaptcha Refit client.</param>
         public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient)
         {
             _recaptchaOptions = recaptchaOptions?.Value;
