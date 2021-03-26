@@ -11,7 +11,7 @@ namespace Recaptcha.Verify.Net
     public interface IRecaptchaService
     {
         /// <summary>
-        /// Verifies Recaptcha response token.
+        /// Verifies reCAPTCHA response token.
         /// https://developers.google.com/recaptcha/docs/verify#api-request
         /// </summary>
         /// <param name="request">Verify reCAPTCHA response token request params.</param>

@@ -1,7 +1,7 @@
 ﻿namespace Recaptcha.Verify.Net.Models
 {
     /// <summary>
-    /// Reca
+    /// Recaptcha options.
     /// </summary>
     public class RecaptchaOptions
     {

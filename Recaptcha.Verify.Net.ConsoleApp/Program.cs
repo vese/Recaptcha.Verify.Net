@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Recaptcha.Verify.Net;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Models;
 using Recaptcha.Verify.Net.Models.Request;
@@ -19,16 +18,16 @@ namespace Recaptcha.Verify.Net.ConsoleApp
         /// https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do
         /// </summary>
         private const string ValidSecretKey = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe";
-        private const string InvalidSecretKey = "invalid";
+        private const string InvalidSecretKey = "<invalid secret key>";
 
         static async Task Main(string[] args)
         {
             try
             {
-                var successResponse = await Verify(ValidSecretKey);
+                var successResponse = await Verify(ValidSecretKey, "<response token>");
                 Console.WriteLine(JsonConvert.SerializeObject(successResponse));
 
-                var failureResponse = await Verify(InvalidSecretKey);
+                var failureResponse = await Verify(InvalidSecretKey, "<response token>");
                 Console.WriteLine(JsonConvert.SerializeObject(failureResponse));
             }
             catch (RecaptchaServiceException e)
@@ -37,7 +36,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
             }
         }
 
-        private static async Task<VerifyResponse> Verify(string secretKey)
+        private static async Task<VerifyResponse> Verify(string secretKey, string responseToken)
         {
             var options = Options.Create(new RecaptchaOptions()
             {
@@ -55,7 +54,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
 
             var response = await recaptchaService.VerifyAsync(new VerifyRequest()
             {
-                Response = "456"
+                Response = responseToken
             });
 
             return response;
