@@ -67,7 +67,5 @@ public class LoginController : Controller
 ```
 ### Examples
 Examples could be found in library repository:
-
-[**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET Core 3.1)
-
-[**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.AspNetCoreAngular/Controllers/LoginController.cs "Link") (ASP.NET Core 3.1 + Angular)
+- [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET Core 3.1)
+- [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.AspNetCoreAngular/Controllers/LoginController.cs "Link") (ASP.NET Core 3.1 + Angular)
