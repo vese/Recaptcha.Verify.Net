@@ -3,7 +3,7 @@ Library for verifying Google reCAPTCHA v2/v3 response token in ASP.NET Core 3.1+
 
 ||Recaptcha.Verify.Net|
 | :------------: | :------------: |
-|*NuGet*|[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)|
+|*NuGet*|[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)|
 
 ### Installation
 Latest version of package can be installed through Nuget using the following command:
@@ -69,4 +69,5 @@ public class LoginController : Controller
 Examples could be found in library repository:
 
 [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET Core 3.1)
+
 [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/Recaptcha.Verify.Net.AspNetCoreAngular/Controllers/LoginController.cs "Link") (ASP.NET Core 3.1 + Angular)
