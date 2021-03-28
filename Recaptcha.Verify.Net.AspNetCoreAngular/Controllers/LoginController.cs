@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
-using Recaptcha.Verify.Net.Models.Request;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,12 +23,7 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
         {
-            var response = await _recaptchaService.VerifyAsync(
-                new VerifyRequest()
-                {
-                    Response = credentials.RecaptchaToken
-                },
-                cancellationToken);
+            var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken, cancellationToken: cancellationToken);
 
             if (!response.Success)
             {

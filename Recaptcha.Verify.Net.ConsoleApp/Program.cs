@@ -52,10 +52,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
 
             var recaptchaService = new RecaptchaService(options, recaptchaClient);
 
-            var response = await recaptchaService.VerifyAsync(new VerifyRequest()
-            {
-                Response = responseToken
-            });
+            var response = await recaptchaService.VerifyAsync(responseToken);
 
             return response;
         }

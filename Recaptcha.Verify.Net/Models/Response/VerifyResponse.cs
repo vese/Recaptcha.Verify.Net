@@ -66,7 +66,7 @@ namespace Recaptcha.Verify.Net.Models.Response
         /// <summary>
         /// Returns list of the verify errors.
         /// </summary>
-        /// <exception cref="RecaptchaServiceException">
+        /// <exception cref="UnknownErrorKeyException">
         /// This exception is thrown when returned error key is unknown.
         /// </exception>
         [JsonIgnore]

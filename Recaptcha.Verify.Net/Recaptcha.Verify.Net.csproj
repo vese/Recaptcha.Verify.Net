@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Vese</Authors>
+    <Description>Library for verifying Google ReCaptcha v2/v3 response token in ASP.NET Core 3.1+</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/vese/Recaptcha.Verify.Net</RepositoryUrl>
+    <PackageTags>Recaptcha, Captcha, Verify, Verification</PackageTags>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Company>Vese</Company>
+    <PackageProjectUrl>https://github.com/vese/Recaptcha.Verify.Net</PackageProjectUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

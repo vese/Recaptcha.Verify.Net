@@ -25,7 +25,7 @@ namespace Recaptcha.Verify.Net.Helpers
                     return verifyError;
                 }
 
-                throw new RecaptchaServiceException("Unknown exception key");
+                throw new UnknownErrorKeyException($"Unknown error key: {error}");
             }).ToList();
     }
 }

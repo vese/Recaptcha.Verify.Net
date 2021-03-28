@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Recaptcha.Verify.Net.Exceptions
 {
     /// <summary>
-    /// Recaptcha service exception.
+    /// Base Recaptcha service exception.
     /// </summary>
     [Serializable]
     public class RecaptchaServiceException : Exception
