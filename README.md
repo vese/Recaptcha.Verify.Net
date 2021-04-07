@@ -1,18 +1,18 @@
 # Recaptcha.Verify.Net
-Library for verifying Google reCAPTCHA v2/v3 response token in ASP.NET Core 3.1+
+[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)
 
-||Recaptcha.Verify.Net|
-| :------------: | :------------: |
-|*NuGet*|[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)|
+Library for verifying Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
 
 ### Installation
-Latest version of package can be installed through Nuget using the following command:
+Package can be installed using Visual Studio UI (Tools > NuGet Package Manager > Manage NuGet Packages for Solution and search for "Recaptcha.Verify.Net").
+
+Also latest version of package can be installed using Package Manager Console:
 ```
 PM> Install-Package Recaptcha.Verify.Net
 ```
 
 ### Using reCAPTCHA verification
-1. Add secret key in appsettings
+1. Add secret key in appsettings.json file
 ```json
 {
   "Recaptcha": {
@@ -28,7 +28,7 @@ public void ConfigureServices(IServiceCollection services)
     //...
 }
 ```
-3. Use in controller
+3. Use service in controller to verify captcha answer
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
