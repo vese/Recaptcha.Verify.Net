@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net", "ReCaptcha.Verify.Net\Recaptcha.Verify.Net.csproj", "{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.ConsoleApp", "Recaptcha.Verify.Net.ConsoleApp\Recaptcha.Verify.Net.ConsoleApp.csproj", "{8C99E79D-0F94-498C-B67C-92C2B51237B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.ConsoleApp", "examples\Recaptcha.Verify.Net.ConsoleApp\Recaptcha.Verify.Net.ConsoleApp.csproj", "{57EDE79D-BD99-4F2F-B34C-5FF130960F83}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.AspNetCoreAngular", "Recaptcha.Verify.Net.AspNetCoreAngular\Recaptcha.Verify.Net.AspNetCoreAngular.csproj", "{C33E7C48-C7D0-4B0C-B965-4EA173915048}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.AspNetCoreAngular", "examples\Recaptcha.Verify.Net.AspNetCoreAngular\Recaptcha.Verify.Net.AspNetCoreAngular.csproj", "{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A9748EE-0AE6-4271-86D4-A13A32FF3601}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,14 +24,14 @@ Global
 		{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C99E79D-0F94-498C-B67C-92C2B51237B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C99E79D-0F94-498C-B67C-92C2B51237B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C99E79D-0F94-498C-B67C-92C2B51237B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C99E79D-0F94-498C-B67C-92C2B51237B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C33E7C48-C7D0-4B0C-B965-4EA173915048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C33E7C48-C7D0-4B0C-B965-4EA173915048}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C33E7C48-C7D0-4B0C-B965-4EA173915048}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C33E7C48-C7D0-4B0C-B965-4EA173915048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
