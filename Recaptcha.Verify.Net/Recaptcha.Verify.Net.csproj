@@ -11,7 +11,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Company>Vese</Company>
     <PackageProjectUrl>https://github.com/vese/Recaptcha.Verify.Net</PackageProjectUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
