@@ -86,5 +86,26 @@ namespace Recaptcha.Verify.Net
                     RemoteIp = remoteIp
                 },
                 cancellationToken);
+
+        /// <seealso cref="IRecaptchaService.VerifyV3Async(VerifyRequest, CancellationToken)"/>
+        public Task<VerifyResponseV3> VerifyV3Async(VerifyRequest request, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(request.Response))
+            {
+                throw new EmptyCaptchaAnswerException();
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Secret))
+            {
+                if (_recaptchaOptions == null)
+                {
+                    throw new SecretKeyNotSpecifiedException();
+                }
+
+                request.Secret = _recaptchaOptions.SecretKey;
+            }
+
+            return _recaptchaClient.VerifyV3Async(request, cancellationToken);
+        }
     }
 }
