@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReCaptcha.Verify.Net\Recaptcha.Verify.Net.csproj" />
-    <ProjectReference Include="..\ReCaptcha.Verify.Net\Recaptcha.Verify.Net.csproj" />
   </ItemGroup>
 
   <ItemGroup>
