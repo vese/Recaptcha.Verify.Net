@@ -50,7 +50,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
                 },
                 new RefitSettings(new NewtonsoftJsonContentSerializer()));
 
-            var recaptchaService = new RecaptchaService(options, recaptchaClient);
+            IRecaptchaService recaptchaService = new RecaptchaService(options, recaptchaClient);
 
             var response = await recaptchaService.VerifyAsync(responseToken);
 

@@ -44,5 +44,11 @@ namespace Recaptcha.Verify.Net
         /// </exception>
         Task<VerifyResponse> VerifyAsync(string response, string secret = null,
             string remoteIp = null, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Verifies reCAPTCHA V3 response token.
+        /// </summary>
+        /// <seealso cref="VerifyAsync(VerifyRequest, CancellationToken)"/>
+        Task<VerifyResponseV3> VerifyV3Async(VerifyRequest request, CancellationToken cancellationToken = default);
     }
 }
