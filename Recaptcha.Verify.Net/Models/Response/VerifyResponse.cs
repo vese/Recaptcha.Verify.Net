@@ -16,6 +16,20 @@ namespace Recaptcha.Verify.Net.Models.Response
         public bool Success { get; set; }
 
         /// <summary>
+        /// Used for reCAPTCHA V3.
+        /// The score for this request (0.0 - 1.0).
+        /// </summary>
+        [JsonProperty("score")]
+        public float? Score { get; set; }
+
+        /// <summary>
+        /// Used for reCAPTCHA V3.
+        /// The action name for this request (important to verify).
+        /// </summary>
+        [JsonProperty("action")]
+        public string Action { get; set; }
+
+        /// <summary>
         /// Timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ).
         /// </summary>
         [JsonProperty("challenge_ts")]

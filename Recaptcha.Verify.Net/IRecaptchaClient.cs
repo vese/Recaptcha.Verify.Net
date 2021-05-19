@@ -21,16 +21,5 @@ namespace Recaptcha.Verify.Net
         Task<VerifyResponse> VerifyAsync(
             [Body(BodySerializationMethod.UrlEncoded)] VerifyRequest request,
             CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Verifies reCAPTCHA V3 response token.
-        /// https://developers.google.com/recaptcha/docs/verify#api-request
-        /// </summary>
-        /// <param name="request">Verify reCAPTCHA V3 response token request params.</param>
-        /// <returns>A <see cref="VerifyResponseV3"/> verification response.</returns>
-        [Post("/siteverify")]
-        Task<VerifyResponseV3> VerifyV3Async(
-            [Body(BodySerializationMethod.UrlEncoded)] VerifyRequest request,
-            CancellationToken cancellationToken = default);
     }
 }
