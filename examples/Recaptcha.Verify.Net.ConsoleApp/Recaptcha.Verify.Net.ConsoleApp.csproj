@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ReCaptcha.Verify.Net\Recaptcha.Verify.Net.csproj" />
-    <ProjectReference Include="..\Recaptcha.Verify.Net\Recaptcha.Verify.Net.csproj" />
   </ItemGroup>
 
 </Project>
