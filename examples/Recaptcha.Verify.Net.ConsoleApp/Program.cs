@@ -26,9 +26,27 @@ namespace Recaptcha.Verify.Net.ConsoleApp
             {
                 var successResponse = await Verify(ValidSecretKey, "<response token>");
                 Console.WriteLine(JsonConvert.SerializeObject(successResponse));
+                Console.WriteLine();
 
                 var failureResponse = await Verify(InvalidSecretKey, "<response token>");
                 Console.WriteLine(JsonConvert.SerializeObject(failureResponse));
+                Console.WriteLine();
+
+                // Verifies response token and checks action and score (score for v3)
+                var checkResult = await VerifyAndCheck(ValidSecretKey, "<response token>", "test", 0.5f);
+                Console.WriteLine(JsonConvert.SerializeObject(checkResult));
+                if (checkResult.Success)
+                {
+                    // Handle successfully verified
+                }
+                else if (!checkResult.ScoreSatisfies)
+                {
+                    // Handle score less than specified threshold for v3
+                }
+                else
+                {
+                    // Handle negative response
+                }
             }
             catch (RecaptchaServiceException e)
             {
@@ -36,11 +54,27 @@ namespace Recaptcha.Verify.Net.ConsoleApp
             }
         }
 
-        private static async Task<VerifyResponse> Verify(string secretKey, string responseToken)
+        private static Task<VerifyResponse> Verify(string secretKey, string responseToken)
+        {
+            var recaptchaService = CreateService(secretKey);
+
+            return recaptchaService.VerifyAsync(responseToken);
+        }
+
+        private static Task<CheckResult> VerifyAndCheck(
+            string secretKey, string responseToken, string action, float score)
+        {
+            var recaptchaService = CreateService(secretKey, score);
+
+            return recaptchaService.VerifyAndCheckAsync(responseToken, action);
+        }
+
+        private static IRecaptchaService CreateService(string secretKey, float? score = null)
         {
             var options = Options.Create(new RecaptchaOptions()
             {
-                SecretKey = secretKey
+                SecretKey = secretKey,
+                ScoreThreshold = score
             });
 
             var recaptchaClient = RestService.For<IRecaptchaClient>(
@@ -50,11 +84,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
                 },
                 new RefitSettings(new NewtonsoftJsonContentSerializer()));
 
-            IRecaptchaService recaptchaService = new RecaptchaService(options, recaptchaClient);
-
-            var response = await recaptchaService.VerifyAsync(responseToken);
-
-            return response;
+            return new RecaptchaService(options, recaptchaClient);
         }
     }
 }

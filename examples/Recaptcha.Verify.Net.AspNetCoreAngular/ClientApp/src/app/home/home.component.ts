@@ -30,7 +30,7 @@ export class HomeComponent implements OnDestroy {
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(
         token => {
-          const credentials = new Credentials("","",token);
+          const credentials = new Credentials('', '', token, 'login');
 
           this.loginService.login(credentials)
             .pipe(takeUntil(this.ngUnsubscribe))

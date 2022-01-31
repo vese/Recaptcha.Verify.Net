@@ -16,7 +16,8 @@ PM> Install-Package Recaptcha.Verify.Net
 ```json
 {
   "Recaptcha": {
-    "SecretKey": "<recaptcha secret key>"
+    "SecretKey": "<recaptcha secret key>",
+    "ScoreThreshold": 0.5
   }
 }
 ```
@@ -46,21 +47,28 @@ public class LoginController : Controller
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
     {
-        var response = await _recaptchaService.VerifyAsync(
-            new VerifyRequest()
-            {
-                Response = credentials.RecaptchaToken
-            },
+        var checkResult = await _recaptchaService.VerifyAndCheckAsync(
+            credentials.RecaptchaToken,
+            credentials.Action,
             cancellationToken);
-
-        if (!response.Success)
+        
+        if (!checkResult.Success)
         {
-            _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(response.ErrorCodes)}");
+            if (!checkResult.ScoreSatisfies)
+            {
+                // Handle score less than specified threshold for v3
+                return BadRequest();
+            }
+        
+            if (!checkResult.Response.Success)
+            {
+                _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
+            }
             return BadRequest();
         }
-
+        
         // Process login
-
+        
         return Ok();
     }
 }

@@ -5,5 +5,6 @@
         public string Login { get; set; }
         public string Password { get; set; }
         public string RecaptchaToken { get; set; }
+        public string Action { get; set; }
     }
 }

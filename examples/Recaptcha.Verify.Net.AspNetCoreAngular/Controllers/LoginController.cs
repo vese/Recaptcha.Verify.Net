@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
+using Recaptcha.Verify.Net.Models.Request;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,11 +24,23 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
         {
-            var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken, cancellationToken: cancellationToken);
+            var checkResult = await _recaptchaService.VerifyAndCheckAsync(
+                credentials.RecaptchaToken,
+                credentials.Action,
+                cancellationToken);
 
-            if (!response.Success)
+            if (!checkResult.Success)
             {
-                _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(response.ErrorCodes)}");
+                if (!checkResult.ScoreSatisfies)
+                {
+                    // Handle score less than specified threshold for v3
+                    return BadRequest();
+                }
+
+                if (!checkResult.Response.Success)
+                {
+                    _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
+                }
                 return BadRequest();
             }
 
