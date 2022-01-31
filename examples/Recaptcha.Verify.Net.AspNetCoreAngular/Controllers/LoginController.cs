@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
-using Recaptcha.Verify.Net.Models.Request;
 using System.Threading;
 using System.Threading.Tasks;
 
