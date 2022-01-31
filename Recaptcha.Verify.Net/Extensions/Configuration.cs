@@ -12,7 +12,11 @@ namespace Recaptcha.Verify.Net.Extensions
 
         public static void ConfigureRecaptcha(this IServiceCollection services, IConfigurationSection recaptchaOptions)
         {
-            services.Configure<RecaptchaOptions>(recaptchaOptions);
+            services.Configure<RecaptchaOptions>(settings =>
+            {
+                recaptchaOptions.Bind(settings);
+                recaptchaOptions.GetSection("ActionsScoreThresholds").Bind(settings.ActionsScoreThresholds);
+            });
 
             services.ConfigureService();
         }
@@ -22,6 +26,8 @@ namespace Recaptcha.Verify.Net.Extensions
             services.Configure<RecaptchaOptions>(co =>
             {
                 co.SecretKey = recaptchaOptions.SecretKey;
+                co.ScoreThreshold = recaptchaOptions.ScoreThreshold;
+                co.ActionsScoreThresholds = recaptchaOptions.ActionsScoreThresholds;
             });
 
             services.ConfigureService();

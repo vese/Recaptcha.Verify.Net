@@ -4,6 +4,7 @@ using Recaptcha.Verify.Net.Models;
 using Recaptcha.Verify.Net.Models.Request;
 using Recaptcha.Verify.Net.Models.Response;
 using Refit;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,8 @@ namespace Recaptcha.Verify.Net
     {
         private readonly RecaptchaOptions _recaptchaOptions;
         private readonly IRecaptchaClient _recaptchaClient;
+
+        public Dictionary<string, float> ActionsScoreThresholds => _recaptchaOptions.ActionsScoreThresholds;
 
         /// <summary>
         /// Recaptcha service constructor.
@@ -40,6 +43,18 @@ namespace Recaptcha.Verify.Net
 
             if (response.Success && response.Score.HasValue)
             {
+                if (_recaptchaOptions == null)
+                {
+                    throw new MinScoreNotSpecifiedException();
+                }
+
+                if (_recaptchaOptions.ActionsScoreThresholds != null &&
+                    _recaptchaOptions.ActionsScoreThresholds.TryGetValue(action, out var scoreThreshold))
+                {
+                    checkResult.ScoreSatisfies = response.Score.Value > scoreThreshold;
+                    return checkResult;
+                }
+
                 if (_recaptchaOptions == null || !_recaptchaOptions.ScoreThreshold.HasValue)
                 {
                     throw new MinScoreNotSpecifiedException();

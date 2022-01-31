@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 
 namespace Recaptcha.Verify.Net.Models
 {
@@ -18,5 +19,10 @@ namespace Recaptcha.Verify.Net.Models
         /// into <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>.</para>
         /// </summary>
         public float? ScoreThreshold { get; set; }
+
+        /// <summary>
+        /// Optional. Map of actions minimal score for V3 Recaptcha.
+        /// </summary>
+        public Dictionary<string, float> ActionsScoreThresholds { get; set; }
     }
 }
