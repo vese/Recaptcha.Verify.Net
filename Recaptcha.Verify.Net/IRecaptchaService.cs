@@ -29,7 +29,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when minimal score was not specified and request had score value.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action,
             CancellationToken cancellationToken = default);
@@ -53,7 +53,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when minimal score was not specified and request had score value.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<CheckResult> VerifyAndCheckAsync(string response, string action,
             CancellationToken cancellationToken = default);
@@ -74,7 +74,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when secret key was not specified in options or request params.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action,
             float score, CancellationToken cancellationToken = default);
@@ -95,7 +95,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when secret key was not specified in options or request params.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<CheckResult> VerifyAndCheckAsync(string response, string action,
             float score, CancellationToken cancellationToken = default);
@@ -114,7 +114,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when secret key was not specified in options or request params.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<VerifyResponse> VerifyAsync(VerifyRequest request, CancellationToken cancellationToken = default);
 
@@ -135,7 +135,7 @@ namespace Recaptcha.Verify.Net
         /// This exception is thrown when secret key was not specified in options or request params.
         /// </exception>
         /// <exception cref="HttpRequestException">
-        /// This exception is thrown when http request is failed.
+        /// This exception is thrown when http request failed.
         /// </exception>
         Task<VerifyResponse> VerifyAsync(string response, string secret = null,
             string remoteIp = null, CancellationToken cancellationToken = default);

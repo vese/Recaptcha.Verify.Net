@@ -81,7 +81,7 @@ namespace Recaptcha.Verify.Net.Models
         /// Returns list of the verify errors.
         /// </summary>
         /// <exception cref="UnknownErrorKeyException">
-        /// This exception is thrown when returned error key is unknown.
+        /// This exception is thrown when verification response error key is unknown.
         /// </exception>
         [JsonIgnore]
         public List<VerifyError> Errors => EnumHelper.GetVerifyErrors(ErrorCodes);

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace Recaptcha.Verify.Net.Exceptions
 {
     /// <summary>
-    /// This exception is thrown when http request is failed.
+    /// This exception is thrown when http request failed.
     /// Stores <see cref="Refit.ApiException"/> as inner exception.
     /// </summary>
     [Serializable]
