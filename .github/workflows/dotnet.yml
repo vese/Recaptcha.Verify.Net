@@ -17,12 +17,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1.9.0
       with:
-        dotnet-version: 3.1.x
-        
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-      with:
-        vs-version: '[16.11.0]'
+        dotnet-version: 5.0.x
         
     - name: Restore dependencies
       run: dotnet restore
