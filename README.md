@@ -1,7 +1,7 @@
 # Recaptcha.Verify.Net
 [![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)
 
-Library for verifying Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
+Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
 
 ### Installation
 Package can be installed using Visual Studio UI (Tools > NuGet Package Manager > Manage NuGet Packages for Solution and search for "Recaptcha.Verify.Net").
