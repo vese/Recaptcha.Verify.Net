@@ -11,6 +11,8 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
+        private const string _loginAction = "login";
+
         private readonly ILogger _logger;
         private readonly IRecaptchaService _recaptchaService;
 
@@ -25,7 +27,7 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
         {
             var checkResult = await _recaptchaService.VerifyAndCheckAsync(
                 credentials.RecaptchaToken,
-                credentials.Action,
+                _loginAction,
                 cancellationToken);
 
             if (!checkResult.Success)
@@ -38,8 +40,11 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
 
                 if (!checkResult.Response.Success)
                 {
+                    // Handle unsuccessful verification response
                     _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
                 }
+
+                // Unsuccessful verification and check
                 return BadRequest();
             }
 
