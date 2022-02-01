@@ -2,8 +2,7 @@ name: Publish NuGet package
 
 on:
   release:
-    events:
-    - published
+    types: [published]
 
 jobs:
   nuget-publish:
@@ -17,6 +16,8 @@ jobs:
       with:
         source-url: https://api.nuget.org/v3/index.json
         dotnet-version: 5.0.x
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
 
     - name: Restore dependencies
       run: dotnet restore
