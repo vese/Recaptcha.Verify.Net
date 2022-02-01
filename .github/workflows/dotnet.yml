@@ -21,7 +21,7 @@ jobs:
         
     - name: Restore dependencies
       run: dotnet restore Recaptcha.Verify.Net.sln
-      working-directory: ReCaptcha.Verify.Net/ReCaptcha.Verify.Net
+      working-directory: Recaptcha.Verify.Net
       
     - name: Build
       run: dotnet build -c Release --no-restore
