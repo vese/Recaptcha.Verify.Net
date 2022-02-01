@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32113.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net", "ReCaptcha.Verify.Net\Recaptcha.Verify.Net.csproj", "{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net", "Recaptcha.Verify.Net\Recaptcha.Verify.Net.csproj", "{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.ConsoleApp", "examples\Recaptcha.Verify.Net.ConsoleApp\Recaptcha.Verify.Net.ConsoleApp.csproj", "{57EDE79D-BD99-4F2F-B34C-5FF130960F83}"
 EndProject
