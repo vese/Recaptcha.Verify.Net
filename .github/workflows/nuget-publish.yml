@@ -26,7 +26,5 @@ jobs:
       run: |
         cd Recaptcha.Verify.Net
         dotnet pack -c Release -o out --no-restore
-        ls
         cd out
-        ls
         dotnet nuget push "*.nupkg" --skip-duplicate --no-symbols true --api-key ${{secrets.NUGET_TOKEN}}
