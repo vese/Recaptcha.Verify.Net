@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Recaptcha.Verify.Net.Models.Request
+namespace Recaptcha.Verify.Net.Models
 {
     /// <summary>
     /// Verify reCAPTCHA response token request params.

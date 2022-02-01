@@ -5,7 +5,7 @@ using Recaptcha.Verify.Net.Helpers;
 using System;
 using System.Collections.Generic;
 
-namespace Recaptcha.Verify.Net.Models.Response
+namespace Recaptcha.Verify.Net.Models
 {
     public class VerifyResponse
     {

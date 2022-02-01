@@ -1,5 +1,4 @@
-﻿using Recaptcha.Verify.Net.Models.Request;
-using Recaptcha.Verify.Net.Models.Response;
+﻿using Recaptcha.Verify.Net.Models;
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;

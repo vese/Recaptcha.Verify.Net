@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Models;
-using Recaptcha.Verify.Net.Models.Request;
-using Recaptcha.Verify.Net.Models.Response;
 using Refit;
 using System.Collections.Generic;
 using System.Threading;

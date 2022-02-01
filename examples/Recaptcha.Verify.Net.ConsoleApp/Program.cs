@@ -2,8 +2,6 @@
 using Newtonsoft.Json;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Models;
-using Recaptcha.Verify.Net.Models.Request;
-using Recaptcha.Verify.Net.Models.Response;
 using Refit;
 using System;
 using System.Net.Http;

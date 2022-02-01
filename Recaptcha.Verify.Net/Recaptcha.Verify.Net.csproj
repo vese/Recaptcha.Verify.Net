@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,8 +11,9 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Company>Vese</Company>
     <PackageProjectUrl>https://github.com/vese/Recaptcha.Verify.Net</PackageProjectUrl>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,9 +28,9 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Refit" Version="6.0.38" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="6.0.38" />
-    <PackageReference Include="Refit.Newtonsoft.Json" Version="6.0.38" />
+    <PackageReference Include="Refit" Version="6.2.16" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="6.2.16" />
+    <PackageReference Include="Refit.Newtonsoft.Json" Version="6.2.16" />
   </ItemGroup>
 
 </Project>

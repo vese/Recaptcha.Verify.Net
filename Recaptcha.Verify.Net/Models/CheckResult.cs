@@ -1,4 +1,4 @@
-﻿namespace Recaptcha.Verify.Net.Models.Response
+﻿namespace Recaptcha.Verify.Net.Models
 {
     /// <summary>
     /// Result of checking of verify response.
