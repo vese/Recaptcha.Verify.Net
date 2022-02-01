@@ -1,7 +1,7 @@
 # Recaptcha.Verify.Net
-[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)
+[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net) [![Build](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml)
 
-Library for verifying Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
+Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
 
 ### Installation
 Package can be installed using Visual Studio UI (Tools > NuGet Package Manager > Manage NuGet Packages for Solution and search for "Recaptcha.Verify.Net").
@@ -12,7 +12,7 @@ PM> Install-Package Recaptcha.Verify.Net
 ```
 
 ### Using reCAPTCHA verification
-1. Add secret key in appsettings.json file
+1. Add secret key in appsettings.json file.
 ```json
 {
   "Recaptcha": {
@@ -21,7 +21,7 @@ PM> Install-Package Recaptcha.Verify.Net
   }
 }
 ```
-2. Configure service in Startup.cs
+2. Configure service in Startup.cs.
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
@@ -29,12 +29,14 @@ public void ConfigureServices(IServiceCollection services)
     //...
 }
 ```
-3. Use service in controller to verify captcha answer
+3. Use service in controller to verify captcha answer and check response action and score (score for V3).
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
 public class LoginController : Controller
 {
+    private const string _loginAction = "login";
+    
     private readonly ILogger _logger;
     private readonly IRecaptchaService _recaptchaService;
 
@@ -49,7 +51,7 @@ public class LoginController : Controller
     {
         var checkResult = await _recaptchaService.VerifyAndCheckAsync(
             credentials.RecaptchaToken,
-            credentials.Action,
+            _loginAction,
             cancellationToken);
         
         if (!checkResult.Success)
@@ -62,8 +64,11 @@ public class LoginController : Controller
         
             if (!checkResult.Response.Success)
             {
+                // Handle unsuccessful verification response
                 _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
             }
+            
+            // Unsuccessful verification and check
             return BadRequest();
         }
         
@@ -73,6 +78,57 @@ public class LoginController : Controller
     }
 }
 ```
+### Directly passing score threshold
+Score threshold in appsettings.json is optional and value could be passed directly into VerifyAndCheckAsync function.
+```csharp
+var scoreThreshold = 0.5f;
+var checkResult = await _recaptchaService.VerifyAndCheckAsync(
+    credentials.RecaptchaToken,
+    _loginAction,
+    scoreThreshold);
+```
+### Using score threshold map
+Based on the score, you can take variable action in the context of your site instead of blocking traffic to better protect your site. Score thresholds specified for actions allow you to achieve adaptive risk analysis and protection based on the context of the action.
+1. Specify ActionsScoreThresholds in appsettings.json. If specified ScoreThreshold value will be used as default score threshold for actions that are not in map.
+```json
+{
+  "Recaptcha": {
+    "SecretKey": "<recaptcha secret key>",
+    "ScoreThreshold": 0.5,
+    "ActionsScoreThresholds": {
+      "login": 0.75,
+      "test": 0.9
+    }
+  }
+}
+```
+2. Call VerifyAndCheckAsync function
+```csharp
+// Response will be checked with score threshold equal to 0.75
+var checkResultLogin  = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "login");
+
+// Response will be checked with score threshold equal to 0.9
+var checkResultTest   = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "login");
+
+// Response will be checked with score threshold equal to 0.5
+var checkResultSignUp = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "signup");
+```
+### Process verify request without checking action and score from response
+If checking of verification response needs to be completed separately then you can use VerifyAsync insted of VerifyAndCheckAsync.
+```csharp
+var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken);
+```
+### Handling exceptions
+Library can produce following exceptions
+Exception | Description
+--- | ---
+EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
+HttpRequestException | This exception is thrown when http request failed. Stores Refit.ApiException as inner exception.
+MinScoreNotSpecifiedException | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
+SecretKeyNotSpecifiedException | This exception is thrown when secret key was not specified in options or request params.
+UnknownErrorKeyException | This exception is thrown when verification response error key is unknown.
+
+All of these exceptions are inherited from RecaptchaServiceException.
 ### Examples
 Examples could be found in library repository:
 - [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/examples/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET Core 3.1)
