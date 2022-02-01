@@ -14,6 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2.4.0
     
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: 16.8
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v1.9.0
       with:
