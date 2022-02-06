@@ -17,6 +17,7 @@ namespace Recaptcha.Verify.Net
     public class RecaptchaAttribute : ActionFilterAttribute
     {
         private readonly string _action;
+        private readonly float? _score;
 
         /// <summary>
         /// Verifies reCAPTCHA response token and checks score (for v3) and action.
@@ -25,6 +26,17 @@ namespace Recaptcha.Verify.Net
         public RecaptchaAttribute(string action)
         {
             _action = action;
+        }
+
+        /// <summary>
+        /// Verifies reCAPTCHA response token and checks score (for v3) and action.
+        /// </summary>
+        /// <param name="action">Action that the action from the response should be equal to.</param>
+        /// <param name="score">Score threshold for V3 reCAPTCHA. This value will be used instead of values from options</param>
+        public RecaptchaAttribute(string action, float score)
+        {
+            _action = action;
+            _score = score;
         }
 
         /// <summary>
@@ -48,15 +60,31 @@ namespace Recaptcha.Verify.Net
             {
                 var recaptchaToken = context.GetResponseToken(recaptchaOptions.RecaptchaAttributeOptions);
 
-                checkResult = await recaptchaService.VerifyAndCheckAsync(
-                    new VerifyRequest()
-                    {
-                        Secret = recaptchaOptions.SecretKey,
-                        Response = recaptchaToken,
-                        RemoteIp = remoteIp
-                    },
-                    _action,
-                    cancellationToken);
+                if (_score.HasValue)
+                {
+                    checkResult = await recaptchaService.VerifyAndCheckAsync(
+                        new VerifyRequest()
+                        {
+                            Secret = recaptchaOptions.SecretKey,
+                            Response = recaptchaToken,
+                            RemoteIp = remoteIp
+                        },
+                        _action,
+                        _score.Value,
+                        cancellationToken);
+                }
+                else
+                {
+                    checkResult = await recaptchaService.VerifyAndCheckAsync(
+                        new VerifyRequest()
+                        {
+                            Secret = recaptchaOptions.SecretKey,
+                            Response = recaptchaToken,
+                            RemoteIp = remoteIp
+                        },
+                        _action,
+                        cancellationToken);
+                }
             }
             catch (RecaptchaServiceException e)
             {

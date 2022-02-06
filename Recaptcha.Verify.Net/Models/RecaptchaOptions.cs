@@ -14,7 +14,7 @@ namespace Recaptcha.Verify.Net.Models
         public string SecretKey { get; set; }
 
         /// <summary>
-        /// Optional. Minimal score for V3 Recaptcha (0.0 - 1.0).
+        /// Optional. Score threshold for V3 Recaptcha (0.0 - 1.0).
         /// <para>Score threshold could be passed directly 
         /// into <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>.</para>
         /// </summary>
