@@ -1,7 +1,7 @@
 # Recaptcha.Verify.Net
 [![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net) [![Build](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml)
 
-Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core. The project targets .NET Core 3.1.
+Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core 3.1+.
 
 ### Installation
 Package can be installed using Visual Studio UI (Tools > NuGet Package Manager > Manage NuGet Packages for Solution and search for "Recaptcha.Verify.Net").
@@ -78,6 +78,56 @@ public class LoginController : Controller
     }
 }
 ```
+### Using attribute for reCAPTCHA verification
+1. Specify in appsettings.json name of parameter for a way in which reCAPTCHA response token is passed.
+```json
+{
+  "Recaptcha": {
+    ...
+    "RecaptchaAttributeOptions": {
+      "ResponseTokenNameInHeader": "RecaptchaTokenInHeader", // If token is passed in header
+      "ResponseTokenNameInQuery": "RecaptchaTokenInQuery", // If token is passed in query
+      "ResponseTokenNameInForm": "RecaptchaTokenInForm" // If token is passed in form
+    }
+  }
+}
+```
+Or set in Startup GetResponseTokenFromActionArguments or GetResponseTokenFromExecutingContext delegate that points how to get token from parsed data.
+```csharp
+services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
+    // Specify how to get token from parsed arguments for using in RecaptchaAttribute
+    o => o.RecaptchaAttributeOptions.GetResponseTokenFromActionArguments =
+        d =>
+        { 
+            if (d.TryGetValue("credentials", out var credentials))
+            {
+                return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
+            }
+            return null;
+        });
+```
+Credentials model used in example has base class with property containing token. 
+```csharp
+public class BaseRecaptchaCredentials
+{
+    public string RecaptchaToken { get; set; }
+}
+public class Credentials : BaseRecaptchaCredentials
+{
+    public string Login { get; set; }
+    public string Password { get; set; }
+}
+```
+2. Add Recaptcha attribute in controller to verify captcha answer and check response action and score (score for V3).
+```csharp
+[Recaptcha("login")]
+[HttpPost("Login")]
+public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
+{
+    // Process login
+    return Ok();
+}
+```
 ### Directly passing score threshold
 Score threshold in appsettings.json is optional and value could be passed directly into VerifyAndCheckAsync function.
 ```csharp
@@ -108,7 +158,7 @@ Based on the score, you can take variable action in the context of your site ins
 var checkResultLogin  = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "login");
 
 // Response will be checked with score threshold equal to 0.9
-var checkResultTest   = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "login");
+var checkResultTest   = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "test");
 
 // Response will be checked with score threshold equal to 0.5
 var checkResultSignUp = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "signup");
