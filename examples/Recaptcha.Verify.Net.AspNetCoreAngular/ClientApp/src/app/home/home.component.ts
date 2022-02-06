@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import { Subject } from 'rxjs';
-import { LoginService } from '../services/login.service';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Credentials } from '../models/credentials';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +24,23 @@ export class HomeComponent implements OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  login(): void {
+  login_InBody(): void {
+    this.login((c) => this.loginService.login_InBody(c));
+  }
+
+  login_RecaptchaAttribute_InHeader(): void {
+    this.login((c) => this.loginService.login_RecaptchaAttribute_InHeader(c));
+  }
+
+  login_RecaptchaAttribute_InQuery(): void {
+    this.login((c) => this.loginService.login_RecaptchaAttribute_InQuery(c));
+  }
+
+  login_RecaptchaAttribute_InForm(): void {
+    this.login((c) => this.loginService.login_RecaptchaAttribute_InForm(c));
+  }
+
+  private login(loginFunc: (credentials: Credentials) => Observable<any>): void {
     this.success = null;
     this.reCaptchaV3Service.execute('login')
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -32,7 +48,7 @@ export class HomeComponent implements OnDestroy {
         token => {
           const credentials = new Credentials('', '', token);
 
-          this.loginService.login(credentials)
+          loginFunc(credentials)
             .pipe(takeUntil(this.ngUnsubscribe))
             .subscribe(
               result => {

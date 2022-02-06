@@ -1,5 +1,6 @@
 ﻿using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Models;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,12 +12,18 @@ namespace Recaptcha.Verify.Net
     public interface IRecaptchaService
     {
         /// <summary>
+        /// Map of actions score thresholds for V3 Recaptcha.
+        /// </summary>
+        public Dictionary<string, float> ActionsScoreThresholds { get; }
+
+        /// <summary>
         /// Verifies reCAPTCHA response token and checks score (for v3) and action.
         /// https://developers.google.com/recaptcha/docs/verify#api-request
         /// <para>Takes score threshold from options <see cref="RecaptchaOptions"/>.</para>
         /// </summary>
         /// <param name="request">Verify reCAPTCHA response token request params.</param>
         /// <param name="action">Action that the action from the response should be equal to.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains result of check <see cref="CheckResult"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">
@@ -41,6 +48,7 @@ namespace Recaptcha.Verify.Net
         /// </summary>
         /// <param name="response">The user response token provided by the reCAPTCHA client-side integration on your site.</param>
         /// <param name="action">Action that the action from the response should be equal to.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains result of check <see cref="CheckResult"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">
@@ -65,6 +73,7 @@ namespace Recaptcha.Verify.Net
         /// <param name="request">Verify reCAPTCHA response token request params.</param>
         /// <param name="action">Action that the action from the response should be equal to.</param>
         /// <param name="score">Score threshold.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains result of check <see cref="CheckResult"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">
@@ -86,6 +95,7 @@ namespace Recaptcha.Verify.Net
         /// <param name="response">The user response token provided by the reCAPTCHA client-side integration on your site.</param>
         /// <param name="action">Action that the action from the response should be equal to.</param>
         /// <param name="score">Score threshold.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains result of check <see cref="CheckResult"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">
@@ -105,6 +115,7 @@ namespace Recaptcha.Verify.Net
         /// https://developers.google.com/recaptcha/docs/verify#api-request
         /// </summary>
         /// <param name="request">Verify reCAPTCHA response token request params.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains verification response <see cref="VerifyResponse"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">
@@ -126,6 +137,7 @@ namespace Recaptcha.Verify.Net
         /// <param name="secret">The shared key between your site and reCAPTCHA.
         /// This parameter could be unsetted if <see cref="RecaptchaOptions"/> was configured.</param>
         /// <param name="remoteIp">The user's IP address.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
         /// The task result contains verification response <see cref="VerifyResponse"/>.</returns>
         /// <exception cref="EmptyCaptchaAnswerException">

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
 using Recaptcha.Verify.Net.Extensions;
 
 namespace Recaptcha.Verify.Net.AspNetCoreAngular
@@ -20,7 +21,17 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"));
+            services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
+                // Specify how to get token from parsed arguments for using in RecaptchaAttribute
+                o => o.RecaptchaAttributeOptions.GetResponseTokenFromActionArguments =
+                    d =>
+                    { 
+                        if (d.TryGetValue("credentials", out var credentials))
+                        {
+                            return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
+                        }
+                        return null;
+                    });
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory

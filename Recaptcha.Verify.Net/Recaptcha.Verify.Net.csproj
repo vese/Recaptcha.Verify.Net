@@ -7,7 +7,7 @@
     <Description>Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core 3.1+</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/vese/Recaptcha.Verify.Net</RepositoryUrl>
-    <PackageTags>Recaptcha, Captcha, Verify, Verification</PackageTags>
+    <PackageTags>Recaptcha, Captcha, Verify, Verification, Validation, Google</PackageTags>
     <NeutralLanguage>en</NeutralLanguage>
     <Company>Vese</Company>
     <PackageProjectUrl>https://github.com/vese/Recaptcha.Verify.Net</PackageProjectUrl>
@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />

@@ -21,8 +21,23 @@ namespace Recaptcha.Verify.Net.Models
         public float? ScoreThreshold { get; set; }
 
         /// <summary>
-        /// Optional. Map of actions minimal score for V3 Recaptcha.
+        /// Optional. Map of actions score thresholds for V3 Recaptcha.
         /// </summary>
         public Dictionary<string, float> ActionsScoreThresholds { get; set; }
+
+        /// <summary>
+        /// Default returning message for unseccessfull validation and checking.
+        /// <para>
+        /// This message would be replaced by value processed by <see cref="RecaptchaAttributeOptions.OnVerificationFailed"/>, 
+        /// <see cref="RecaptchaAttributeOptions.OnRecaptchaServiceException"/>, <see cref="RecaptchaAttributeOptions.OnException"/>
+        /// or <see cref="RecaptchaAttributeOptions.OnReturnBadRequest"/>.
+        /// </para>
+        /// </summary>
+        public string VerificationFailedMessage { get; set; } = "Recaptcha verification failed";
+
+        /// <summary>
+        /// <see cref="RecaptchaAttribute"/> options.
+        /// </summary>
+        public RecaptchaAttributeOptions RecaptchaAttributeOptions { get; set; } = new RecaptchaAttributeOptions();
     }
 }

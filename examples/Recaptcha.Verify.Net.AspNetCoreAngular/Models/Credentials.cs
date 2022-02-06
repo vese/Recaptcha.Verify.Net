@@ -1,9 +1,8 @@
 ﻿namespace Recaptcha.Verify.Net.AspNetCoreAngular.Models
 {
-    public class Credentials
+    public class Credentials : BaseRecaptchaCredentials
     {
         public string Login { get; set; }
         public string Password { get; set; }
-        public string RecaptchaToken { get; set; }
     }
 }

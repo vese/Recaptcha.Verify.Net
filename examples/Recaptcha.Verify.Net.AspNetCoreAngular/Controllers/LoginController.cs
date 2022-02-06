@@ -52,5 +52,14 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
 
             return Ok();
         }
+
+        [Recaptcha("login")]
+        [HttpPost("Login_RecaptchaAttribute")]
+        public async Task<IActionResult> Login_RecaptchaAttribute([FromForm] Credentials credentials, CancellationToken cancellationToken)
+        {
+            // Process login
+
+            return Ok();
+        }
     }
 }

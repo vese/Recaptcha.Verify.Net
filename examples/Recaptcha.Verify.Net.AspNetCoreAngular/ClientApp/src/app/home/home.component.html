@@ -1,5 +1,24 @@
 <br />
-<button (click)="login()">Login</button>
+<br />
+<div>Pass reCAPTCHA response token in body</div>
+<button (click)="login_InBody()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in header, using RecaptchaAttribute</div>
+<button (click)="login_RecaptchaAttribute_InHeader()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in query, using RecaptchaAttribute</div>
+<button (click)="login_RecaptchaAttribute_InQuery()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in form, using RecaptchaAttribute</div>
+<button (click)="login_RecaptchaAttribute_InForm()">Login</button>
+
+<br />
 <br />
 <span *ngIf="success">Successfully logged</span>
 <span *ngIf="success === false">Recaptcha failed</span>

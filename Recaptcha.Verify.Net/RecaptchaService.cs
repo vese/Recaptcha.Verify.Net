@@ -14,6 +14,7 @@ namespace Recaptcha.Verify.Net
         private readonly RecaptchaOptions _recaptchaOptions;
         private readonly IRecaptchaClient _recaptchaClient;
 
+        /// <inheritdoc />
         public Dictionary<string, float> ActionsScoreThresholds => _recaptchaOptions.ActionsScoreThresholds;
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace Recaptcha.Verify.Net
                 if (_recaptchaOptions.ActionsScoreThresholds != null &&
                     _recaptchaOptions.ActionsScoreThresholds.TryGetValue(action, out var scoreThreshold))
                 {
-                    checkResult.ScoreSatisfies = response.Score.Value > scoreThreshold;
+                    checkResult.ScoreSatisfies = response.Score.Value >= scoreThreshold;
                     return checkResult;
                 }
 
@@ -58,7 +59,7 @@ namespace Recaptcha.Verify.Net
                     throw new MinScoreNotSpecifiedException();
                 }
 
-                checkResult.ScoreSatisfies = response.Score.Value > _recaptchaOptions.ScoreThreshold.Value;
+                checkResult.ScoreSatisfies = response.Score.Value >= _recaptchaOptions.ScoreThreshold.Value;
             }
 
             return checkResult;

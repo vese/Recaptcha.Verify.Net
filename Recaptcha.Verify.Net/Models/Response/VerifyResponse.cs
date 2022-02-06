@@ -7,6 +7,9 @@ using System.Collections.Generic;
 
 namespace Recaptcha.Verify.Net.Models
 {
+    /// <summary>
+    /// Response of reCAPTCHA response token verification.
+    /// </summary>
     public class VerifyResponse
     {
         /// <summary>
