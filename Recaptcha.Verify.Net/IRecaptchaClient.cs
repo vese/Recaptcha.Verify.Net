@@ -15,6 +15,7 @@ namespace Recaptcha.Verify.Net
         /// https://developers.google.com/recaptcha/docs/verify#api-request
         /// </summary>
         /// <param name="request">Verify reCAPTCHA response token request params.</param>
+        /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="VerifyResponse"/> verification response.</returns>
         [Post("/siteverify")]
         Task<VerifyResponse> VerifyAsync(

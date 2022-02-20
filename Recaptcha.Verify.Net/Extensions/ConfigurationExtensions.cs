@@ -64,7 +64,7 @@ namespace Recaptcha.Verify.Net.Extensions
         private static void ConfigureService(this IServiceCollection services)
         {
             services
-                .AddRefitClient<IRecaptchaClient>(provider => new RefitSettings(new NewtonsoftJsonContentSerializer()))
+                .AddRefitClient<IRecaptchaClient>()
                 .ConfigureHttpClient(provider => provider.BaseAddress = new Uri(_baseUrl));
 
             services.AddSingleton<IRecaptchaService, RecaptchaService>();

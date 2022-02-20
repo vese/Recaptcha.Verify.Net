@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Recaptcha.Verify.Net.Models
 {
@@ -11,19 +11,19 @@ namespace Recaptcha.Verify.Net.Models
         /// Required. The shared key between your site and reCAPTCHA.
         /// This parameter could be unsetted if <see cref="RecaptchaOptions"/> was configured.
         /// </summary>
-        [JsonProperty("secret")]
+        [JsonPropertyName("secret")]
         public string Secret { get; set; }
 
         /// <summary>
         /// Required. The user response token provided by the reCAPTCHA client-side integration on your site.
         /// </summary>
-        [JsonProperty("response")]
+        [JsonPropertyName("response")]
         public string Response { get; set; }
 
         /// <summary>
         /// Optional. The user's IP address.
         /// </summary>
-        [JsonProperty("remoteip")]
+        [JsonPropertyName("remoteip")]
         public string RemoteIp { get; set; }
     }
 }

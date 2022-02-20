@@ -79,8 +79,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
                 new HttpClient()
                 {
                     BaseAddress = new Uri("https://www.google.com/recaptcha/api")
-                },
-                new RefitSettings(new NewtonsoftJsonContentSerializer()));
+                });
 
             return new RecaptchaService(options, recaptchaClient);
         }
