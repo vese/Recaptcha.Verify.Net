@@ -1,7 +1,24 @@
 # Recaptcha.Verify.Net
 [![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net) [![Build](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml)
 
-Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET Core 3.1+.
+Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET.
+
+Recaptcha.Verify.Net starting from version 2.0.0 supports the following platforms and any .NET Standard 2.0 target:
+- .NET Standard 2.0+
+- .NET Framework 4.6.1+
+- .NET Core 2.0+
+- .NET 5+
+
+# Table of Contents
+
+- [Installation](#installation)
+- [Verifying reCAPTCHA response](#verifying-recaptcha-response)
+- [Using attribute for verifying reCAPTCHA response](#using-attribute-for-verifying-recaptcha-response)
+- [Directly passing score threshold](#directly-passing-score-threshold)
+- [Using score threshold map](#using-score-threshold-map)
+- [Verifying reCAPTCHA response without checking action and score](#verifying-recaptcha-response-without-checking-action-and-score)
+- [Handling exceptions](#handling-exceptions)
+- [Examples](#examples)
 
 ### Installation
 Package can be installed using Visual Studio UI (Tools > NuGet Package Manager > Manage NuGet Packages for Solution and search for "Recaptcha.Verify.Net").
@@ -11,7 +28,7 @@ Also latest version of package can be installed using Package Manager Console:
 PM> Install-Package Recaptcha.Verify.Net
 ```
 
-### Using reCAPTCHA verification
+### Verifying reCAPTCHA response
 1. Add secret key in appsettings.json file.
 ```json
 {
@@ -78,7 +95,7 @@ public class LoginController : Controller
     }
 }
 ```
-### Using attribute for reCAPTCHA verification
+### Using attribute for verifying reCAPTCHA response
 1. Specify in appsettings.json name of parameter for a way in which reCAPTCHA response token is passed.
 ```json
 {
@@ -163,7 +180,7 @@ var checkResultTest   = await _recaptchaService.VerifyAndCheckAsync(credentials.
 // Response will be checked with score threshold equal to 0.5
 var checkResultSignUp = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "signup");
 ```
-### Process verify request without checking action and score from response
+### Verifying reCAPTCHA response without checking action and score
 If checking of verification response needs to be completed separately then you can use VerifyAsync insted of VerifyAndCheckAsync.
 ```csharp
 var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken);
