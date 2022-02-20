@@ -14,7 +14,7 @@ namespace Recaptcha.Verify.Net
         /// <summary>
         /// Map of actions score thresholds for V3 Recaptcha.
         /// </summary>
-        public Dictionary<string, float> ActionsScoreThresholds { get; }
+        Dictionary<string, float> ActionsScoreThresholds { get; }
 
         /// <summary>
         /// Verifies reCAPTCHA response token and checks score (for v3) and action.
