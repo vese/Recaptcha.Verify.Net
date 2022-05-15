@@ -49,6 +49,7 @@ namespace Recaptcha.Verify.Net.ConsoleApp
             catch (RecaptchaServiceException e)
             {
                 // Handle exceptions in service
+                Console.WriteLine(e.Message);
             }
         }
 

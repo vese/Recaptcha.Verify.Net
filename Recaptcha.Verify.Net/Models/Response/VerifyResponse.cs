@@ -45,6 +45,12 @@ namespace Recaptcha.Verify.Net.Models
         public string Hostname { get; set; }
 
         /// <summary>
+        /// The package name of the app where the reCAPTCHA was solved.
+        /// </summary>
+        [JsonProperty("apk_package_name")]
+        public string ApkPackageName { get; set; }
+
+        /// <summary>
         /// List of error codes.
         /// <list type="table">
         /// <listheader>
@@ -88,5 +94,11 @@ namespace Recaptcha.Verify.Net.Models
         /// </exception>
         [JsonIgnore]
         public List<VerifyError> Errors => EnumHelper.GetVerifyErrors(ErrorCodes);
+
+        /// <summary>
+        /// <c>True</c> if reCAPTCHA v3 is used.
+        /// </summary>
+        [JsonIgnore]
+        public bool IsV3 => Score.HasValue;
     }
 }

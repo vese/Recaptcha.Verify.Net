@@ -23,7 +23,7 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular
         {
             services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
                 // Specify how to get token from parsed arguments for using in RecaptchaAttribute
-                o => o.RecaptchaAttributeOptions.GetResponseTokenFromActionArguments =
+                o => o.AttributeOptions.GetResponseTokenFromActionArguments =
                     d =>
                     { 
                         if (d.TryGetValue("credentials", out var credentials))

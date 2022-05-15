@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.22" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.25" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,17 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\app\models\credentials.ts" />
-    <None Remove="ClientApp\src\app\services\login.service.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Recaptcha.Verify.Net\Recaptcha.Verify.Net.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\app\models\credentials.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\services\login.service.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

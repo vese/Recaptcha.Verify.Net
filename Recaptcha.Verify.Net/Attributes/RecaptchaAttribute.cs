@@ -51,14 +51,14 @@ namespace Recaptcha.Verify.Net
             var recaptchaOptions = context.HttpContext.RequestServices.GetService<IOptions<RecaptchaOptions>>().Value;
 
             var remoteIp = context.HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
-            var cancellationToken = recaptchaOptions.RecaptchaAttributeOptions.UseCancellationToken ?
+            var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
                 context.HttpContext.RequestAborted : CancellationToken.None;
 
             CheckResult checkResult = null;
 
             try
             {
-                var recaptchaToken = context.GetResponseToken(recaptchaOptions.RecaptchaAttributeOptions);
+                var recaptchaToken = context.GetResponseToken(recaptchaOptions.AttributeOptions);
 
                 if (_score.HasValue)
                 {
@@ -109,7 +109,7 @@ namespace Recaptcha.Verify.Net
         private void HandleBadResult(ActionExecutingContext context, RecaptchaOptions recaptchaOptions,
             CheckResult result, RecaptchaServiceException re, Exception e)
         {
-            var options = recaptchaOptions.RecaptchaAttributeOptions;
+            var options = recaptchaOptions.AttributeOptions;
             IActionResult handleResult = null;
 
             if (re != null)

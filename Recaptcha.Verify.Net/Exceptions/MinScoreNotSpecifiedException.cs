@@ -9,9 +9,33 @@ namespace Recaptcha.Verify.Net.Exceptions
     [Serializable]
     public class MinScoreNotSpecifiedException : RecaptchaServiceException
     {
-        public MinScoreNotSpecifiedException() { }
-        public MinScoreNotSpecifiedException(string message) : base(message) { }
-        public MinScoreNotSpecifiedException(string message, Exception inner) : base(message, inner) { }
-        protected MinScoreNotSpecifiedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        /// <summary>
+        /// The action.
+        /// </summary>
+        public string Action { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MinScoreNotSpecifiedException"/> class.
+        /// </summary>
+        public MinScoreNotSpecifiedException(string action) :
+            base($"Score threshold was not provided for action {action}.")
+        {
+            Action = action;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MinScoreNotSpecifiedException"/> class with serialized data.
+        /// </summary>
+        protected MinScoreNotSpecifiedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            Action = info.GetString(nameof(Action));
+        }
+
+        /// <inheritdoc />
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(Action), Action);
+            base.GetObjectData(info, context);
+        }
     }
 }

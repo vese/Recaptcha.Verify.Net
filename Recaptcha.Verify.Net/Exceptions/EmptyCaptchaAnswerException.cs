@@ -9,9 +9,14 @@ namespace Recaptcha.Verify.Net.Exceptions
     [Serializable]
     public class EmptyCaptchaAnswerException : RecaptchaServiceException
     {
-        public EmptyCaptchaAnswerException() { }
-        public EmptyCaptchaAnswerException(string message) : base(message) { }
-        public EmptyCaptchaAnswerException(string message, Exception inner) : base(message, inner) { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmptyCaptchaAnswerException"/> class.
+        /// </summary>
+        public EmptyCaptchaAnswerException() : base("Provided captcha answer is empty.") { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmptyCaptchaAnswerException"/> class with serialized data.
+        /// </summary>
         protected EmptyCaptchaAnswerException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

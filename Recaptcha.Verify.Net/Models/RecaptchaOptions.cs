@@ -14,14 +14,23 @@ namespace Recaptcha.Verify.Net.Models
         public string SecretKey { get; set; }
 
         /// <summary>
+        /// Optional. Action to check for V3 Recaptcha request.
+        /// <para>Action specified in <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+        /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
+        /// </summary>
+        public string Action { get; set; }
+
+        /// <summary>
         /// Optional. Score threshold for V3 Recaptcha (0.0 - 1.0).
-        /// <para>Score threshold could be passed directly 
-        /// into <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>.</para>
+        /// <para>Score threshold specified in <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+        /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
         /// </summary>
         public float? ScoreThreshold { get; set; }
 
         /// <summary>
         /// Optional. Map of actions score thresholds for V3 Recaptcha.
+        /// <para>Score threshold specified in <see cref="RecaptchaService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+        /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
         /// </summary>
         public Dictionary<string, float> ActionsScoreThresholds { get; set; }
 
@@ -36,8 +45,8 @@ namespace Recaptcha.Verify.Net.Models
         public string VerificationFailedMessage { get; set; } = "Recaptcha verification failed";
 
         /// <summary>
-        /// <see cref="RecaptchaAttribute"/> options.
+        /// Options for <see cref="RecaptchaAttribute"/>.
         /// </summary>
-        public RecaptchaAttributeOptions RecaptchaAttributeOptions { get; set; } = new RecaptchaAttributeOptions();
+        public RecaptchaAttributeOptions AttributeOptions { get; set; } = new RecaptchaAttributeOptions();
     }
 }

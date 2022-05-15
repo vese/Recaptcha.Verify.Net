@@ -9,9 +9,14 @@ namespace Recaptcha.Verify.Net.Exceptions
     [Serializable]
     public class SecretKeyNotSpecifiedException : RecaptchaServiceException
     {
-        public SecretKeyNotSpecifiedException() { }
-        public SecretKeyNotSpecifiedException(string message) : base(message) { }
-        public SecretKeyNotSpecifiedException(string message, Exception inner) : base(message, inner) { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecretKeyNotSpecifiedException"/> class.
+        /// </summary>
+        public SecretKeyNotSpecifiedException(): base("Secret key was not provided.") { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SecretKeyNotSpecifiedException"/> class with serialized data.
+        /// </summary>
         protected SecretKeyNotSpecifiedException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

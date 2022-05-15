@@ -189,6 +189,7 @@ var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken);
 Library can produce following exceptions
 Exception | Description
 --- | ---
+EmptyActionException | This exception is thrown when the action passed in function is empty.
 EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
 HttpRequestException | This exception is thrown when http request failed. Stores Refit.ApiException as inner exception.
 MinScoreNotSpecifiedException | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
