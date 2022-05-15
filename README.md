@@ -101,7 +101,7 @@ public class LoginController : Controller
 {
   "Recaptcha": {
     ...
-    "RecaptchaAttributeOptions": {
+    "AttributeOptions": {
       "ResponseTokenNameInHeader": "RecaptchaTokenInHeader", // If token is passed in header
       "ResponseTokenNameInQuery": "RecaptchaTokenInQuery", // If token is passed in query
       "ResponseTokenNameInForm": "RecaptchaTokenInForm" // If token is passed in form
@@ -113,7 +113,7 @@ Or set in Startup GetResponseTokenFromActionArguments or GetResponseTokenFromExe
 ```csharp
 services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
     // Specify how to get token from parsed arguments for using in RecaptchaAttribute
-    o => o.RecaptchaAttributeOptions.GetResponseTokenFromActionArguments =
+    o => o.AttributeOptions.GetResponseTokenFromActionArguments =
         d =>
         { 
             if (d.TryGetValue("credentials", out var credentials))
