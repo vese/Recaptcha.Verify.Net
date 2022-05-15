@@ -2,12 +2,14 @@
 using Recaptcha.Verify.Net.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Recaptcha.Verify.Net.Test")]
 namespace Recaptcha.Verify.Net.Helpers
 {
     internal static class EnumHelper
     {
-        private static readonly Dictionary<string, VerifyError> _verifyErrorsDictionary = new Dictionary<string, VerifyError>()
+        internal static readonly Dictionary<string, VerifyError> VerifyErrorsDictionary = new Dictionary<string, VerifyError>()
         {
             { "missing-input-secret", VerifyError.MissingInputSecret },
             { "invalid-input-secret", VerifyError.InvalidInputSecret },
@@ -20,12 +22,12 @@ namespace Recaptcha.Verify.Net.Helpers
         internal static List<VerifyError> GetVerifyErrors(List<string> errors) =>
             errors?.Select(error =>
             {
-                if (_verifyErrorsDictionary.TryGetValue(error, out var verifyError))
+                if (VerifyErrorsDictionary.TryGetValue(error, out var verifyError))
                 {
                     return verifyError;
                 }
 
-                throw new UnknownErrorKeyException($"Unknown error key: {error}");
+                throw new UnknownErrorKeyException(error);
             }).ToList();
     }
 }

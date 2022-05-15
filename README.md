@@ -46,7 +46,7 @@ public void ConfigureServices(IServiceCollection services)
     //...
 }
 ```
-3. Use service in controller to verify captcha answer and check response action and score (score for V3).
+3. Use service in controller to verify captcha answer and check response for V3 action and score.
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
