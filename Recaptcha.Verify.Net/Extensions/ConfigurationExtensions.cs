@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Models;
 using Refit;
 using System;
@@ -42,14 +43,7 @@ namespace Recaptcha.Verify.Net.Extensions
             Action<RecaptchaOptions> configuration = null)
         {
             configuration?.Invoke(recaptchaOptions);
-
-            services.Configure<RecaptchaOptions>(co =>
-            {
-                co.SecretKey = recaptchaOptions.SecretKey;
-                co.ScoreThreshold = recaptchaOptions.ScoreThreshold;
-                co.ActionsScoreThresholds = recaptchaOptions.ActionsScoreThresholds;
-            });
-
+            services.AddSingleton(Options.Create(recaptchaOptions));
             services.ConfigureService();
         }
 
