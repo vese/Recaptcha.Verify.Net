@@ -32,16 +32,15 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
 
             if (!checkResult.Success)
             {
-                if (!checkResult.ScoreSatisfies)
-                {
-                    // Handle score less than specified threshold for v3
-                    return BadRequest();
-                }
-
                 if (!checkResult.Response.Success)
                 {
                     // Handle unsuccessful verification response
                     _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
+                }
+
+                if (!checkResult.ScoreSatisfies)
+                {
+                    // Handle score less than specified threshold for v3
                 }
 
                 // Unsuccessful verification and check
