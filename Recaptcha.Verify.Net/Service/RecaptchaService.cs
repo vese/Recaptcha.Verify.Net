@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
+using Recaptcha.Verify.Net.Logging;
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,16 +13,18 @@ namespace Recaptcha.Verify.Net
     {
         private readonly RecaptchaOptions _recaptchaOptions;
         private readonly IRecaptchaClient _recaptchaClient;
+        private readonly IRecaptchaLoggerService _logger;
 
         /// <summary>
         /// Recaptcha service constructor.
         /// </summary>
         /// <param name="recaptchaOptions">Recaptcha options.</param>
         /// <param name="recaptchaClient">Recaptcha Refit client.</param>
-        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient)
+        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, IRecaptchaLoggerService recaptchaLoggerService)
         {
             _recaptchaOptions = recaptchaOptions?.Value;
             _recaptchaClient = recaptchaClient;
+            _logger = recaptchaLoggerService;
         }
 
         /// <inheritdoc />
@@ -66,7 +69,9 @@ namespace Recaptcha.Verify.Net
             {
                 if (string.IsNullOrWhiteSpace(_recaptchaOptions?.SecretKey))
                 {
-                    throw new SecretKeyNotSpecifiedException();
+                    var e = new SecretKeyNotSpecifiedException();
+                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+                    throw e;
                 }
 
                 request.Secret = _recaptchaOptions.SecretKey;
@@ -74,16 +79,23 @@ namespace Recaptcha.Verify.Net
 
             if (string.IsNullOrWhiteSpace(request.Response))
             {
-                throw new EmptyCaptchaAnswerException();
+                var e = new EmptyCaptchaAnswerException();
+                _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+                throw e;
             }
 
             try
             {
-                return await _recaptchaClient.VerifyAsync(request, cancellationToken);
+                _logger.Log(RecaptchaServiceEventId.SendingRequest, request.Response, request.RemoteIp);
+                var result = await _recaptchaClient.VerifyAsync(request, cancellationToken);
+                _logger.Log(RecaptchaServiceEventId.RequestSucceded, result);
+                return result;
             }
             catch (ApiException e)
             {
-                throw new HttpRequestException(e);
+                var se = new HttpRequestException(e);
+                _logger.Log(RecaptchaServiceEventId.ServiceException, se);
+                throw se;
             }
         }
 
@@ -111,7 +123,9 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    throw new EmptyActionException();
+                    var e = new EmptyActionException();
+                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+                    throw e;
                 }
 
                 checkResult.ActionMatches = response.Success && actionToCheck.Equals(response.Action);
@@ -130,12 +144,15 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    throw new MinScoreNotSpecifiedException(actionToCheck);
+                    var e = new MinScoreNotSpecifiedException(actionToCheck);
+                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+                    throw e;
                 }
 
                 checkResult.ScoreSatisfies = response.Score.Value >= scoreThreshold;
             }
 
+            _logger.Log(RecaptchaServiceEventId.VerifyResponseChecked, checkResult);
             return checkResult;
         }
     }

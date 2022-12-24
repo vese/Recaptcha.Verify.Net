@@ -10,7 +10,7 @@ namespace Recaptcha.Verify.Net
     {
         /// <summary>
         /// Required. The shared key between your site and reCAPTCHA.
-        /// This parameter could be unspecified if <see cref="RecaptchaOptions"/> was configured.
+        /// This parameter could be unspecified if secret key in <see cref="RecaptchaOptions"/> was configured.
         /// </summary>
         [JsonPropertyName("secret")]
         public string Secret { get; set; }

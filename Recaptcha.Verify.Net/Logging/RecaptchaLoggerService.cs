@@ -1,16 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
+using Recaptcha.Verify.Net.Exceptions;
+using System;
 using System.Collections.Generic;
 
 namespace Recaptcha.Verify.Net.Logging
 {
-    internal class RecaptchaLoggerService : IRecaptchaLoggerService
+    public class RecaptchaLoggerService : IRecaptchaLoggerService
     {
         private static readonly Dictionary<EventId, string> _eventsLogMessageTemplates = new Dictionary<EventId, string>()
         {
-            { RecaptchaServiceEventId.Error, "Error" },
-            { RecaptchaServiceEventId.Trace, "Trace" },
+            { RecaptchaServiceEventId.ServiceException, "Service exception was thrown." },
+            { RecaptchaServiceEventId.SendingRequest, "Sending verify request. Response token: {0}, remote IP: {1}." },
+            { RecaptchaServiceEventId.RequestSucceded, "Verify request succeded. Response: {0}." },
+            { RecaptchaServiceEventId.VerifyResponseChecked, "Verify response checked. Result: {0}." },
         };
 
         private readonly LogOptions _options;
@@ -25,7 +29,7 @@ namespace Recaptcha.Verify.Net.Logging
             }
         }
 
-        public void Log(EventId eventId, params object[] args)
+        public void Log(EventId eventId, Exception e, params object[] args)
         {
             if (!_options.EnableLogging)
             {
@@ -34,35 +38,67 @@ namespace Recaptcha.Verify.Net.Logging
 
             if (!_options.LogLevels.TryGetValue(eventId, out var logLevel))
             {
-                //throw new RecaptchaLoggerException($"Log level for event with id {id} is missing", args);
+                throw CreateException($"Log level for event {eventId} is missing", eventId);
             }
             if (!_eventsLogMessageTemplates.TryGetValue(eventId, out var message))
             {
-                //throw new RecaptchaLoggerException($"Message for event with id {id} is missing", args);
+                throw CreateException($"Message for event {eventId} is missing", eventId);
             }
 
-            if (eventId == RecaptchaServiceEventId.Error)
+            if (eventId == RecaptchaServiceEventId.ServiceException)
             {
-                if (_options.LogErrorMessageHandler != null)
+                if (!_options.EnableExceptionLogging)
                 {
-                    _options.LogErrorMessageHandler.Invoke(logLevel, eventId, message, args);
+                    return;
+                }
+                if (_options.LogServiceExceptionMessageHandler != null)
+                {
+                    _options.LogServiceExceptionMessageHandler.Invoke(logLevel, eventId, message, e);
                     return;
                 }
             }
-            else if (eventId == RecaptchaServiceEventId.Trace)
+            else if (eventId == RecaptchaServiceEventId.SendingRequest)
             {
-                if (_options.LogTraceMessageHandler != null)
+                if (_options.LogSendingRequestMessageHandler != null)
                 {
-                    _options.LogTraceMessageHandler.Invoke(logLevel, eventId, message, args);
+                    _options.LogSendingRequestMessageHandler.Invoke(logLevel, eventId, message, args[0] as string, args[1] as string);
+                    return;
+                }
+            }
+            else if (eventId == RecaptchaServiceEventId.RequestSucceded)
+            {
+                if (_options.LogRequestSuccededMessageHandler != null)
+                {
+                    _options.LogRequestSuccededMessageHandler.Invoke(logLevel, eventId, message, args[0] as VerifyResponse);
+                    return;
+                }
+            }
+            else if (eventId == RecaptchaServiceEventId.VerifyResponseChecked)
+            {
+                if (_options.LogVerifyResponseCheckedMessageHandler != null)
+                {
+                    _options.LogVerifyResponseCheckedMessageHandler.Invoke(logLevel, eventId, message, args[0] as CheckResult);
                     return;
                 }
             }
             else
             {
-                //throw new RecaptchaLoggerException($"Event with id {id} is missing", args);
+                throw CreateException($"Event {eventId} is missing", eventId);
             }
 
-            _logger.Log(logLevel, eventId, message, args);
+            _logger.Log(logLevel, eventId, e, message, args);
         }
+
+        private RecaptchaLoggerException CreateException(string message, EventId currentEventId)
+        {
+            var se = new RecaptchaLoggerException(message);
+            if (_options.EnableExceptionLogging && currentEventId != RecaptchaServiceEventId.ServiceException)
+            {
+                Log(RecaptchaServiceEventId.ServiceException, se);
+            }
+            return se;
+        }
+
+        public void Log(EventId eventId, params object[] args) => Log(eventId, null, args);
     }
 }

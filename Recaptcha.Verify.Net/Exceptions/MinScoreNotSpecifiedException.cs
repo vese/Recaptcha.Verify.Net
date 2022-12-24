@@ -17,8 +17,7 @@ namespace Recaptcha.Verify.Net.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="MinScoreNotSpecifiedException"/> class.
         /// </summary>
-        public MinScoreNotSpecifiedException(string action) :
-            base($"Score threshold was not provided for action {action}.")
+        public MinScoreNotSpecifiedException(string action) : base($"Score threshold was not provided for action {action}.")
         {
             Action = action;
         }

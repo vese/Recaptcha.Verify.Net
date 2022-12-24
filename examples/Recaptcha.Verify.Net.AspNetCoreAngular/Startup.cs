@@ -39,16 +39,18 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular
                         });
                 builder.ConfigureLogging(o =>
                 {
-                    o.UpdateLevels((RecaptchaServiceEventId.Error, LogLevel.Critical));
+                    // Enable logging exceptions. (Do not enable if logging performed in catch or RecaptchaOptions handlers)
+                    o.EnableExceptionLogging = true;
+                    o.UpdateLevels((RecaptchaServiceEventId.ServiceException, LogLevel.Critical));
                     // Custom log message handler
-                    o.LogErrorMessageHandler = (level, id, message, args) =>
+                    o.LogSendingRequestMessageHandler = (level, id, message, token, ip) =>
                     {
                         Console.WriteLine(level);
                         Console.WriteLine(id);
-                        Console.WriteLine(string.Format(message, args));
+                        Console.WriteLine(string.Format(message, token, ip));
                     };
                     // Custom log message handler using async logging
-                    o.LogTraceMessageHandler = (level, id, message, args) =>
+                    o.LogRequestSuccededMessageHandler = (level, id, message, response) =>
                     {
                         Task.Run(async () =>
                         {

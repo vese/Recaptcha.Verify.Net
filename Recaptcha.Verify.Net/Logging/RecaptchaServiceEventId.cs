@@ -8,12 +8,16 @@ namespace Recaptcha.Verify.Net
 
         private enum Id
         {
-            Error = 100,
-            Trace = 200,
+            ServiceException = 0,
+            SendingRequest = 100,
+            RequestSucceded,
+            VerifyResponseChecked,
         }
 
-        public static readonly EventId Error = Id.Error.ToEventId();
-        public static readonly EventId Trace = Id.Trace.ToEventId();
+        public static readonly EventId ServiceException = Id.ServiceException.ToEventId();
+        public static readonly EventId SendingRequest = Id.SendingRequest.ToEventId();
+        public static readonly EventId RequestSucceded = Id.RequestSucceded.ToEventId();
+        public static readonly EventId VerifyResponseChecked = Id.VerifyResponseChecked.ToEventId();
 
         private static EventId ToEventId(this Id id) => new EventId((int)id, _prefix + id);
     }
