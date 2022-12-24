@@ -69,9 +69,7 @@ namespace Recaptcha.Verify.Net
             {
                 if (string.IsNullOrWhiteSpace(_recaptchaOptions?.SecretKey))
                 {
-                    var e = new SecretKeyNotSpecifiedException();
-                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
-                    throw e;
+                    throw LogException(new SecretKeyNotSpecifiedException());
                 }
 
                 request.Secret = _recaptchaOptions.SecretKey;
@@ -79,9 +77,7 @@ namespace Recaptcha.Verify.Net
 
             if (string.IsNullOrWhiteSpace(request.Response))
             {
-                var e = new EmptyCaptchaAnswerException();
-                _logger.Log(RecaptchaServiceEventId.ServiceException, e);
-                throw e;
+                throw LogException(new EmptyCaptchaAnswerException());
             }
 
             try
@@ -93,9 +89,7 @@ namespace Recaptcha.Verify.Net
             }
             catch (ApiException e)
             {
-                var se = new HttpRequestException(e);
-                _logger.Log(RecaptchaServiceEventId.ServiceException, se);
-                throw se;
+                throw LogException(new HttpRequestException(e));
             }
         }
 
@@ -123,9 +117,7 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    var e = new EmptyActionException();
-                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
-                    throw e;
+                    throw LogException(new EmptyActionException());
                 }
 
                 checkResult.ActionMatches = response.Success && actionToCheck.Equals(response.Action);
@@ -144,9 +136,7 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    var e = new MinScoreNotSpecifiedException(actionToCheck);
-                    _logger.Log(RecaptchaServiceEventId.ServiceException, e);
-                    throw e;
+                    throw LogException(new MinScoreNotSpecifiedException(actionToCheck));
                 }
 
                 checkResult.ScoreSatisfies = response.Score.Value >= scoreThreshold;
@@ -154,6 +144,12 @@ namespace Recaptcha.Verify.Net
 
             _logger.Log(RecaptchaServiceEventId.VerifyResponseChecked, checkResult);
             return checkResult;
+        }
+
+        private T LogException<T>(T e)
+        {
+            _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+            return e;
         }
     }
 }
