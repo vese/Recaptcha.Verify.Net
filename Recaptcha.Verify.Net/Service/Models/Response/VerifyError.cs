@@ -1,4 +1,4 @@
-﻿namespace Recaptcha.Verify.Net.Enums
+﻿namespace Recaptcha.Verify.Net
 {
     /// <summary>
     /// Verification errors.

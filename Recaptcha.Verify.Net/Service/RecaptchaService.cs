@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
+using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Models;
 using Refit;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,11 +37,11 @@ namespace Recaptcha.Verify.Net
             VerifyAndCheckCoreAsync(new VerifyRequest() { Response = response }, action, score, cancellationToken);
 
         /// <inheritdoc />
-        public Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, CancellationToken cancellationToken = default) => 
+        public Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, CancellationToken cancellationToken = default) =>
             VerifyAndCheckCoreAsync(request, null, null, cancellationToken);
 
         /// <inheritdoc />
-        public Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action, CancellationToken cancellationToken = default) => 
+        public Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action, CancellationToken cancellationToken = default) =>
             VerifyAndCheckCoreAsync(request, action, null, cancellationToken);
 
         /// <inheritdoc />

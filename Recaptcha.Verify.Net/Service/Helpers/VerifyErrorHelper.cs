@@ -1,5 +1,4 @@
-﻿using Recaptcha.Verify.Net.Enums;
-using Recaptcha.Verify.Net.Exceptions;
+﻿using Recaptcha.Verify.Net.Exceptions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -7,7 +6,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Recaptcha.Verify.Net.Test")]
 namespace Recaptcha.Verify.Net.Helpers
 {
-    internal static class EnumHelper
+    internal static class VerifyErrorHelper
     {
         internal static readonly Dictionary<string, VerifyError> VerifyErrorsDictionary = new Dictionary<string, VerifyError>()
         {

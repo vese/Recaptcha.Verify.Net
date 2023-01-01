@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Recaptcha.Verify.Net.Models;
+using Recaptcha.Verify.Net.Configuration;
 using System.Linq;
 
-namespace Recaptcha.Verify.Net
+namespace Recaptcha.Verify.Net.Attribute
 {
-    internal static class AttributesExtensions
+    internal static class AttributeExtensions
     {
         internal static string GetResponseToken(this ActionExecutingContext context, RecaptchaAttributeOptions options) =>
             context.GetTokenFromActionArguments(options) ??

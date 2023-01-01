@@ -1,10 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Models;
-using Refit;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net.ConsoleApp
@@ -22,16 +20,20 @@ namespace Recaptcha.Verify.Net.ConsoleApp
         {
             try
             {
-                var successResponse = await Verify(ValidSecretKey, "<response token>");
-                Console.WriteLine(JsonConvert.SerializeObject(successResponse));
-                Console.WriteLine();
+                var recaptchaServiceWithInvalidKey = CreateService(InvalidSecretKey);
 
-                var failureResponse = await Verify(InvalidSecretKey, "<response token>");
+                var failureResponse = await recaptchaServiceWithInvalidKey.VerifyAsync("<response token>");
                 Console.WriteLine(JsonConvert.SerializeObject(failureResponse));
                 Console.WriteLine();
 
-                // Verifies response token and checks action and score (score for v3)
-                var checkResult = await VerifyAndCheck(ValidSecretKey, "<response token>", "test", 0.5f);
+                var recaptchaService = CreateService(ValidSecretKey);
+
+                var successResponse = await recaptchaService.VerifyAsync("<response token>");
+                Console.WriteLine(JsonConvert.SerializeObject(successResponse));
+                Console.WriteLine();
+
+                // Verifies response token and checks action and score for v3
+                var checkResult = await recaptchaService.VerifyAndCheckAsync("<response token>", "test");
                 Console.WriteLine(JsonConvert.SerializeObject(checkResult));
                 if (checkResult.Success)
                 {
@@ -53,36 +55,21 @@ namespace Recaptcha.Verify.Net.ConsoleApp
             }
         }
 
-        private static Task<VerifyResponse> Verify(string secretKey, string responseToken)
+        static IRecaptchaService CreateService(string secretKey)
         {
-            var recaptchaService = CreateService(secretKey);
-
-            return recaptchaService.VerifyAsync(responseToken);
-        }
-
-        private static Task<CheckResult> VerifyAndCheck(
-            string secretKey, string responseToken, string action, float score)
-        {
-            var recaptchaService = CreateService(secretKey, score);
-
-            return recaptchaService.VerifyAndCheckAsync(responseToken, action);
-        }
-
-        private static IRecaptchaService CreateService(string secretKey, float? score = null)
-        {
-            var options = Options.Create(new RecaptchaOptions()
-            {
-                SecretKey = secretKey,
-                ScoreThreshold = score
-            });
-
-            var recaptchaClient = RestService.For<IRecaptchaClient>(
-                new HttpClient()
+            var serviceProvider = new ServiceCollection()
+                .AddRecaptcha(builder =>
                 {
-                    BaseAddress = new Uri("https://www.google.com/recaptcha/api")
-                });
+                    builder.Configure(new RecaptchaOptions(), o =>
+                    {
+                        o.SecretKey = secretKey;
+                        o.ScoreThreshold = 0.5f;
+                    });
+                })
+                .BuildServiceProvider();
 
-            return new RecaptchaService(options, recaptchaClient);
+            var recaptchaService = serviceProvider.GetRequiredService<IRecaptchaService>();
+            return recaptchaService;
         }
     }
 }

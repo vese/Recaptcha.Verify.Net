@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using Recaptcha.Verify.Net.Models;
+using Recaptcha.Verify.Net.Configuration;
 using System.Collections.Generic;
 
 namespace Recaptcha.Verify.Net.Test.Tests;

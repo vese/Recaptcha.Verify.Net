@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using Recaptcha.Verify.Net.Enums;
+using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Helpers;
-using Recaptcha.Verify.Net.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace Recaptcha.Verify.Net.Test;
 
 public record ResponseTokenFixture(string Token, string? Action, string? Hostname, string? ApkPackageName, float? Score, List<string>? Errors)
 {
-    public List<VerifyError> ErrorsItems => EnumHelper.GetVerifyErrors(Errors);
+    public List<VerifyError> ErrorsItems => VerifyErrorHelper.GetVerifyErrors(Errors);
 }
 
 public static class RecaptchaServiceFixture
@@ -52,7 +51,7 @@ public static class RecaptchaServiceFixture
 
     public static List<string> SecretKeys => new() { InvalidSecretKey, ValidSecretKey };
 
-    public static readonly List<string> ErrorsKeys = EnumHelper.VerifyErrorsDictionary.Keys.ToList();
+    public static readonly List<string> ErrorsKeys = VerifyErrorHelper.VerifyErrorsDictionary.Keys.ToList();
     public static readonly string UnknownErrorKey = "unknown-error-key";
 
     public static readonly ResponseTokenFixture InvalidTokenFixtureUnknownErrorKey =

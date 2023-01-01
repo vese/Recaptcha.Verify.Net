@@ -1,6 +1,5 @@
-﻿using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Models;
-using System.Collections.Generic;
+﻿using Recaptcha.Verify.Net.Configuration;
+using Recaptcha.Verify.Net.Exceptions;
 using System.Threading;
 using System.Threading.Tasks;
 

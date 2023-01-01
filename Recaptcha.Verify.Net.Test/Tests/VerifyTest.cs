@@ -1,4 +1,3 @@
-using Recaptcha.Verify.Net.Enums;
 using Recaptcha.Verify.Net.Exceptions;
 using System;
 using System.Linq;

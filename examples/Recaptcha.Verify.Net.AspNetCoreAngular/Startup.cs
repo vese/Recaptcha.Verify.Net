@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
-using Recaptcha.Verify.Net.Extensions;
+using Recaptcha.Verify.Net.Configuration;
+using System;
+using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net.AspNetCoreAngular
 {
@@ -21,17 +24,39 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
-                // Specify how to get token from parsed arguments for using in RecaptchaAttribute
-                o => o.AttributeOptions.GetResponseTokenFromActionArguments =
-                    d =>
-                    { 
-                        if (d.TryGetValue("credentials", out var credentials))
+            services.AddRecaptcha(builder =>
+            {
+                builder.Configure(Configuration.GetSection("Recaptcha"),
+                    // Retrieve token from parsed action arguments handler used in RecaptchaAttribute
+                    o => o.AttributeOptions.GetResponseTokenFromActionArguments =
+                        d =>
                         {
-                            return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
-                        }
-                        return null;
-                    });
+                            if (d.TryGetValue("credentials", out var credentials))
+                            {
+                                return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
+                            }
+                            return null;
+                        });
+                builder.ConfigureLogging(o =>
+                {
+                    o.UpdateLevels((RecaptchaServiceEventId.Error, LogLevel.Critical));
+                    // Custom log message handler
+                    o.LogErrorMessageHandler = (level, id, message, args) =>
+                    {
+                        Console.WriteLine(level);
+                        Console.WriteLine(id);
+                        Console.WriteLine(string.Format(message, args));
+                    };
+                    // Custom log message handler using async logging
+                    o.LogTraceMessageHandler = (level, id, message, args) =>
+                    {
+                        Task.Run(async () =>
+                        {
+                            //await LogAsync(level, id, message, args);
+                        });
+                    };
+                });
+            });
 
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory

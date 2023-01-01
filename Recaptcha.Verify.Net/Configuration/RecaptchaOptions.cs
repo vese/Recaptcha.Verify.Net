@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Recaptcha.Verify.Net.Attribute;
+using System.Collections.Generic;
 using System.Threading;
 
-namespace Recaptcha.Verify.Net.Models
+namespace Recaptcha.Verify.Net.Configuration
 {
     /// <summary>
     /// Recaptcha options.
@@ -48,5 +49,7 @@ namespace Recaptcha.Verify.Net.Models
         /// Options for <see cref="RecaptchaAttribute"/>.
         /// </summary>
         public RecaptchaAttributeOptions AttributeOptions { get; set; } = new RecaptchaAttributeOptions();
+
+        public LogOptions LogOptions { get; set; } = new LogOptions();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Recaptcha.Verify.Net.Attribute;
+using System.Collections.Generic;
 
 namespace Recaptcha.Verify.Net.Test.Tests;
 

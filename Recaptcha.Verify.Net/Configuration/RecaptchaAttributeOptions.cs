@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Recaptcha.Verify.Net.Attribute;
 using Recaptcha.Verify.Net.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace Recaptcha.Verify.Net.Models
+namespace Recaptcha.Verify.Net.Configuration
 {
     /// <summary>
     /// <see cref="RecaptchaAttribute"/> options.

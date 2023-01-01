@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
-using Recaptcha.Verify.Net.Enums;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Helpers;
 using System;
 using System.Collections.Generic;
 
-namespace Recaptcha.Verify.Net.Models
+namespace Recaptcha.Verify.Net
 {
     /// <summary>
     /// Response of reCAPTCHA response token verification.
@@ -93,7 +92,7 @@ namespace Recaptcha.Verify.Net.Models
         /// This exception is thrown when verification response error key is unknown.
         /// </exception>
         [JsonIgnore]
-        public List<VerifyError> Errors => EnumHelper.GetVerifyErrors(ErrorCodes);
+        public List<VerifyError> Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
 
         /// <summary>
         /// <c>True</c> if reCAPTCHA v3 is used.

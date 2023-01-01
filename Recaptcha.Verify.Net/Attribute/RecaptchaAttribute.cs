@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Recaptcha.Verify.Net
+namespace Recaptcha.Verify.Net.Attribute
 {
     /// <summary>
     /// Verifies reCAPTCHA response token and checks score (for v3) and action.
@@ -106,8 +106,7 @@ namespace Recaptcha.Verify.Net
             await base.OnActionExecutionAsync(context, next);
         }
 
-        private void HandleBadResult(ActionExecutingContext context, RecaptchaOptions recaptchaOptions,
-            CheckResult result, RecaptchaServiceException re, Exception e)
+        private void HandleBadResult(ActionExecutingContext context, RecaptchaOptions recaptchaOptions, CheckResult result, RecaptchaServiceException re, Exception e)
         {
             var options = recaptchaOptions.AttributeOptions;
             IActionResult handleResult = null;

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Recaptcha.Verify.Net.Attribute;
+using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Models;
 using System;
 using Xunit;
 
