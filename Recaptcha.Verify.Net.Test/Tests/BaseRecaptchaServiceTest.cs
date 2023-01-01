@@ -82,13 +82,19 @@ public abstract class BaseRecaptchaServiceTest
     protected IRecaptchaService CreateService(
         string? secretKey = null, float? score = null, Dictionary<string, float>? scoreMap = null, string? action = null)
     {
-        var options = Options.Create(new RecaptchaOptions()
+        var options = Options.Create(CreateOptions(secretKey, score, scoreMap, action));
+        return RecaptchaServiceFixture.CreateServiceWithClient(options, _v3);
+    }
+
+    protected RecaptchaOptions CreateOptions(
+        string? secretKey = null, float? score = null, Dictionary<string, float>? scoreMap = null, string? action = null)
+    {
+        return new RecaptchaOptions()
         {
             SecretKey = secretKey,
             Action = action,
             ScoreThreshold = score,
             ActionsScoreThresholds = scoreMap,
-        });
-        return RecaptchaServiceFixture.CreateService(options, _v3);
+        };
     }
 }
