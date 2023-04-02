@@ -83,15 +83,21 @@ public class VerifyTest : BaseRecaptchaServiceTest
     public async void Verify_ValidSecretKey_InvalidToken_UnknownErrorKey(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var recaptchaService = CreateService(secretKey);
-        var response = await recaptchaService.VerifyAsync(tokenFixture.Token);
-        Assert.False(response.Success);
-        var e = Assert.Throws<UnknownErrorKeyException>(() => response.Errors);
+        var e = await Assert.ThrowsAsync<UnknownErrorKeyException>(async () =>
+        {
+            var response = await recaptchaService.VerifyAsync(tokenFixture.Token);
+            Assert.False(response.Success);
+            var _ = response.Errors;
+        });
         Assert.Equal(tokenFixture.Errors?.First(), e.Key);
 
         recaptchaService = CreateService();
-        response = await recaptchaService.VerifyAsync(tokenFixture.Token, secretKey);
-        Assert.False(response.Success);
-        e = Assert.Throws<UnknownErrorKeyException>(() => response.Errors);
+        e = await Assert.ThrowsAsync<UnknownErrorKeyException>(async () =>
+        {
+            var response = await recaptchaService.VerifyAsync(tokenFixture.Token, secretKey);
+            Assert.False(response.Success);
+            var _ = response.Errors;
+        });
         Assert.Equal(tokenFixture.Errors?.First(), e.Key);
     }
 }

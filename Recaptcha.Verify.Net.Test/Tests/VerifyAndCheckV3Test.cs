@@ -52,10 +52,13 @@ public class VerifyAndCheckV3Test : BaseRecaptchaServiceTest
     public async void VerifyAndCheck_ValidSecretKey_InvalidToken_UnknownErrorKey(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var recaptchaService = CreateService(secretKey);
-        var response = await recaptchaService.VerifyAndCheckAsync(tokenFixture.Token, tokenFixture.Action);
-        Assert.False(response.Response.Success);
-        Assert.False(response.Success);
-        var e = Assert.Throws<UnknownErrorKeyException>(() => response.Response.Errors);
+        var e = await Assert.ThrowsAsync<UnknownErrorKeyException>(async () =>
+        {
+            var response = await recaptchaService.VerifyAndCheckAsync(tokenFixture.Token, tokenFixture.Action);
+            Assert.False(response.Response.Success);
+            Assert.False(response.Success);
+            var _ = response.Response.Errors;
+        });
         Assert.Equal(tokenFixture.Errors?.First(), e.Key);
     }
 
