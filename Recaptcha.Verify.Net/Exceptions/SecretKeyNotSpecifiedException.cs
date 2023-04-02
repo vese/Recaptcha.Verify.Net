@@ -12,7 +12,7 @@ namespace Recaptcha.Verify.Net.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="SecretKeyNotSpecifiedException"/> class.
         /// </summary>
-        public SecretKeyNotSpecifiedException(): base("Secret key was not provided.") { }
+        public SecretKeyNotSpecifiedException() : base("Secret key was not provided.") { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SecretKeyNotSpecifiedException"/> class with serialized data.
