@@ -36,7 +36,7 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
                 if (!checkResult.Response.Success)
                 {
                     // Handle unsuccessful verification response
-                    _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
+                    _logger.LogError("Recaptcha error: {errorCodes}", JsonConvert.SerializeObject(checkResult.Response.ErrorCodes));
                 }
 
                 if (!checkResult.ScoreSatisfies)

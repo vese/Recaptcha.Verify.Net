@@ -10,7 +10,6 @@ using Moq;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Helpers;
-using Recaptcha.Verify.Net.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,9 +119,7 @@ public static class RecaptchaServiceFixture
                 }));
         }
 
-        var recaptchaLoggerServiceMock = new Mock<IRecaptchaLoggerService>();
-
-        return new RecaptchaService(options, recaptchaClientMock.Object, recaptchaLoggerServiceMock.Object);
+        return new RecaptchaService(options, recaptchaClientMock.Object);
     }
 
     public static (

@@ -24,13 +24,13 @@ export class LoginService {
   public login_RecaptchaAttribute_InQuery(credentials: Credentials): Observable<any> {
     return this.http.post('/api/login/Login_RecaptchaAttribute', credentials, {
       params: {
-        'recaptchaTokenInQuery': credentials.recaptchaToken
+        recaptchaTokenInQuery: credentials.recaptchaToken
       }
     });
   }
 
   public login_RecaptchaAttribute_InForm(credentials: Credentials): Observable<any> {
-    var formData: any = new FormData();
+    const formData: any = new FormData();
     formData.append("login", credentials.login);
     formData.append("password", credentials.password);
     formData.append("recaptchaToken", credentials.recaptchaToken);

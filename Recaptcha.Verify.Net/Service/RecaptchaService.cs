@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Logging;
 using Refit;
+using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,18 +15,19 @@ namespace Recaptcha.Verify.Net
     {
         private readonly RecaptchaOptions _recaptchaOptions;
         private readonly IRecaptchaClient _recaptchaClient;
-        private readonly IRecaptchaLoggerService _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Recaptcha service constructor.
         /// </summary>
         /// <param name="recaptchaOptions">Recaptcha options.</param>
         /// <param name="recaptchaClient">Recaptcha Refit client.</param>
-        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, IRecaptchaLoggerService recaptchaLoggerService)
+        /// <param name="loggerFactory">Optional. Logger factory.</param>
+        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILoggerFactory loggerFactory = null)
         {
             _recaptchaOptions = recaptchaOptions?.Value;
             _recaptchaClient = recaptchaClient;
-            _logger = recaptchaLoggerService;
+            _logger = loggerFactory?.CreateLogger<RecaptchaService>();
         }
 
         /// <inheritdoc />
@@ -82,9 +85,9 @@ namespace Recaptcha.Verify.Net
 
             try
             {
-                _logger.Log(RecaptchaServiceEventId.SendingRequest, request.Response, request.RemoteIp);
+                LogInfo("Sending verify request. Response token: {token}, remote IP: {ip}.", request.Response, request.RemoteIp);
                 var result = await _recaptchaClient.VerifyAsync(request, cancellationToken);
-                _logger.Log(RecaptchaServiceEventId.RequestSucceded, result);
+                LogInfo("Verify request succeeded. Response: {response}.", JsonSerializer.Serialize(result));
                 return result;
             }
             catch (ApiException e)
@@ -142,13 +145,24 @@ namespace Recaptcha.Verify.Net
                 checkResult.ScoreSatisfies = response.Score.Value >= scoreThreshold;
             }
 
-            _logger.Log(RecaptchaServiceEventId.VerifyResponseChecked, checkResult);
+            LogInfo("Verify response checked. Result: {checkResult}.", JsonSerializer.Serialize(checkResult));
             return checkResult;
         }
 
-        private T LogException<T>(T e)
+        private void LogInfo(string message, params object[] args)
         {
-            _logger.Log(RecaptchaServiceEventId.ServiceException, e);
+            if (_recaptchaOptions.EnableLogging && _logger != null)
+            {
+                _logger.LogInformation(message, args);
+            }
+        }
+
+        private T LogException<T>(T e) where T : Exception
+        {
+            if (_recaptchaOptions.EnableExceptionLogging && _logger != null)
+            {
+                _logger.LogError(e, e.Message);
+            }
             return e;
         }
     }

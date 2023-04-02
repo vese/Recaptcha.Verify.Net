@@ -3,11 +3,12 @@
 
 Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET.
 
-Recaptcha.Verify.Net starting from version 2.0.0 supports the following platforms and any .NET Standard 2.0 target:
-- .NET Standard 2.0+
-- .NET Framework 4.6.1+
-- .NET Core 2.0+
-- .NET 5+
+Recaptcha.Verify.Net starting from version 2.0.0 supports the following platforms and any target that supports .NET Standard from 2.0:
+- .NET Standard 2.0
+- .NET Standard 2.1
+- .NET Framework 4.6.2
+- .NET 6
+- .NET 7
 
 # Table of Contents
 
@@ -42,11 +43,11 @@ PM> Install-Package Recaptcha.Verify.Net
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-    services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"));
+    services.AddRecaptcha(Configuration.GetSection("Recaptcha"));
     //...
 }
 ```
-3. Use service in controller to verify captcha answer and check response for V3 action and score.
+3. Use service in controller to verify captcha answer and check response action and score for V3.
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
@@ -76,7 +77,7 @@ public class LoginController : Controller
             if (!checkResult.Response.Success)
             {
                 // Handle unsuccessful verification response
-                _logger.LogError($"Recaptcha error: {JsonConvert.SerializeObject(checkResult.Response.ErrorCodes)}");
+                _logger.LogError("Recaptcha error: {errorCodes}", JsonConvert.SerializeObject(checkResult.Response.ErrorCodes));
             }
             
             if (!checkResult.ScoreSatisfies)
@@ -110,7 +111,7 @@ public class LoginController : Controller
 ```
 Or set in Startup GetResponseTokenFromActionArguments or GetResponseTokenFromExecutingContext delegate that points how to get token from parsed data.
 ```csharp
-services.ConfigureRecaptcha(Configuration.GetSection("Recaptcha"),
+services.AddRecaptcha(Configuration.GetSection("Recaptcha"),
     // Specify how to get token from parsed arguments for using in RecaptchaAttribute
     o => o.AttributeOptions.GetResponseTokenFromActionArguments =
         d =>
@@ -134,7 +135,7 @@ public class Credentials : BaseRecaptchaCredentials
     public string Password { get; set; }
 }
 ```
-2. Add Recaptcha attribute in controller to verify captcha answer and check response action and score (score for V3).
+2. Add Recaptcha attribute in controller to verify captcha answer and check response action and score for V3.
 ```csharp
 [Recaptcha("login")]
 [HttpPost("Login")]
@@ -154,7 +155,7 @@ var checkResult = await _recaptchaService.VerifyAndCheckAsync(
     scoreThreshold);
 ```
 ### Using score threshold map
-Based on the score, you can take variable action in the context of your site instead of blocking traffic to better protect your site. Score thresholds specified for actions allow you to achieve adaptive risk analysis and protection based on the context of the action.
+Based on the score, you can take variable actions in the context of your site instead of blocking traffic to better protect your site. Score thresholds specified for actions allow you to achieve adaptive risk analysis and protection based on the context of the action.
 1. Specify ActionsScoreThresholds in appsettings.json. If specified ScoreThreshold value will be used as default score threshold for actions that are not in map.
 ```json
 {
@@ -180,7 +181,7 @@ var checkResultTest   = await _recaptchaService.VerifyAndCheckAsync(credentials.
 var checkResultSignUp = await _recaptchaService.VerifyAndCheckAsync(credentials.RecaptchaToken, "signup");
 ```
 ### Verifying reCAPTCHA response without checking action and score
-If checking of verification response needs to be completed separately then you can use VerifyAsync insted of VerifyAndCheckAsync.
+If checking of verification response needs to be completed separately then you can use VerifyAsync instead of VerifyAndCheckAsync.
 ```csharp
 var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken);
 ```
@@ -198,5 +199,5 @@ UnknownErrorKeyException | This exception is thrown when verification response e
 All of these exceptions are inherited from RecaptchaServiceException.
 ### Examples
 Examples could be found in library repository:
-- [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/examples/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET Core 3.1)
-- [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/examples/Recaptcha.Verify.Net.AspNetCoreAngular/Controllers/LoginController.cs "Link") (ASP.NET Core 3.1 + Angular)
+- [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/examples/Recaptcha.Verify.Net.ConsoleApp/Program.cs "Link") (.NET 6)
+- [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/blob/master/examples/Recaptcha.Verify.Net.AspNetCoreAngular/Controllers/LoginController.cs "Link") (ASP.NET 6 + Angular)

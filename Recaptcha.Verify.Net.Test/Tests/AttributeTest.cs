@@ -106,7 +106,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
         // Assert
         Assert.IsType<BadRequestObjectResult>(actionExecutingContext.Result);
         Assert.NotNull(actionExecutingContext.Result);
-        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult).Value, options.VerificationFailedMessage);
+        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult)!.Value, options.VerificationFailedMessage);
 
         onRecaptchaServiceExceptionMock.Verify(onRecaptchaServiceException, Times.Once);
         onExceptionMock.Verify(onException, Times.Never);
@@ -145,7 +145,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
         // Assert
         Assert.IsType<BadRequestObjectResult>(actionExecutingContext.Result);
         Assert.NotNull(actionExecutingContext.Result);
-        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult).Value, options.VerificationFailedMessage);
+        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult)!.Value, options.VerificationFailedMessage);
 
         onRecaptchaServiceExceptionMock.Verify(onRecaptchaServiceException, Times.Never);
         onExceptionMock.Verify(onException, Times.Once);
@@ -184,7 +184,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
         // Assert
         Assert.IsType<BadRequestObjectResult>(actionExecutingContext.Result);
         Assert.NotNull(actionExecutingContext.Result);
-        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult).Value, options.VerificationFailedMessage);
+        Assert.Equal((actionExecutingContext.Result as BadRequestObjectResult)!.Value, options.VerificationFailedMessage);
 
         onRecaptchaServiceExceptionMock.Verify(onRecaptchaServiceException, Times.Never);
         onExceptionMock.Verify(onException, Times.Never);

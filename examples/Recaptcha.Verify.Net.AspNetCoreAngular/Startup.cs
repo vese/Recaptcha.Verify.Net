@@ -4,11 +4,8 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
 using Recaptcha.Verify.Net.Configuration;
-using System;
-using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net.AspNetCoreAngular
 {
@@ -24,43 +21,22 @@ namespace Recaptcha.Verify.Net.AspNetCoreAngular
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRecaptcha(builder =>
-            {
-                builder.Configure(Configuration.GetSection("Recaptcha"),
-                    // Retrieve token from parsed action arguments handler used in RecaptchaAttribute
-                    o => o.AttributeOptions.GetResponseTokenFromActionArguments =
-                        d =>
-                        {
-                            if (d.TryGetValue("credentials", out var credentials))
-                            {
-                                return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
-                            }
-                            return null;
-                        });
-                builder.ConfigureLogging(o =>
-                {
-                    // Enable logging exceptions. (Do not enable if logging performed in catch or RecaptchaOptions handlers)
-                    o.EnableExceptionLogging = true;
-                    o.UpdateLevels((RecaptchaServiceEventId.ServiceException, LogLevel.Critical));
-                    // Custom log message handler
-                    o.LogSendingRequestMessageHandler = (level, id, message, token, ip) =>
+            services.AddRecaptcha(Configuration.GetSection("Recaptcha"),
+                // Retrieve token from parsed action arguments handler used in RecaptchaAttribute
+                o => o.AttributeOptions.GetResponseTokenFromActionArguments =
+                    d =>
                     {
-                        Console.WriteLine(level);
-                        Console.WriteLine(id);
-                        Console.WriteLine(string.Format(message, token, ip));
-                    };
-                    // Custom log message handler using async logging
-                    o.LogRequestSuccededMessageHandler = (level, id, message, response) =>
-                    {
-                        Task.Run(async () =>
+                        if (d.TryGetValue("credentials", out var credentials))
                         {
-                            //await LogAsync(level, id, message, args);
-                        });
-                    };
-                });
-            });
+                            return ((BaseRecaptchaCredentials)credentials).RecaptchaToken;
+                        }
+                        return null;
+                    });
 
-            services.AddControllersWithViews();
+            services.AddLogging();
+
+            services.AddControllers();
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

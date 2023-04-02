@@ -58,13 +58,10 @@ namespace Recaptcha.Verify.Net.ConsoleApp
         static IRecaptchaService CreateService(string secretKey)
         {
             var serviceProvider = new ServiceCollection()
-                .AddRecaptcha(builder =>
+                .AddRecaptcha(o =>
                 {
-                    builder.Configure(new RecaptchaOptions(), o =>
-                    {
-                        o.SecretKey = secretKey;
-                        o.ScoreThreshold = 0.5f;
-                    });
+                    o.SecretKey = secretKey;
+                    o.ScoreThreshold = 0.5f;
                 })
                 .BuildServiceProvider();
 

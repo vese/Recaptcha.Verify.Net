@@ -6,7 +6,7 @@
     public class CheckResult
     {
         /// <summary>
-        /// Veryfy response.
+        /// Verify response.
         /// </summary>
         public VerifyResponse Response { get; set; }
 

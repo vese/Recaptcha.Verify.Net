@@ -1,4 +1,5 @@
-﻿using Recaptcha.Verify.Net.Attribute;
+﻿using Microsoft.Extensions.Logging;
+using Recaptcha.Verify.Net.Attribute;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -36,7 +37,7 @@ namespace Recaptcha.Verify.Net.Configuration
         public Dictionary<string, float> ActionsScoreThresholds { get; set; }
 
         /// <summary>
-        /// Default returning message for unseccessfull validation and checking.
+        /// Default returning message for unsuccessful validation and checking.
         /// <para>
         /// This message would be replaced by value processed by <see cref="RecaptchaAttributeOptions.OnVerificationFailed"/>, 
         /// <see cref="RecaptchaAttributeOptions.OnRecaptchaServiceException"/>, <see cref="RecaptchaAttributeOptions.OnException"/>
@@ -50,6 +51,16 @@ namespace Recaptcha.Verify.Net.Configuration
         /// </summary>
         public RecaptchaAttributeOptions AttributeOptions { get; set; } = new RecaptchaAttributeOptions();
 
-        public LogOptions LogOptions { get; set; } = new LogOptions();
+        /// <summary>
+        /// When <c>True</c> logs events such as "request sent" with <see cref="LogLevel.Information"/> using <see cref="ILogger"/> registered in di container.
+        /// Default is <c>True</c>.
+        /// </summary>
+        public bool EnableLogging { get; set; } = true;
+
+        /// <summary>
+        /// When <c>True</c> logs exceptions with <see cref="LogLevel.Error"/> using <see cref="ILogger"/> registered in di container.
+        /// Default is <c>True</c>.
+        /// </summary>
+        public bool EnableExceptionLogging { get; set; } = true;
     }
 }
