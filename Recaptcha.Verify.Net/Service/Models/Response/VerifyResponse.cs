@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Recaptcha.Verify.Net.Exceptions;
+﻿using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Recaptcha.Verify.Net
 {
@@ -14,39 +14,39 @@ namespace Recaptcha.Verify.Net
         /// <summary>
         /// <c>True</c> if successfully verified.
         /// </summary>
-        [JsonProperty("success")]
+        [JsonPropertyName("success")]
         public bool Success { get; set; }
 
         /// <summary>
         /// Used for reCAPTCHA V3.
         /// The score for this request (0.0 - 1.0).
         /// </summary>
-        [JsonProperty("score")]
+        [JsonPropertyName("score")]
         public float? Score { get; set; }
 
         /// <summary>
         /// Used for reCAPTCHA V3.
         /// The action name for this request (important to verify).
         /// </summary>
-        [JsonProperty("action")]
+        [JsonPropertyName("action")]
         public string Action { get; set; }
 
         /// <summary>
         /// Timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ).
         /// </summary>
-        [JsonProperty("challenge_ts")]
+        [JsonPropertyName("challenge_ts")]
         public DateTime ChallengeTs { get; set; }
 
         /// <summary>
         /// The hostname of the site where the reCAPTCHA was solved.
         /// </summary>
-        [JsonProperty("hostname")]
+        [JsonPropertyName("hostname")]
         public string Hostname { get; set; }
 
         /// <summary>
         /// The package name of the app where the reCAPTCHA was solved.
         /// </summary>
-        [JsonProperty("apk_package_name")]
+        [JsonPropertyName("apk_package_name")]
         public string ApkPackageName { get; set; }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Recaptcha.Verify.Net
         /// </item>
         /// </list>
         /// </summary>
-        [JsonProperty("error-codes")]
+        [JsonPropertyName("error-codes")]
         public List<string> ErrorCodes { get; set; }
 
         /// <summary>
