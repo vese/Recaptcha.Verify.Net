@@ -50,17 +50,5 @@ namespace Recaptcha.Verify.Net.Configuration
         /// Options for <see cref="RecaptchaAttribute"/>.
         /// </summary>
         public RecaptchaAttributeOptions AttributeOptions { get; set; } = new RecaptchaAttributeOptions();
-
-        /// <summary>
-        /// When <c>True</c> logs events such as "request sent" with <see cref="LogLevel.Information"/> using <see cref="ILogger"/> registered in di container.
-        /// Default is <c>True</c>.
-        /// </summary>
-        public bool EnableLogging { get; set; } = true;
-
-        /// <summary>
-        /// When <c>True</c> logs exceptions with <see cref="LogLevel.Error"/> using <see cref="ILogger"/> registered in di container.
-        /// Default is <c>True</c>.
-        /// </summary>
-        public bool EnableExceptionLogging { get; set; } = true;
     }
 }

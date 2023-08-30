@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
+using Recaptcha.Verify.Net.Logging;
 using Refit;
 using System;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,12 +22,12 @@ namespace Recaptcha.Verify.Net
         /// </summary>
         /// <param name="recaptchaOptions">Recaptcha options.</param>
         /// <param name="recaptchaClient">Recaptcha Refit client.</param>
-        /// <param name="loggerFactory">Optional. Logger factory.</param>
-        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILoggerFactory loggerFactory = null)
+        /// <param name="logger">Logger.</param>
+        public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILogger<RecaptchaService> logger)
         {
             _recaptchaOptions = recaptchaOptions?.Value;
             _recaptchaClient = recaptchaClient;
-            _logger = loggerFactory?.CreateLogger<RecaptchaService>();
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -72,7 +72,7 @@ namespace Recaptcha.Verify.Net
             {
                 if (string.IsNullOrWhiteSpace(_recaptchaOptions?.SecretKey))
                 {
-                    throw LogException(new SecretKeyNotSpecifiedException());
+                    throw Log(new SecretKeyNotSpecifiedException(), _logger.MissingSecretKeyError);
                 }
 
                 request.Secret = _recaptchaOptions.SecretKey;
@@ -80,19 +80,19 @@ namespace Recaptcha.Verify.Net
 
             if (string.IsNullOrWhiteSpace(request.Response))
             {
-                throw LogException(new EmptyCaptchaAnswerException());
+                throw Log(new EmptyCaptchaAnswerException(), _logger.MissingCaptchaAnswerError);
             }
 
             try
             {
-                LogInfo("Sending verify request. Response token: {token}, remote IP: {ip}.", request.Response, request.RemoteIp);
+                _logger.SendingRequest(request);
                 var result = await _recaptchaClient.VerifyAsync(request, cancellationToken);
-                LogInfo("Verify request succeeded. Response: {response}.", JsonSerializer.Serialize(result));
+                _logger.RequestCompleted(result);
                 return result;
             }
             catch (ApiException e)
             {
-                throw LogException(new HttpRequestException(e));
+                throw Log(new HttpRequestException(e), _logger.HttpRequestError);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    throw LogException(new EmptyActionException());
+                    throw Log(new EmptyActionException(), _logger.MissingActionError);
                 }
 
                 checkResult.ActionMatches = response.Success && actionToCheck.Equals(response.Action);
@@ -139,30 +139,24 @@ namespace Recaptcha.Verify.Net
                 }
                 else
                 {
-                    throw LogException(new MinScoreNotSpecifiedException(actionToCheck));
+                    throw Log(new MinScoreNotSpecifiedException(actionToCheck), _logger.MissingMinScoreError);
                 }
 
                 checkResult.ScoreSatisfies = response.Score.Value >= scoreThreshold;
+
+                _logger.ResponseChecked(actionToCheck, scoreThreshold, checkResult);
+            }
+            else
+            {
+                _logger.ResponseChecked(null, null, checkResult);
             }
 
-            LogInfo("Verify response checked. Result: {checkResult}.", JsonSerializer.Serialize(checkResult));
             return checkResult;
         }
 
-        private void LogInfo(string message, params object[] args)
+        private static T Log<T>(T e, Action<T> action) where T : Exception
         {
-            if (_recaptchaOptions.EnableLogging && _logger != null)
-            {
-                _logger.LogInformation(message, args);
-            }
-        }
-
-        private T LogException<T>(T e) where T : Exception
-        {
-            if (_recaptchaOptions.EnableExceptionLogging && _logger != null)
-            {
-                _logger.LogError(e, e.Message);
-            }
+            action.Invoke(e);
             return e;
         }
     }

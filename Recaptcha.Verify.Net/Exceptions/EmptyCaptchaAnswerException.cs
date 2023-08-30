@@ -12,7 +12,7 @@ namespace Recaptcha.Verify.Net.Exceptions
         /// <summary>
         /// Initializes a new instance of the <see cref="EmptyCaptchaAnswerException"/> class.
         /// </summary>
-        public EmptyCaptchaAnswerException() : base("Provided captcha answer is empty.") { }
+        public EmptyCaptchaAnswerException() : base("Received captcha answer is empty.") { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmptyCaptchaAnswerException"/> class with serialized data.

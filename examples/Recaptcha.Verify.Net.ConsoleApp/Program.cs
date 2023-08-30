@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using System;
@@ -53,11 +53,17 @@ namespace Recaptcha.Verify.Net.ConsoleApp
                 // Handle exceptions in service
                 Console.WriteLine(e.Message);
             }
+            Console.ReadLine();
         }
 
         static IRecaptchaService CreateService(string secretKey)
         {
             var serviceProvider = new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddDebug();
+                    builder.AddConsole();
+                })
                 .AddRecaptcha(o =>
                 {
                     o.SecretKey = secretKey;
