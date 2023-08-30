@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using System;
