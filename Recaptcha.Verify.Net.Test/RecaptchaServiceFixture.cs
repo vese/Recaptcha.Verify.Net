@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
@@ -119,7 +121,7 @@ public static class RecaptchaServiceFixture
                 }));
         }
 
-        return new RecaptchaService(options, recaptchaClientMock.Object);
+        return new RecaptchaService(options, recaptchaClientMock.Object, NullLoggerFactory.Instance.CreateLogger<RecaptchaService>());
     }
 
     public static (
