@@ -40,7 +40,7 @@ Response data: {Data}.");
             eventId: CoreEventId.MissingCaptchaAnswerError,
             formatString: _exceptionMessage);
 
-        private static readonly Action<ILogger, HttpRequestException> _httpRequestError = LoggerMessage.Define(
+        private static readonly Action<ILogger, RecaptchaHttpRequestException> _httpRequestError = LoggerMessage.Define(
             logLevel: LogLevel.Error,
             eventId: CoreEventId.HttpRequestError,
             formatString: _exceptionMessage);
@@ -65,7 +65,7 @@ Result: {Result}.");
             response,
             null);
         public static void MissingCaptchaAnswerError(this ILogger logger, EmptyCaptchaAnswerException e) => _missingCaptchaAnswerError(logger, e);
-        public static void HttpRequestError(this ILogger logger, HttpRequestException e) => _httpRequestError(logger, e);
+        public static void HttpRequestError(this ILogger logger, RecaptchaHttpRequestException e) => _httpRequestError(logger, e);
         public static void ResponseChecked(this ILogger logger, string action, float? scoreThreshold, CheckResult checkResult) => _responseChecked(
             logger,
             GetVersionString(checkResult.Response.IsV3),

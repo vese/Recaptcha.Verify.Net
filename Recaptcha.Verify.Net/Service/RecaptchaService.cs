@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Logging;
-using Refit;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace Recaptcha.Verify.Net
         /// Recaptcha service constructor.
         /// </summary>
         /// <param name="recaptchaOptions">Recaptcha options.</param>
-        /// <param name="recaptchaClient">Recaptcha Refit client.</param>
+        /// <param name="recaptchaClient">Recaptcha client.</param>
         /// <param name="logger">Logger.</param>
         public RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILogger<RecaptchaService> logger)
         {
@@ -90,9 +89,9 @@ namespace Recaptcha.Verify.Net
                 _logger.RequestCompleted(result);
                 return result;
             }
-            catch (ApiException e)
+            catch (Exception e)
             {
-                throw Log(new HttpRequestException(e), _logger.HttpRequestError);
+                throw Log(new RecaptchaHttpRequestException(e), _logger.HttpRequestError);
             }
         }
 

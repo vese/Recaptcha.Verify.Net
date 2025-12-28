@@ -191,7 +191,7 @@ Exception | Description
 --- | ---
 EmptyActionException | This exception is thrown when the action passed in function is empty.
 EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
-HttpRequestException | This exception is thrown when http request failed. Stores Refit.ApiException as inner exception.
+RecaptchaHttpRequestException | This exception is thrown when http request failed. Stores inner exception.
 MinScoreNotSpecifiedException | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
 SecretKeyNotSpecifiedException | This exception is thrown when secret key was not specified in options or request params.
 UnknownErrorKeyException | This exception is thrown when verification response error key is unknown.
