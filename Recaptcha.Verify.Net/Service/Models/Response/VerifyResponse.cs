@@ -29,7 +29,7 @@ public class VerifyResponse
     /// The action name for this request (important to verify).
     /// </summary>
     [JsonPropertyName("action")]
-    public string Action { get; set; }
+    public string Action { get; set; } = null!;
 
     /// <summary>
     /// Timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ).
@@ -41,13 +41,13 @@ public class VerifyResponse
     /// The hostname of the site where the reCAPTCHA was solved.
     /// </summary>
     [JsonPropertyName("hostname")]
-    public string Hostname { get; set; }
+    public string? Hostname { get; set; }
 
     /// <summary>
     /// The package name of the app where the reCAPTCHA was solved.
     /// </summary>
     [JsonPropertyName("apk_package_name")]
-    public string ApkPackageName { get; set; }
+    public string? ApkPackageName { get; set; }
 
     /// <summary>
     /// List of error codes.
@@ -83,7 +83,7 @@ public class VerifyResponse
     /// </list>
     /// </summary>
     [JsonPropertyName("error-codes")]
-    public List<string> ErrorCodes { get; set; }
+    public List<string>? ErrorCodes { get; set; }
 
     /// <summary>
     /// Returns list of the verify errors.

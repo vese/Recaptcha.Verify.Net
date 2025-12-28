@@ -15,7 +15,7 @@ internal class RecaptchaClient(HttpClient httpClient) : IRecaptchaClient
     /// <inheritdoc />
     public async Task<VerifyResponse> VerifyAsync(VerifyRequest request, CancellationToken cancellationToken = default)
     {
-        var formData = new Dictionary<string, string>
+        var formData = new Dictionary<string, string?>
         {
             { "secret", request.Secret },
             { "response", request.Response },
