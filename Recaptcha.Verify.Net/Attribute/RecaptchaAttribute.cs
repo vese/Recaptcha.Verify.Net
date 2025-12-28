@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Recaptcha.Verify.Net.Exceptions.Processing;
+using Recaptcha.Verify.Net.Logging;
 
 namespace Recaptcha.Verify.Net.Attribute;
 
@@ -59,9 +59,10 @@ public class RecaptchaAttribute : ActionFilterAttribute
         {
             var recaptchaToken = context.GetResponseToken(recaptchaOptions.AttributeOptions);
 
-            if (recaptchaToken is null)
+            if (string.IsNullOrWhiteSpace(recaptchaToken))
             {
-                throw new Exception();
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<RecaptchaAttribute>>();
+                throw new EmptyCaptchaAnswerException().WithLog(logger.MissingCaptchaAnswerError);
             }
 
             if (_score.HasValue)

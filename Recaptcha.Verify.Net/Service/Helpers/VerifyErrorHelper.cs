@@ -1,7 +1,6 @@
-﻿using Recaptcha.Verify.Net.Exceptions;
+﻿using Recaptcha.Verify.Net.Exceptions.Processing;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Recaptcha.Verify.Net.Test")]
 namespace Recaptcha.Verify.Net.Helpers;

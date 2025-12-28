@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Recaptcha.Verify.Net.Exceptions;
-using System;
+using Recaptcha.Verify.Net.Exceptions.Configuration;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 
 namespace Recaptcha.Verify.Net.Logging;
 
@@ -40,12 +40,12 @@ Response data: {Data}.");
         eventId: CoreEventId.MissingCaptchaAnswerError,
         formatString: _exceptionMessage);
 
-    private static readonly Action<ILogger, RecaptchaHttpRequestException> _httpRequestError = LoggerMessage.Define(
+    private static readonly Action<ILogger, VerifyRequestException> _httpRequestError = LoggerMessage.Define(
         logLevel: LogLevel.Error,
         eventId: CoreEventId.HttpRequestError,
         formatString: _exceptionMessage);
 
-    private static readonly Action<ILogger, string, string, float?, CheckResult, Exception?> _responseChecked = LoggerMessage.Define<string, string?, float?, CheckResult>(
+    private static readonly Action<ILogger, string, string?, float?, CheckResult, Exception?> _responseChecked = LoggerMessage.Define<string, string?, float?, CheckResult>(
         logLevel: LogLevel.Information,
         eventId: CoreEventId.ResponseChecked,
         formatString: @"Verify response checked for {Type} captcha request.
@@ -65,7 +65,7 @@ Result: {Result}.");
         response,
         null);
     public static void MissingCaptchaAnswerError(this ILogger logger, EmptyCaptchaAnswerException e) => _missingCaptchaAnswerError(logger, e);
-    public static void HttpRequestError(this ILogger logger, RecaptchaHttpRequestException e) => _httpRequestError(logger, e);
+    public static void VerifyRequestError(this ILogger logger, VerifyRequestException e) => _httpRequestError(logger, e);
     public static void ResponseChecked(this ILogger logger, string? action, float? scoreThreshold, CheckResult checkResult) => _responseChecked(
         logger,
         GetVersionString(checkResult.Response.IsV3),

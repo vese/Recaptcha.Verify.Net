@@ -189,11 +189,15 @@ var response = await _recaptchaService.VerifyAsync(credentials.RecaptchaToken);
 Library can produce following exceptions
 Exception | Description
 --- | ---
+RecaptchaServiceException | Base recaptcha exception.
+RecaptchaServiceConfigurationException | Base recaptcha exception for invalid configuration.
 EmptyActionException | This exception is thrown when the action passed in function is empty.
-EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
-RecaptchaHttpRequestException | This exception is thrown when http request failed. Stores inner exception.
 MinScoreNotSpecifiedException | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
 SecretKeyNotSpecifiedException | This exception is thrown when secret key was not specified in options or request params.
+RecaptchaServiceProcessingException | Base recaptcha exception for errors while processing token verification and result checking.
+EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
+EmptyResponseException | This exception is thrown when verification request response is empty. When thrown, it is wrapped in VerifyRequestException.
+VerifyRequestException | This exception is thrown when verification request failed. Stores inner exception.
 UnknownErrorKeyException | This exception is thrown when verification response error key is unknown.
 
 All of these exceptions are inherited from RecaptchaServiceException.

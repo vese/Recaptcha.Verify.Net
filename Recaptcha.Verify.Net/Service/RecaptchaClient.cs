@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Recaptcha.Verify.Net.Exceptions.Processing;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -31,7 +32,7 @@ internal class RecaptchaClient(HttpClient httpClient) : IRecaptchaClient
 
         if (verifyResponse is null)
         {
-            throw new Exception();
+            throw new EmptyResponseException();
         }
 
         return verifyResponse;

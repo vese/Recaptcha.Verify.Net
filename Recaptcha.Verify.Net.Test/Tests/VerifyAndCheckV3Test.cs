@@ -1,4 +1,5 @@
-using Recaptcha.Verify.Net.Exceptions;
+using Recaptcha.Verify.Net.Exceptions.Configuration;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 using System.Linq;
 using Xunit;
 

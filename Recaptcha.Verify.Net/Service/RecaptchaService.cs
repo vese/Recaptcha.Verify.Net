@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
+using Recaptcha.Verify.Net.Exceptions.Configuration;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net;
 
@@ -62,15 +61,10 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
         {
             if (string.IsNullOrWhiteSpace(_recaptchaOptions?.SecretKey))
             {
-                throw Log(new SecretKeyNotSpecifiedException(), logger.MissingSecretKeyError);
+                throw new SecretKeyNotSpecifiedException().WithLog(logger.MissingSecretKeyError);
             }
 
             request.Secret = _recaptchaOptions.SecretKey;
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Response))
-        {
-            throw Log(new EmptyCaptchaAnswerException(), logger.MissingCaptchaAnswerError);
         }
 
         try
@@ -82,7 +76,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
         }
         catch (Exception e)
         {
-            throw Log(new RecaptchaHttpRequestException(e), logger.HttpRequestError);
+            throw new VerifyRequestException(e).WithLog(logger.VerifyRequestError);
         }
     }
 
@@ -110,7 +104,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
             }
             else
             {
-                throw Log(new EmptyActionException(), logger.MissingActionError);
+                throw new EmptyActionException().WithLog(logger.MissingActionError);
             }
 
             checkResult.ActionMatches = response.Success && actionToCheck.Equals(response.Action);
@@ -129,7 +123,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
             }
             else
             {
-                throw Log(new MinScoreNotSpecifiedException(actionToCheck), logger.MissingMinScoreError);
+                throw new MinScoreNotSpecifiedException(actionToCheck).WithLog(logger.MissingMinScoreError);
             }
 
             checkResult.ScoreSatisfies = response.Score!.Value >= scoreThreshold;
@@ -142,11 +136,5 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
         }
 
         return checkResult;
-    }
-
-    private static T Log<T>(T e, Action<T> action) where T : Exception
-    {
-        action.Invoke(e);
-        return e;
     }
 }
