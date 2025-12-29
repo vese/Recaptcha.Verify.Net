@@ -18,17 +18,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
+    /// <exception cref="VerifyRequestException">
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
     /// <exception cref="MinScoreNotSpecifiedException">
     /// This exception is thrown when minimal score was not specified and request had score value.
-    /// </exception>
-    /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(string response, CancellationToken cancellationToken = default);
 
@@ -42,17 +42,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
+    /// <exception cref="VerifyRequestException">
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
     /// <exception cref="MinScoreNotSpecifiedException">
     /// This exception is thrown when minimal score was not specified and request had score value.
-    /// </exception>
-    /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(string response, string action, CancellationToken cancellationToken = default);
 
@@ -66,14 +66,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
     /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
+    /// <exception cref="MinScoreNotSpecifiedException">
+    /// This exception is thrown when minimal score was not specified and request had score value.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(string response, string action, float score, CancellationToken cancellationToken = default);
 
@@ -86,17 +89,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
+    /// <exception cref="VerifyRequestException">
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
     /// <exception cref="MinScoreNotSpecifiedException">
     /// This exception is thrown when minimal score was not specified and request had score value.
-    /// </exception>
-    /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, CancellationToken cancellationToken = default);
 
@@ -110,17 +113,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
+    /// <exception cref="VerifyRequestException">
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
     /// <exception cref="MinScoreNotSpecifiedException">
     /// This exception is thrown when minimal score was not specified and request had score value.
-    /// </exception>
-    /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action, CancellationToken cancellationToken = default);
 
@@ -134,14 +137,17 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains result of check <see cref="CheckResult"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
     /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
+    /// This exception is thrown when verify request failed.
+    /// </exception>
+    /// <exception cref="EmptyActionException">
+    /// This exception is thrown when the action passed in function is empty.
+    /// </exception>
+    /// <exception cref="MinScoreNotSpecifiedException">
+    /// This exception is thrown when minimal score was not specified and request had score value.
     /// </exception>
     Task<CheckResult> VerifyAndCheckAsync(VerifyRequest request, string action, float score, CancellationToken cancellationToken = default);
 
@@ -156,16 +162,13 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains verification response <see cref="VerifyResponse"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
     /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
+    /// This exception is thrown when verify request failed.
     /// </exception>
-    Task<VerifyResponse> VerifyAsync(string response, string secret = null, string remoteIp = null, CancellationToken cancellationToken = default);
+    Task<VerifyResponse> VerifyAsync(string response, string? secret = null, string? remoteIp = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Verifies reCAPTCHA response token.
@@ -175,14 +178,11 @@ public interface IRecaptchaService
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> that represents the asynchronous operation.
     /// The task result contains verification response <see cref="VerifyResponse"/>.</returns>
-    /// <exception cref="EmptyCaptchaAnswerException">
-    /// This exception is thrown when captcha answer is empty.
-    /// </exception>
     /// <exception cref="SecretKeyNotSpecifiedException">
     /// This exception is thrown when secret key was not specified in options or request params.
     /// </exception>
     /// <exception cref="VerifyRequestException">
-    /// This exception is thrown when http request failed.
+    /// This exception is thrown when verify request failed.
     /// </exception>
     Task<VerifyResponse> VerifyAsync(VerifyRequest request, CancellationToken cancellationToken = default);
 }

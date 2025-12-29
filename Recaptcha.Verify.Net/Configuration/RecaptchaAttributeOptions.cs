@@ -69,5 +69,5 @@ public class RecaptchaAttributeOptions
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// <para>Fires after <see cref="OnVerificationFailed"/>, <see cref="OnRecaptchaServiceException"/> and <see cref="OnException"/>.</para>
     /// </summary>
-    public virtual Func<ActionExecutingContext, string, CheckResult?, RecaptchaServiceException, Exception, IActionResult>? OnReturnBadRequest { get; set; }
+    public virtual Func<ActionExecutingContext, string, CheckResult?, RecaptchaServiceException?, Exception?, IActionResult>? OnReturnBadRequest { get; set; }
 }
