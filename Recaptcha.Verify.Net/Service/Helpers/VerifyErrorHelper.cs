@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-[assembly: InternalsVisibleTo("Recaptcha.Verify.Net.Test")]
 namespace Recaptcha.Verify.Net.Helpers;
 
 internal static class VerifyErrorHelper
