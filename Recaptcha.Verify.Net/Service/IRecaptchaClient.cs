@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Recaptcha.Verify.Net;
+﻿namespace Recaptcha.Verify.Net;
 
 /// <summary>
 /// Http client for verifying reCAPTCHA response token.

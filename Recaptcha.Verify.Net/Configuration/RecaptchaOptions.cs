@@ -1,6 +1,4 @@
 ﻿using Recaptcha.Verify.Net.Attribute;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

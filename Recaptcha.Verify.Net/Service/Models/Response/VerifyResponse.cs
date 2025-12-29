@@ -1,7 +1,5 @@
 ﻿using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Recaptcha.Verify.Net;
@@ -29,7 +27,7 @@ public class VerifyResponse
     /// The action name for this request (important to verify).
     /// </summary>
     [JsonPropertyName("action")]
-    public string Action { get; set; } = null!;
+    public required string Action { get; set; }
 
     /// <summary>
     /// Timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ).
@@ -92,7 +90,7 @@ public class VerifyResponse
     /// This exception is thrown when verification response error key is unknown.
     /// </exception>
     [JsonIgnore]
-    public List<VerifyError> Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
+    public List<VerifyError>? Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
 
     /// <summary>
     /// <c>True</c> if reCAPTCHA v3 is used.

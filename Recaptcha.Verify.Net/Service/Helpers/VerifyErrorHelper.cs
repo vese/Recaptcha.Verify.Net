@@ -1,6 +1,4 @@
 ﻿using Recaptcha.Verify.Net.Exceptions.Processing;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Recaptcha.Verify.Net.Helpers;
 

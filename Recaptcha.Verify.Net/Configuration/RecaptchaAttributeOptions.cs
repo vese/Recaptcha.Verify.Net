@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Recaptcha.Verify.Net.Attribute;
 using Recaptcha.Verify.Net.Exceptions;
-using System;
-using System.Collections.Generic;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

@@ -8,7 +8,7 @@ public class CheckResult
     /// <summary>
     /// Verify response.
     /// </summary>
-    public VerifyResponse Response { get; set; } = null!;
+    public required VerifyResponse Response { get; set; }
 
     /// <summary>
     /// <c>True</c> if action matches specified value.

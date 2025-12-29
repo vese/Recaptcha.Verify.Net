@@ -14,9 +14,9 @@ public class VerifyRequest
     public string? Secret { get; set; }
 
     /// <summary>
-    /// Required. The user response token provided by the reCAPTCHA client-side integration on your site.
+    /// The user response token provided by the reCAPTCHA client-side integration on your site.
     /// </summary>
-    public string Response { get; set; } = null!;
+    public required string Response { get; set; }
 
     /// <summary>
     /// The user's IP address.

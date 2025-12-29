@@ -1,8 +1,6 @@
 ﻿using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net;
 
