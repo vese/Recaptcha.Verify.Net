@@ -62,7 +62,9 @@ public class RecaptchaAttribute : ActionFilterAttribute
             if (string.IsNullOrWhiteSpace(recaptchaToken))
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<RecaptchaAttribute>>();
-                throw new EmptyCaptchaAnswerException().WithLog(logger.MissingCaptchaAnswerError);
+                var e = new EmptyCaptchaAnswerException().WithLog(logger.MissingCaptchaAnswerError);
+                HandleBadResult(context, recaptchaOptions, checkResult, e, null);
+                return;
             }
 
             if (_score.HasValue)
