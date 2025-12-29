@@ -3,63 +3,63 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Models;
 using Recaptcha.Verify.Net.Attribute;
+using Recaptcha.Verify.Net.Service;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers
+namespace Recaptcha.Verify.Net.AspNetCoreAngular.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class LoginController : Controller
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class LoginController : Controller
+    private const string _loginAction = "login";
+
+    private readonly ILogger _logger;
+    private readonly IRecaptchaService _recaptchaService;
+
+    public LoginController(ILoggerFactory loggerFactory, IRecaptchaService recaptchaService)
     {
-        private const string _loginAction = "login";
+        _logger = loggerFactory.CreateLogger<LoginController>();
+        _recaptchaService = recaptchaService;
+    }
 
-        private readonly ILogger _logger;
-        private readonly IRecaptchaService _recaptchaService;
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
+    {
+        var checkResult = await _recaptchaService.VerifyAndCheckAsync(
+            credentials.RecaptchaToken,
+            _loginAction,
+            cancellationToken);
 
-        public LoginController(ILoggerFactory loggerFactory, IRecaptchaService recaptchaService)
+        if (!checkResult.Success)
         {
-            _logger = loggerFactory.CreateLogger<LoginController>();
-            _recaptchaService = recaptchaService;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login([FromBody] Credentials credentials, CancellationToken cancellationToken)
-        {
-            var checkResult = await _recaptchaService.VerifyAndCheckAsync(
-                credentials.RecaptchaToken,
-                _loginAction,
-                cancellationToken);
-
-            if (!checkResult.Success)
+            if (!checkResult.Response.Success)
             {
-                if (!checkResult.Response.Success)
-                {
-                    // Handle unsuccessful verification response
-                    _logger.LogError("Recaptcha error: {errorCodes}", JsonConvert.SerializeObject(checkResult.Response.ErrorCodes));
-                }
-
-                if (!checkResult.ScoreSatisfies)
-                {
-                    // Handle score less than specified threshold for v3
-                }
-
-                // Unsuccessful verification and check
-                return BadRequest();
+                // Handle unsuccessful verification response
+                _logger.LogError("Recaptcha error: {errorCodes}", JsonConvert.SerializeObject(checkResult.Response.ErrorCodes));
             }
 
-            // Process login
+            if (!checkResult.ScoreSatisfies)
+            {
+                // Handle score less than specified threshold for v3
+            }
 
-            return Ok();
+            // Unsuccessful verification and check
+            return BadRequest();
         }
 
-        [Recaptcha("login")]
-        [HttpPost("Login_RecaptchaAttribute")]
-        public IActionResult Login_RecaptchaAttribute([FromForm] Credentials credentials, CancellationToken cancellationToken)
-        {
-            // Process login
+        // Process login
 
-            return Ok();
-        }
+        return Ok();
+    }
+
+    [Recaptcha("login")]
+    [HttpPost("Login_RecaptchaAttribute")]
+    public IActionResult Login_RecaptchaAttribute([FromForm] Credentials credentials, CancellationToken cancellationToken)
+    {
+        // Process login
+
+        return Ok();
     }
 }
