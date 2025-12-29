@@ -1,4 +1,5 @@
 ﻿using Recaptcha.Verify.Net.Attribute;
+using Recaptcha.Verify.Net.Service;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

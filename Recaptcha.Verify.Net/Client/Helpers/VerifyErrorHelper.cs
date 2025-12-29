@@ -1,10 +1,11 @@
-﻿using Recaptcha.Verify.Net.Exceptions.Processing;
+﻿using Recaptcha.Verify.Net.Client.Models.Response;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 
-namespace Recaptcha.Verify.Net.Helpers;
+namespace Recaptcha.Verify.Net.Client.Helpers;
 
 internal static class VerifyErrorHelper
 {
-    internal static readonly Dictionary<string, VerifyError> VerifyErrorsDictionary = new Dictionary<string, VerifyError>()
+    internal static readonly Dictionary<string, VerifyError> VerifyErrorsDictionary = new()
     {
         { "missing-input-secret", VerifyError.MissingInputSecret },
         { "invalid-input-secret", VerifyError.InvalidInputSecret },

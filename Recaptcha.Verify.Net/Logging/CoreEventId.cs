@@ -33,7 +33,7 @@ public static class CoreEventId
         ResponseChecked = _checkResponseBaseId,
     }
 
-    private static EventId MakeId(Id id) => new EventId((int)id);
+    private static EventId MakeId(Id id) => new((int)id);
 
     /// <summary>
     /// Missing a secret key.

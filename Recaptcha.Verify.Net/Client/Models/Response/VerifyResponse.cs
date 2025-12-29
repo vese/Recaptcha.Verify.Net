@@ -1,8 +1,8 @@
-﻿using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.Helpers;
+﻿using Recaptcha.Verify.Net.Client.Helpers;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 using System.Text.Json.Serialization;
 
-namespace Recaptcha.Verify.Net;
+namespace Recaptcha.Verify.Net.Client.Models.Response;
 
 /// <summary>
 /// Response of reCAPTCHA response token verification.
@@ -27,7 +27,7 @@ public class VerifyResponse
     /// The action name for this request (important to verify).
     /// </summary>
     [JsonPropertyName("action")]
-    public required string Action { get; set; }
+    public string? Action { get; set; }
 
     /// <summary>
     /// Timestamp of the challenge load (ISO format yyyy-MM-dd'T'HH:mm:ssZZ).

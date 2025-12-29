@@ -1,4 +1,7 @@
-﻿namespace Recaptcha.Verify.Net;
+﻿using Recaptcha.Verify.Net.Client.Models.Request;
+using Recaptcha.Verify.Net.Client.Models.Response;
+
+namespace Recaptcha.Verify.Net.Client;
 
 /// <summary>
 /// Http client for verifying reCAPTCHA response token.

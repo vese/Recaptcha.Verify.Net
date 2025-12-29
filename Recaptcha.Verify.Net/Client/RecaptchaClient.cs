@@ -1,7 +1,9 @@
-﻿using Recaptcha.Verify.Net.Exceptions.Processing;
+﻿using Recaptcha.Verify.Net.Client.Models.Request;
+using Recaptcha.Verify.Net.Client.Models.Response;
+using Recaptcha.Verify.Net.Exceptions.Processing;
 using System.Net.Http.Json;
 
-namespace Recaptcha.Verify.Net;
+namespace Recaptcha.Verify.Net.Client;
 
 /// <inheritdoc />
 internal class RecaptchaClient(HttpClient httpClient) : IRecaptchaClient

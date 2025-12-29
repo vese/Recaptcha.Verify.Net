@@ -1,12 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Recaptcha.Verify.Net.Client;
+using Recaptcha.Verify.Net.Client.Models.Request;
+using Recaptcha.Verify.Net.Client.Models.Response;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.Logging;
+using Recaptcha.Verify.Net.Service.Models;
 
-namespace Recaptcha.Verify.Net;
+namespace Recaptcha.Verify.Net.Service;
 
 /// <inheritdoc />
 /// <summary>

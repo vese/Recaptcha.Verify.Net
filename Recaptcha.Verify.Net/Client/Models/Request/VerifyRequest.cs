@@ -1,6 +1,6 @@
 ﻿using Recaptcha.Verify.Net.Configuration;
 
-namespace Recaptcha.Verify.Net;
+namespace Recaptcha.Verify.Net.Client.Models.Request;
 
 /// <summary>
 /// Verify reCAPTCHA response token request params.

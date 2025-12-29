@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Recaptcha.Verify.Net.Client;
+using Recaptcha.Verify.Net.Service;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Recaptcha.Verify.Net.Client.Models.Request;
+using Recaptcha.Verify.Net.Client.Models.Response;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
+using Recaptcha.Verify.Net.Service.Models;
 
 namespace Recaptcha.Verify.Net.Logging;
 
@@ -29,7 +32,7 @@ internal static class LoggerExtensions
         eventId: CoreEventId.SendingRequest,
         formatString: "Sending verify request. Request data: {Data}.");
 
-    private static readonly Action<ILogger, string, string, bool, float?, VerifyResponse, Exception?> _requestCompleted = LoggerMessage.Define<string, string, bool, float?, VerifyResponse>(
+    private static readonly Action<ILogger, string, string?, bool, float?, VerifyResponse, Exception?> _requestCompleted = LoggerMessage.Define<string, string?, bool, float?, VerifyResponse>(
         logLevel: LogLevel.Information,
         eventId: CoreEventId.RequestCompleted,
         formatString: @"Request for {Type} captcha for action {Action} completed with result {Success} and score {Score}.
