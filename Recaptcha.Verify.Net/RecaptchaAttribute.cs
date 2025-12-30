@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Client.Models.Request;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.Logging;
 using Recaptcha.Verify.Net.Service;
 using Recaptcha.Verify.Net.Service.Models;
 using Recaptcha.Verify.Net.TokenExtraction;
@@ -51,132 +49,103 @@ public class RecaptchaAttribute : ActionFilterAttribute
     /// <param name="next">A delegate that contains next action.</param>
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var tokenExtractors = context.HttpContext.RequestServices.GetServices<ITokenExtractor>();
-
-        if (!tokenExtractors.Any())
-        {
-            throw new TokenExtractorNotFound();
-        }
-
-        CheckResult? checkResult = null;
-
         try
         {
-            string? recaptchaToken = null;
-            var recaptchaTokenExtracted = false;
+            var result = await ProcessRecaptchaAsync(context);
 
-            foreach (var tokenExtractor in tokenExtractors)
+            if (result is not null)
             {
-                recaptchaToken = tokenExtractor.GetToken(context);
-
-                if (!string.IsNullOrWhiteSpace(recaptchaToken))
-                {
-                    recaptchaTokenExtracted = true;
-                    break;
-                }
-            }
-
-            if (!recaptchaTokenExtracted)
-            {
-                var e = new EmptyCaptchaAnswerException();
-
-                var logger = context.HttpContext.RequestServices.GetService<ILogger<RecaptchaAttribute>>();
-
-                if (logger is not null)
-                {
-                    e.WithLog(logger.MissingCaptchaAnswerError);
-                }
-
-                var recaptchaOptions2 = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
-                HandleBadResult(context, recaptchaOptions2, checkResult, e, null);
-
+                context.Result = result;
                 return;
             }
-
-            var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
-            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
-
-            var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-            var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
-                context.HttpContext.RequestAborted : CancellationToken.None;
-
-            if (_score.HasValue)
-            {
-                checkResult = await recaptchaService.VerifyAndCheckAsync(
-                    new VerifyRequest()
-                    {
-                        Secret = recaptchaOptions.SecretKey,
-                        Response = recaptchaToken!,
-                        RemoteIp = remoteIp
-                    },
-                    _action,
-                    _score.Value,
-                    cancellationToken);
-            }
-            else
-            {
-                checkResult = await recaptchaService.VerifyAndCheckAsync(
-                    new VerifyRequest()
-                    {
-                        Secret = recaptchaOptions.SecretKey,
-                        Response = recaptchaToken!,
-                        RemoteIp = remoteIp
-                    },
-                    _action,
-                    cancellationToken);
-            }
         }
-        catch (RecaptchaServiceException e)
+        catch (Exception e) when (e is not RecaptchaServiceException)
         {
-            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
-            HandleBadResult(context, recaptchaOptions, checkResult, e, null);
-            return;
-        }
-        catch (Exception e)
-        {
-            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
-            HandleBadResult(context, recaptchaOptions, checkResult, null, e);
-            return;
-        }
-
-        if (!checkResult.Success)
-        {
-            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
-            HandleBadResult(context, recaptchaOptions, checkResult, null, null);
-            return;
+            throw new RecaptchaUnknownException(e);
         }
 
         await base.OnActionExecutionAsync(context, next);
     }
 
-    private void HandleBadResult(ActionExecutingContext context, RecaptchaOptions recaptchaOptions, CheckResult? result, RecaptchaServiceException? re, Exception? e)
+    private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context)
     {
-        var options = recaptchaOptions.AttributeOptions;
-        IActionResult? handleResult = null;
+        var recaptchaToken = GetRecaptchaToken(context);
 
-        if (re != null)
+        var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
+        var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
+        var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+        var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
+            context.HttpContext.RequestAborted : CancellationToken.None;
+
+        CheckResult checkResult;
+
+        if (_score.HasValue)
         {
-            handleResult = options.OnRecaptchaServiceException?.Invoke(context, _action, result, re);
+            checkResult = await recaptchaService.VerifyAndCheckAsync(
+                new VerifyRequest()
+                {
+                    Secret = recaptchaOptions.SecretKey,
+                    Response = recaptchaToken,
+                    RemoteIp = remoteIp
+                },
+                _action,
+                _score.Value,
+                cancellationToken);
         }
-        else if (e != null)
+        else
         {
-            handleResult = options.OnException?.Invoke(context, _action, result, e);
-        }
-        else if (result != null)
-        {
-            handleResult = options.OnVerificationFailed?.Invoke(context, _action, result);
+            checkResult = await recaptchaService.VerifyAndCheckAsync(
+                new VerifyRequest()
+                {
+                    Secret = recaptchaOptions.SecretKey,
+                    Response = recaptchaToken,
+                    RemoteIp = remoteIp
+                },
+                _action,
+                cancellationToken);
         }
 
-        if (options.OnReturnBadRequest != null)
+        if (!checkResult.Success)
         {
-            handleResult = options.OnReturnBadRequest?.Invoke(context, _action, result, re, e);
+            return recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, checkResult) ??
+                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
         }
 
-        context.Result = handleResult ?? new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
+        return null;
+    }
+
+    private static string GetRecaptchaToken(ActionExecutingContext context)
+    {
+        var tokenExtractors = context.HttpContext.RequestServices.GetServices<ITokenExtractor>();
+
+        string? recaptchaToken = null;
+        var recaptchaTokenExtracted = false;
+        var tokenExtractorsCount = 0;
+
+        foreach (var tokenExtractor in tokenExtractors)
+        {
+            tokenExtractorsCount++;
+
+            recaptchaToken = tokenExtractor.GetToken(context);
+
+            if (!string.IsNullOrWhiteSpace(recaptchaToken))
+            {
+                recaptchaTokenExtracted = true;
+                break;
+            }
+        }
+
+        if (tokenExtractorsCount == 0)
+        {
+            throw new TokenExtractorNotFound();
+        }
+
+        if (!recaptchaTokenExtracted)
+        {
+            throw new EmptyCaptchaAnswerException();
+        }
+
+        return recaptchaToken!;
     }
 }

@@ -65,7 +65,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
         {
             if (string.IsNullOrWhiteSpace(_recaptchaOptions?.SecretKey))
             {
-                throw new SecretKeyNotSpecifiedException().WithLog(logger.MissingSecretKeyError);
+                throw new SecretKeyNotSpecifiedException();
             }
 
             request.Secret = _recaptchaOptions.SecretKey;
@@ -80,7 +80,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
         }
         catch (Exception e)
         {
-            throw new VerifyRequestException(e).WithLog(logger.VerifyRequestError);
+            throw new VerifyRequestException(e);
         }
     }
 
@@ -108,7 +108,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
             }
             else
             {
-                throw new EmptyActionException().WithLog(logger.MissingActionError);
+                throw new EmptyActionException();
             }
 
             checkResult.ActionMatches = response.Success && actionToCheck.Equals(response.Action);
@@ -127,7 +127,7 @@ public class RecaptchaService(IOptions<RecaptchaOptions> recaptchaOptions, IReca
             }
             else
             {
-                throw new MinScoreNotSpecifiedException(actionToCheck).WithLog(logger.MissingMinScoreError);
+                throw new MinScoreNotSpecifiedException(actionToCheck);
             }
 
             checkResult.ScoreSatisfies = response.Score!.Value >= scoreThreshold;
