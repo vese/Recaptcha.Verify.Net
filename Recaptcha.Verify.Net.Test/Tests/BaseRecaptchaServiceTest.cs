@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
-using System.Collections.Generic;
+using Recaptcha.Verify.Net.Service;
 
 namespace Recaptcha.Verify.Net.Test.Tests;
 

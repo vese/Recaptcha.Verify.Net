@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Recaptcha.Verify.Net.Attribute;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using System;
+using Recaptcha.Verify.Net.TokenExtraction;
 using Xunit;
 
 namespace Recaptcha.Verify.Net.Test.Tests;
@@ -18,32 +17,28 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
         (var actionExecutingContext, _) = RecaptchaServiceFixture.CreateActionExecutingContext();
 
-        var options = new RecaptchaAttributeOptions();
+        var resultToken = new FormTokenExtractor(tokenParamName).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
 
-        options.ResponseTokenNameInForm = tokenParamName;
-        var resultToken = actionExecutingContext.GetResponseToken(options);
-        Assert.Equal(resultToken, token);
+        resultToken = new QueryTokenExtractor(tokenParamName).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
 
-        options.ResponseTokenNameInQuery = tokenParamName;
-        resultToken = actionExecutingContext.GetResponseToken(options);
-        Assert.Equal(resultToken, token);
+        resultToken = new HeaderTokenExtractor(tokenParamName).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
 
-        options.ResponseTokenNameInHeader = tokenParamName;
-        resultToken = actionExecutingContext.GetResponseToken(options);
-        Assert.Equal(resultToken, token);
+        resultToken = new ExecutingContextTokenExtractor((context) => token).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
 
-        options.GetResponseTokenFromExecutingContext = (context) => token;
-        resultToken = actionExecutingContext.GetResponseToken(options);
-        Assert.Equal(resultToken, token);
+        resultToken = new ActionArgumentsTokenExtractor((dict) => dict[tokenParamName]?.ToString()).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
 
-        options.GetResponseTokenFromActionArguments = (context) => token;
-        resultToken = actionExecutingContext.GetResponseToken(options);
-        Assert.Equal(resultToken, token);
+        resultToken = new ActionArgumentsTokenExtractor(tokenParamName).GetToken(actionExecutingContext);
+        Assert.Equal(token, resultToken);
     }
 
     [Theory]
     [MemberData(nameof(AttributeDataWithoutScore))]
-    public async void VerifyAndCheckAsyncExecuted_WithoutNotSpecifiedScoreInAttribute(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_WithoutNotSpecifiedScoreInAttribute(RecaptchaAttribute attribute)
     {
         // Arrange
         (var recaptchaService, var verifyWithScoreFromAttribute, var verifyWithoutScoreFromAttribute) = RecaptchaServiceFixture.CreateService();
@@ -60,7 +55,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
     [Theory]
     [MemberData(nameof(AttributeDataWithScore))]
-    public async void VerifyAndCheckAsyncExecuted_WithSpecifiedScoreInAttribute(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_WithSpecifiedScoreInAttribute(RecaptchaAttribute attribute)
     {
         // Arrange
         (var recaptchaService, var verifyWithScoreFromAttribute, var verifyWithoutScoreFromAttribute) = RecaptchaServiceFixture.CreateService();
@@ -77,7 +72,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
     [Theory]
     [MemberData(nameof(AttributeData))]
-    public async void VerifyAndCheckAsyncExecuted_RecaptchaServiceExceptionThrown(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_RecaptchaServiceExceptionThrown(RecaptchaAttribute attribute)
     {
         // Arrange
         (var onRecaptchaServiceExceptionMock, var onRecaptchaServiceException) = RecaptchaServiceFixture.CreateOnRecaptchaServiceException();
@@ -116,7 +111,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
     [Theory]
     [MemberData(nameof(AttributeData))]
-    public async void VerifyAndCheckAsyncExecuted_NonServiceExceptionThrown(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_NonServiceExceptionThrown(RecaptchaAttribute attribute)
     {
         // Arrange
         (var onRecaptchaServiceExceptionMock, var onRecaptchaServiceException) = RecaptchaServiceFixture.CreateOnRecaptchaServiceException();
@@ -155,7 +150,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
     [Theory]
     [MemberData(nameof(AttributeData))]
-    public async void VerifyAndCheckAsyncExecuted_BadResultReturned(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_BadResultReturned(RecaptchaAttribute attribute)
     {
         // Arrange
         (var onRecaptchaServiceExceptionMock, var onRecaptchaServiceException) = RecaptchaServiceFixture.CreateOnRecaptchaServiceException();
@@ -194,7 +189,7 @@ public class AttributeTest : BaseRecaptchaAttributeTest
 
     [Theory]
     [MemberData(nameof(AttributeData))]
-    public async void VerifyAndCheckAsyncExecuted_Success(RecaptchaAttribute attribute)
+    public async Task VerifyAndCheckAsyncExecuted_Success(RecaptchaAttribute attribute)
     {
         // Arrange
         (var onRecaptchaServiceExceptionMock, var onRecaptchaServiceException) = RecaptchaServiceFixture.CreateOnRecaptchaServiceException();

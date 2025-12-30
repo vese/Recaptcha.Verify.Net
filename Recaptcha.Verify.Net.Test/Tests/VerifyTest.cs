@@ -1,7 +1,6 @@
+using Recaptcha.Verify.Net.Client.Models.Response;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Recaptcha.Verify.Net.Test.Tests;
@@ -10,7 +9,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 {
     [Theory]
     [MemberData(nameof(NoSecretKeyData))]
-    public async void Verify_NoSecretKey(string? secretKey, string? token)
+    public async Task Verify_NoSecretKey(string? secretKey, string? token)
     {
         var recaptchaService = CreateService();
         await Assert.ThrowsAsync<SecretKeyNotSpecifiedException>(
@@ -27,7 +26,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 
     [Theory]
     [MemberData(nameof(NoResponseTokenData))]
-    public async void Verify_NoResponseToken(string secretKey, string? token)
+    public async Task Verify_NoResponseToken(string secretKey, string? token)
     {
         var recaptchaService = CreateService(secretKey);
         await Assert.ThrowsAsync<EmptyCaptchaAnswerException>(
@@ -36,7 +35,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 
     [Theory]
     [MemberData(nameof(InvalidSecretKeyData))]
-    public async void Verify_InvalidSecretKey(string secretKey, ResponseTokenFixture tokenFixture)
+    public async Task Verify_InvalidSecretKey(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var recaptchaService = CreateService(secretKey);
         var response = await recaptchaService.VerifyAsync(tokenFixture.Token);
@@ -49,7 +48,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 
     [Theory]
     [MemberData(nameof(ValidItemsData))]
-    public async void Verify_ValidSecretKey_ValidToken(string secretKey, ResponseTokenFixture tokenFixture)
+    public async Task Verify_ValidSecretKey_ValidToken(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var recaptchaService = CreateService(secretKey);
         var response = await recaptchaService.VerifyAsync(tokenFixture.Token);
@@ -62,7 +61,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 
     [Theory]
     [MemberData(nameof(InvalidItemsData))]
-    public async void Verify_ValidSecretKey_InvalidToken(string secretKey, ResponseTokenFixture tokenFixture)
+    public async Task Verify_ValidSecretKey_InvalidToken(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var assertErrors = tokenFixture.ErrorsItems
             .Select(e => (Action<VerifyError>)(item => Assert.Equal(e, item)))
@@ -81,7 +80,7 @@ public class VerifyTest : BaseRecaptchaServiceTest
 
     [Theory]
     [MemberData(nameof(InvalidItemsWithUnknownErrorKeyData))]
-    public async void Verify_ValidSecretKey_InvalidToken_UnknownErrorKey(string secretKey, ResponseTokenFixture tokenFixture)
+    public async Task Verify_ValidSecretKey_InvalidToken_UnknownErrorKey(string secretKey, ResponseTokenFixture tokenFixture)
     {
         var recaptchaService = CreateService(secretKey);
         var e = await Assert.ThrowsAsync<UnknownErrorKeyException>(async () =>

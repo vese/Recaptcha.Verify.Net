@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Recaptcha.Verify.Net.Attribute;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Service.Models;
 
@@ -25,6 +24,7 @@ public class RecaptchaAttributeOptions
     /// <summary>
     /// Name of reCAPTCHA response token param in request query.
     /// </summary>
+    [Obsolete("Do not pass token in query parameters. It is not secure.")]
     public string? ResponseTokenNameInQuery { get; set; }
 
     /// <summary>
@@ -36,11 +36,13 @@ public class RecaptchaAttributeOptions
     /// Delegate for getting reCAPTCHA response token from action arguments.
     /// Actions argumets are mapped arguments of controller method.
     /// </summary>
+    [Obsolete("Use AddRecaptchaActionArgumentsTokenExtractor instead")]
     public Func<IDictionary<string, object?>, string>? GetResponseTokenFromActionArguments { get; set; }
 
     /// <summary>
     /// Delegate for getting reCAPTCHA response token from executing context.
     /// </summary>
+    [Obsolete("Use AddRecaptchaExecutingContextTokenExtractor instead")]
     public Func<ActionExecutingContext, string>? GetResponseTokenFromExecutingContext { get; set; }
 
     /// <summary>

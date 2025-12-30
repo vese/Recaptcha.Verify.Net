@@ -194,6 +194,7 @@ RecaptchaServiceConfigurationException | Base recaptcha exception for invalid co
 EmptyActionException | This exception is thrown when the action passed in function is empty.
 MinScoreNotSpecifiedException | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
 SecretKeyNotSpecifiedException | This exception is thrown when secret key was not specified in options or request params.
+TokenExtractorNotFound | This exception is thrown when no ITokenExtractor implementation is registered in DI.
 RecaptchaServiceProcessingException | Base recaptcha exception for errors while processing token verification and result checking.
 EmptyCaptchaAnswerException | This exception is thrown when captcha answer passed in function is empty.
 EmptyResponseException | This exception is thrown when verification request response is empty. When thrown, it is wrapped in VerifyRequestException.

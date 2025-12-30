@@ -6,12 +6,14 @@ using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Client.Models.Request;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
+using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.Logging;
 using Recaptcha.Verify.Net.Service;
 using Recaptcha.Verify.Net.Service.Models;
+using Recaptcha.Verify.Net.TokenExtraction;
 
-namespace Recaptcha.Verify.Net.Attribute;
+namespace Recaptcha.Verify.Net;
 
 /// <summary>
 /// Verifies reCAPTCHA response token and checks score (for v3) and action.
@@ -49,26 +51,56 @@ public class RecaptchaAttribute : ActionFilterAttribute
     /// <param name="next">A delegate that contains next action.</param>
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
-        var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+        var tokenExtractors = context.HttpContext.RequestServices.GetServices<ITokenExtractor>();
 
-        var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-        var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
-            context.HttpContext.RequestAborted : CancellationToken.None;
+        if (!tokenExtractors.Any())
+        {
+            throw new TokenExtractorNotFound();
+        }
 
         CheckResult? checkResult = null;
 
         try
         {
-            var recaptchaToken = context.GetResponseToken(recaptchaOptions.AttributeOptions);
+            string? recaptchaToken = null;
+            var recaptchaTokenExtracted = false;
 
-            if (string.IsNullOrWhiteSpace(recaptchaToken))
+            foreach (var tokenExtractor in tokenExtractors)
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<RecaptchaAttribute>>();
-                var e = new EmptyCaptchaAnswerException().WithLog(logger.MissingCaptchaAnswerError);
-                HandleBadResult(context, recaptchaOptions, checkResult, e, null);
+                recaptchaToken = tokenExtractor.GetToken(context);
+
+                if (!string.IsNullOrWhiteSpace(recaptchaToken))
+                {
+                    recaptchaTokenExtracted = true;
+                    break;
+                }
+            }
+
+            if (!recaptchaTokenExtracted)
+            {
+                var e = new EmptyCaptchaAnswerException();
+
+                var logger = context.HttpContext.RequestServices.GetService<ILogger<RecaptchaAttribute>>();
+
+                if (logger is not null)
+                {
+                    e.WithLog(logger.MissingCaptchaAnswerError);
+                }
+
+                var recaptchaOptions2 = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
+                HandleBadResult(context, recaptchaOptions2, checkResult, e, null);
+
                 return;
             }
+
+            var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
+            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
+
+            var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
+                context.HttpContext.RequestAborted : CancellationToken.None;
 
             if (_score.HasValue)
             {
@@ -76,7 +108,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
                     new VerifyRequest()
                     {
                         Secret = recaptchaOptions.SecretKey,
-                        Response = recaptchaToken,
+                        Response = recaptchaToken!,
                         RemoteIp = remoteIp
                     },
                     _action,
@@ -89,7 +121,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
                     new VerifyRequest()
                     {
                         Secret = recaptchaOptions.SecretKey,
-                        Response = recaptchaToken,
+                        Response = recaptchaToken!,
                         RemoteIp = remoteIp
                     },
                     _action,
@@ -98,17 +130,23 @@ public class RecaptchaAttribute : ActionFilterAttribute
         }
         catch (RecaptchaServiceException e)
         {
+            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
             HandleBadResult(context, recaptchaOptions, checkResult, e, null);
             return;
         }
         catch (Exception e)
         {
+            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
             HandleBadResult(context, recaptchaOptions, checkResult, null, e);
             return;
         }
 
         if (!checkResult.Success)
         {
+            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
             HandleBadResult(context, recaptchaOptions, checkResult, null, null);
             return;
         }

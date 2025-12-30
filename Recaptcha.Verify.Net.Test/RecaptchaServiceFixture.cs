@@ -9,16 +9,16 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
+using Recaptcha.Verify.Net.Client;
+using Recaptcha.Verify.Net.Client.Helpers;
+using Recaptcha.Verify.Net.Client.Models.Request;
+using Recaptcha.Verify.Net.Client.Models.Response;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Recaptcha.Verify.Net.Service;
+using Recaptcha.Verify.Net.Service.Models;
 using System.Linq.Expressions;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Recaptcha.Verify.Net.Test;
 
@@ -260,9 +260,9 @@ public static class RecaptchaServiceFixture
         }
 
         StringValues token = tokenValue;
-        httpContext.RequestMock.HeadersMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token));
-        httpContext.RequestMock.QueryMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token));
-        httpContext.RequestMock.FormMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token));
+        httpContext.RequestMock.HeadersMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token)).Returns(true);
+        httpContext.RequestMock.QueryMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token)).Returns(true);
+        httpContext.RequestMock.FormMock.Mock.Setup(m => m.TryGetValue(It.Is<string>(a => a == paramName), out token)).Returns(true);
         httpContext.RequestMock.Mock.Setup(m => m.HasFormContentType).Returns(true);
         httpContext.ConnectionMock.Mock.Setup(m => m.RemoteIpAddress).Returns(IPAddress);
 
