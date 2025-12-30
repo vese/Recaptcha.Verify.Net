@@ -49,9 +49,11 @@ public class RecaptchaAttribute : ActionFilterAttribute
     /// <param name="next">A delegate that contains next action.</param>
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
         try
         {
-            var result = await ProcessRecaptchaAsync(context);
+            var result = await ProcessRecaptchaAsync(context, recaptchaOptions);
 
             if (result is not null)
             {
@@ -61,18 +63,34 @@ public class RecaptchaAttribute : ActionFilterAttribute
         }
         catch (Exception e) when (e is not RecaptchaServiceException)
         {
+            if (recaptchaOptions.AttributeOptions.OnException is not null || recaptchaOptions.AttributeOptions.OnRecaptchaServiceException is not null || recaptchaOptions.AttributeOptions.OnReturnBadRequest is not null)
+            {
+                context.Result =
+                    recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, null, e) ??
+                    recaptchaOptions.AttributeOptions.OnException?.Invoke(context, _action, null, e) ??
+                    new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
+                return;
+            }
+
             throw new RecaptchaUnknownException(e);
+        }
+        catch (RecaptchaServiceException e) when (recaptchaOptions.AttributeOptions.OnException is not null || recaptchaOptions.AttributeOptions.OnRecaptchaServiceException is not null || recaptchaOptions.AttributeOptions.OnReturnBadRequest is not null)
+        {
+            context.Result =
+                recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, e, null) ??
+                recaptchaOptions.AttributeOptions.OnRecaptchaServiceException?.Invoke(context, _action, null, e) ??
+                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
+            return;
         }
 
         await base.OnActionExecutionAsync(context, next);
     }
 
-    private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context)
+    private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context, RecaptchaOptions recaptchaOptions)
     {
         var recaptchaToken = GetRecaptchaToken(context);
 
         var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
-        var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
 
         var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
@@ -108,7 +126,8 @@ public class RecaptchaAttribute : ActionFilterAttribute
 
         if (!checkResult.Success)
         {
-            return recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, checkResult) ??
+            return recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, checkResult, null, null) ??
+                recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, checkResult) ??
                 new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
         }
 
