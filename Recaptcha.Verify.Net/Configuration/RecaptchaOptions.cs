@@ -1,4 +1,4 @@
-﻿using Recaptcha.Verify.Net.Service;
+﻿using Recaptcha.Verify.Net.VerificationResultValidation;
 
 namespace Recaptcha.Verify.Net.Configuration;
 
@@ -14,21 +14,21 @@ public class RecaptchaOptions
 
     /// <summary>
     /// Optional. Action to check for V3 Recaptcha request.
-    /// <para>Action specified in <see cref="RecaptchaVerificationResultValidationService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+    /// <para>Action specified in <see cref="IRecaptchaVerificationResultValidationService.Validate"/>
     /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
     /// </summary>
     public string? Action { get; set; }
 
     /// <summary>
     /// Optional. Score threshold for V3 Recaptcha (0.0 - 1.0).
-    /// <para>Score threshold specified in <see cref="RecaptchaVerificationResultValidationService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+    /// <para>Score threshold specified in <see cref="IRecaptchaVerificationResultValidationService.Validate"/>
     /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
     /// </summary>
     public float? ScoreThreshold { get; set; }
 
     /// <summary>
     /// Optional. Map of actions score thresholds for V3 Recaptcha.
-    /// <para>Score threshold specified in <see cref="RecaptchaVerificationResultValidationService.VerifyAndCheckAsync(string, string, float, CancellationToken)"/>
+    /// <para>Score threshold specified in <see cref="IRecaptchaVerificationResultValidationService.Validate"/>
     /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
     /// </summary>
     public Dictionary<string, float>? ActionsScoreThresholds { get; set; }

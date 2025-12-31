@@ -23,7 +23,7 @@ internal class ActionArgumentsTokenExtractor : IRecaptchaTokenExtractor
         {
             return _getToken(context.ActionArguments);
         }
-        
+
         if (context.ActionArguments.TryGetValue(_argumentName!, out var token) && token is string)
         {
             return (string?)token;

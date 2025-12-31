@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Recaptcha.Verify.Net.Client.Models.Response;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Logging;
-using Recaptcha.Verify.Net.Service.Models;
+using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
+using Recaptcha.Verify.Net.VerificationResultValidation.Models;
 
-namespace Recaptcha.Verify.Net.Service;
+namespace Recaptcha.Verify.Net.VerificationResultValidation;
 
 /// <inheritdoc />
 /// <summary>
@@ -21,7 +21,7 @@ public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOpti
     /// <inheritdoc />
     public ValidationResult Validate(VerifyResponse response, string? action = null, float? score = null)
     {
-        var checkResult = new ValidationResult
+        var validationResult = new ValidationResult
         {
             ResponseSuccessful = response.Success,
             IsV3 = response.IsV3,
@@ -33,20 +33,20 @@ public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOpti
         {
             var expectedAction = GetExpectedAction(action);
 
-            checkResult.ActionMatches = expectedAction.Equals(response.Action);
+            validationResult.ActionMatches = expectedAction.Equals(response.Action);
 
             var scoreThreshold = GetScoreThreshold(score, expectedAction);
 
-            checkResult.ScoreSatisfies = response.Score!.Value >= scoreThreshold;
+            validationResult.ScoreSatisfies = response.Score!.Value >= scoreThreshold;
 
-            logger.ResponseChecked(expectedAction, scoreThreshold, checkResult);
+            logger.ResponseChecked(expectedAction, scoreThreshold, validationResult);
         }
         else
         {
-            logger.ResponseChecked(null, null, checkResult);
+            logger.ResponseChecked(null, null, validationResult);
         }
 
-        return checkResult;
+        return validationResult;
     }
 
     private string GetExpectedAction(string? action)
@@ -70,12 +70,12 @@ public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOpti
         {
             return score.Value;
         }
-        
+
         if (_recaptchaOptions.ActionsScoreThresholds is not null && _recaptchaOptions.ActionsScoreThresholds.TryGetValue(action, out var scoreThreshold))
         {
             return scoreThreshold;
         }
-        
+
         if (_recaptchaOptions is not null && _recaptchaOptions.ScoreThreshold.HasValue)
         {
             return _recaptchaOptions.ScoreThreshold.Value;

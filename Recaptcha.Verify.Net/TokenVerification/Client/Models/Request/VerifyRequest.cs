@@ -1,4 +1,4 @@
-﻿namespace Recaptcha.Verify.Net.Client.Models.Request;
+﻿namespace Recaptcha.Verify.Net.TokenVerification.Client.Models.Request;
 
 /// <summary>
 /// Verify reCAPTCHA response token request params.

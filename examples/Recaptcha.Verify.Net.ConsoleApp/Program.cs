@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
-using Recaptcha.Verify.Net.Service;
 using Recaptcha.Verify.Net.TokenVerification;
+using Recaptcha.Verify.Net.VerificationResultValidation;
 using System.Text.Json;
 
 /// <summary>

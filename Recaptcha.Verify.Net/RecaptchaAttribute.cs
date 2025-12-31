@@ -2,15 +2,14 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Recaptcha.Verify.Net.Client.Models.Request;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.Service;
-using Recaptcha.Verify.Net.Service.Models;
 using Recaptcha.Verify.Net.TokenExtraction;
 using Recaptcha.Verify.Net.TokenVerification;
+using Recaptcha.Verify.Net.TokenVerification.Client.Models.Request;
+using Recaptcha.Verify.Net.VerificationResultValidation;
 
 namespace Recaptcha.Verify.Net;
 

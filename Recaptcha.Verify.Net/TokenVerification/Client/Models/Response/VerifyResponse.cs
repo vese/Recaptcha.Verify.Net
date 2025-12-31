@@ -1,8 +1,8 @@
-﻿using Recaptcha.Verify.Net.Client.Helpers;
-using Recaptcha.Verify.Net.Exceptions.Processing;
+﻿using Recaptcha.Verify.Net.Exceptions.Processing;
+using Recaptcha.Verify.Net.TokenVerification.Client.Helpers;
 using System.Text.Json.Serialization;
 
-namespace Recaptcha.Verify.Net.Client.Models.Response;
+namespace Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
 
 /// <summary>
 /// Response of reCAPTCHA response token verification.
