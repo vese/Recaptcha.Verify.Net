@@ -10,6 +10,7 @@ using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.Service;
 using Recaptcha.Verify.Net.Service.Models;
 using Recaptcha.Verify.Net.TokenExtraction;
+using Recaptcha.Verify.Net.TokenVerification;
 
 namespace Recaptcha.Verify.Net;
 
@@ -19,11 +20,16 @@ namespace Recaptcha.Verify.Net;
 [AttributeUsage(AttributeTargets.Method)]
 public class RecaptchaAttribute : ActionFilterAttribute
 {
-    private readonly string _action;
+    private readonly string? _action;
     private readonly float? _score;
 
     /// <summary>
-    /// Verifies reCAPTCHA response token and checks score (for v3) and action.
+    /// Verifies reCAPTCHA response token  and validates verification result (for v2 or v3 (if specified in <see cref="RecaptchaOptions"/>)).
+    /// </summary>
+    public RecaptchaAttribute() { }
+
+    /// <summary>
+    /// Verifies reCAPTCHA response token and validates verification result (for v3).
     /// </summary>
     /// <param name="action">Action that the action from the response should be equal to.</param>
     public RecaptchaAttribute(string action)
@@ -32,10 +38,10 @@ public class RecaptchaAttribute : ActionFilterAttribute
     }
 
     /// <summary>
-    /// Verifies reCAPTCHA response token and checks score (for v3) and action.
+    /// Verifies reCAPTCHA response token and validates verification result (for v3).
     /// </summary>
     /// <param name="action">Action that the action from the response should be equal to.</param>
-    /// <param name="score">Score threshold for V3 reCAPTCHA. This value will be used instead of values from options</param>
+    /// <param name="score">Score threshold. This value will be used instead of values from options</param>
     public RecaptchaAttribute(string action, float score)
     {
         _action = action;
@@ -90,44 +96,28 @@ public class RecaptchaAttribute : ActionFilterAttribute
     {
         var recaptchaToken = GetRecaptchaToken(context);
 
-        var recaptchaService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaService>();
+        var verificationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationService>();
+        var validationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationResultValidationService>();
 
         var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
         var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
             context.HttpContext.RequestAborted : CancellationToken.None;
 
-        CheckResult checkResult;
+        var verifyRequest = new VerifyRequest()
+        {
+            Secret = recaptchaOptions.SecretKey,
+            Response = recaptchaToken,
+            RemoteIp = remoteIp
+        };
 
-        if (_score.HasValue)
-        {
-            checkResult = await recaptchaService.VerifyAndCheckAsync(
-                new VerifyRequest()
-                {
-                    Secret = recaptchaOptions.SecretKey,
-                    Response = recaptchaToken,
-                    RemoteIp = remoteIp
-                },
-                _action,
-                _score.Value,
-                cancellationToken);
-        }
-        else
-        {
-            checkResult = await recaptchaService.VerifyAndCheckAsync(
-                new VerifyRequest()
-                {
-                    Secret = recaptchaOptions.SecretKey,
-                    Response = recaptchaToken,
-                    RemoteIp = remoteIp
-                },
-                _action,
-                cancellationToken);
-        }
+        var verifyResponse = await verificationService.VerifyAsync(verifyRequest, cancellationToken);
 
-        if (!checkResult.Success)
+        var validationResult = validationService.Validate(verifyResponse, _action, _score);
+
+        if (!validationResult.Success)
         {
-            return recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, checkResult, null, null) ??
-                recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, checkResult) ??
+            return recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, validationResult, null, null) ??
+                recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, validationResult) ??
                 new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
         }
 
@@ -136,7 +126,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
 
     private static string GetRecaptchaToken(ActionExecutingContext context)
     {
-        var tokenExtractors = context.HttpContext.RequestServices.GetServices<ITokenExtractor>();
+        var tokenExtractors = context.HttpContext.RequestServices.GetServices<IRecaptchaTokenExtractor>();
 
         string? recaptchaToken = null;
         var recaptchaTokenExtracted = false;

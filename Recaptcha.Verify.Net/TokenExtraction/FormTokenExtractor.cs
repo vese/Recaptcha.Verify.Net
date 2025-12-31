@@ -2,7 +2,7 @@
 
 namespace Recaptcha.Verify.Net.TokenExtraction;
 
-internal class FormTokenExtractor(string parameterName) : ITokenExtractor
+internal class FormTokenExtractor(string parameterName) : IRecaptchaTokenExtractor
 {
     public string? GetToken(ActionExecutingContext context)
     {

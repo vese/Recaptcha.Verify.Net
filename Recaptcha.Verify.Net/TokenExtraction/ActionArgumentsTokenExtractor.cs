@@ -2,7 +2,7 @@
 
 namespace Recaptcha.Verify.Net.TokenExtraction;
 
-internal class ActionArgumentsTokenExtractor : ITokenExtractor
+internal class ActionArgumentsTokenExtractor : IRecaptchaTokenExtractor
 {
     private readonly Func<IDictionary<string, object?>, string?>? _getToken;
     private readonly string? _argumentName;

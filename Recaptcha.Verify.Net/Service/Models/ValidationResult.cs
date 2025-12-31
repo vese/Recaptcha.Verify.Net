@@ -1,16 +1,19 @@
-﻿using Recaptcha.Verify.Net.Client.Models.Response;
-
-namespace Recaptcha.Verify.Net.Service.Models;
+﻿namespace Recaptcha.Verify.Net.Service.Models;
 
 /// <summary>
-/// Result of checking of verify response.
+/// Result of validating of verification response.
 /// </summary>
-public class CheckResult
+public class ValidationResult
 {
     /// <summary>
-    /// Verify response.
+    /// <c>True</c> if successfully verified.
     /// </summary>
-    public required VerifyResponse Response { get; set; }
+    public required bool ResponseSuccessful { get; init; }
+
+    /// <summary>
+    /// <c>True</c> if reCAPTCHA v3 is used.
+    /// </summary>
+    public required bool IsV3 { get; init; }
 
     /// <summary>
     /// <c>True</c> if action matches specified value.
@@ -27,5 +30,5 @@ public class CheckResult
     /// <summary>
     /// <c>True</c> if successfully verified and satisfies specified requirements.
     /// </summary>
-    public bool Success => Response.Success && (!Response.IsV3 || ActionMatches && ScoreSatisfies);
+    public bool Success => ResponseSuccessful && (!IsV3 || ActionMatches && ScoreSatisfies);
 }

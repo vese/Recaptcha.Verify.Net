@@ -50,7 +50,7 @@ public class RecaptchaAttributeOptions
     /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
-    public virtual Func<ActionExecutingContext, string, CheckResult?, IActionResult>? OnVerificationFailed { get; set; }
+    public virtual Func<ActionExecutingContext, string?, ValidationResult?, IActionResult>? OnVerificationFailed { get; set; }
 
     /// <summary>
     /// Delegate for handling thrown <see cref="RecaptchaServiceException"/> during verification of reCAPTCHA response token.
@@ -58,7 +58,7 @@ public class RecaptchaAttributeOptions
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
     [Obsolete("Use error handler middleware instead")]
-    public virtual Func<ActionExecutingContext, string, CheckResult?, RecaptchaServiceException, IActionResult>? OnRecaptchaServiceException { get; set; }
+    public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException, IActionResult>? OnRecaptchaServiceException { get; set; }
 
     /// <summary>
     /// Delegate for handling thrown <see cref="Exception"/> during verification of reCAPTCHA response token.
@@ -66,7 +66,7 @@ public class RecaptchaAttributeOptions
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
     [Obsolete("Use error handler middleware instead")]
-    public virtual Func<ActionExecutingContext, string, CheckResult?, Exception, IActionResult>? OnException { get; set; }
+    public virtual Func<ActionExecutingContext, string?, ValidationResult?, Exception, IActionResult>? OnException { get; set; }
 
     /// <summary>
     /// Delegate for handling any bad result of verification.
@@ -75,5 +75,5 @@ public class RecaptchaAttributeOptions
     /// <para>Fires after <see cref="OnVerificationFailed"/>, <see cref="OnRecaptchaServiceException"/> and <see cref="OnException"/>.</para>
     /// </summary>
     [Obsolete("Use OnVerificationFailed or error handler middleware instead")]
-    public virtual Func<ActionExecutingContext, string, CheckResult?, RecaptchaServiceException?, Exception?, IActionResult>? OnReturnBadRequest { get; set; }
+    public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException?, Exception?, IActionResult>? OnReturnBadRequest { get; set; }
 }

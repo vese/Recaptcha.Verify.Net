@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Client;
 using Recaptcha.Verify.Net.Service;
 using Recaptcha.Verify.Net.TokenExtraction;
+using Recaptcha.Verify.Net.TokenVerification;
 
 namespace Recaptcha.Verify.Net.Configuration;
 
@@ -16,7 +17,7 @@ public static class ConfigurationExtensions
     private const string _baseUrl = "https://www.google.com/recaptcha/api";
 
     /// <summary>
-    /// Registers <see cref="IRecaptchaService"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaVerificationResultValidationService"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="configuration">Delegate for configuring options <see cref="RecaptchaOptions"/>.</param>
@@ -24,7 +25,7 @@ public static class ConfigurationExtensions
         services.AddRecaptcha(new RecaptchaOptions(), configuration);
 
     /// <summary>
-    /// Registers <see cref="IRecaptchaService"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaVerificationResultValidationService"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="section">Configuration section for mapping to <see cref="RecaptchaOptions"/>.</param>
@@ -39,7 +40,7 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
-    /// Registers <see cref="IRecaptchaService"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaVerificationResultValidationService"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="recaptchaOptions">Recaptcha service options.</param>
@@ -85,7 +86,7 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="getToken">
@@ -93,10 +94,10 @@ public static class ConfigurationExtensions
     /// Actions argumets are mapped arguments of controller method.
     /// </param>
     public static IServiceCollection AddRecaptchaActionArgumentsTokenExtractor(this IServiceCollection services, Func<IDictionary<string, object?>, string?> getToken) =>
-        services.AddSingleton<ITokenExtractor, ActionArgumentsTokenExtractor>(_ => new ActionArgumentsTokenExtractor(getToken));
+        services.AddSingleton<IRecaptchaTokenExtractor, ActionArgumentsTokenExtractor>(_ => new ActionArgumentsTokenExtractor(getToken));
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="argumentName">
@@ -104,46 +105,47 @@ public static class ConfigurationExtensions
     /// Actions argumets are mapped arguments of controller method.
     /// </param>
     public static IServiceCollection AddRecaptchaActionArgumentsTokenExtractor(this IServiceCollection services, string argumentName) =>
-        services.AddSingleton<ITokenExtractor, ActionArgumentsTokenExtractor>(_ => new ActionArgumentsTokenExtractor(argumentName));
+        services.AddSingleton<IRecaptchaTokenExtractor, ActionArgumentsTokenExtractor>(_ => new ActionArgumentsTokenExtractor(argumentName));
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="getToken">Delegate for getting reCAPTCHA response token from executing context.</param>
     public static IServiceCollection AddRecaptchaExecutingContextTokenExtractor(this IServiceCollection services, Func<ActionExecutingContext, string?> getToken) =>
-        services.AddSingleton<ITokenExtractor, ExecutingContextTokenExtractor>(_ => new ExecutingContextTokenExtractor(getToken));
+        services.AddSingleton<IRecaptchaTokenExtractor, ExecutingContextTokenExtractor>(_ => new ExecutingContextTokenExtractor(getToken));
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="parameterName">Name of form that contains reCAPTCHA token.</param>
     public static IServiceCollection AddRecaptchaFormTokenExtractor(this IServiceCollection services, string parameterName) =>
-        services.AddSingleton<ITokenExtractor, FormTokenExtractor>(_ => new FormTokenExtractor(parameterName));
+        services.AddSingleton<IRecaptchaTokenExtractor, FormTokenExtractor>(_ => new FormTokenExtractor(parameterName));
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="headerName">Name of header that contains reCAPTCHA token.</param>
     public static IServiceCollection AddRecaptchaHeaderTokenExtractor(this IServiceCollection services, string headerName) =>
-        services.AddSingleton<ITokenExtractor, HeaderTokenExtractor>(_ => new HeaderTokenExtractor(headerName));
+        services.AddSingleton<IRecaptchaTokenExtractor, HeaderTokenExtractor>(_ => new HeaderTokenExtractor(headerName));
 
     /// <summary>
-    /// Registers <see cref="ITokenExtractor"/> implementation for usage with dependency injection.
+    /// Registers <see cref="IRecaptchaTokenExtractor"/> implementation for usage with dependency injection.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="parameterName">Name of query parameter that contains reCAPTCHA token.</param>
     [Obsolete("Do not pass token in query parameters. It is not secure.")]
     public static IServiceCollection AddRecaptchaQueryTokenExtractor(this IServiceCollection services, string parameterName) =>
-        services.AddSingleton<ITokenExtractor, QueryTokenExtractor>(_ => new QueryTokenExtractor(parameterName));
+        services.AddSingleton<IRecaptchaTokenExtractor, QueryTokenExtractor>(_ => new QueryTokenExtractor(parameterName));
 
     private static void ConfigureService(this IServiceCollection services)
     {
         services.AddHttpClient<IRecaptchaClient, RecaptchaClient>(client =>
             client.BaseAddress = new Uri(_baseUrl.EndsWith('/') ? _baseUrl : $"{_baseUrl}/"));
 
-        services.AddScoped<IRecaptchaService, RecaptchaService>();
+        services.AddScoped<IRecaptchaVerificationService, RecaptchaVerificationService>();
+        services.AddScoped<IRecaptchaVerificationResultValidationService, RecaptchaVerificationResultValidationService>();
     }
 }

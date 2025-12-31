@@ -68,5 +68,5 @@ public static class CoreEventId
     /// <summary>
     /// Verify request response was checked.
     /// </summary>
-    public static readonly EventId ResponseChecked = MakeId(Id.ResponseChecked);
+    public static readonly EventId VerificationResultValidated = MakeId(Id.ResponseChecked);
 }

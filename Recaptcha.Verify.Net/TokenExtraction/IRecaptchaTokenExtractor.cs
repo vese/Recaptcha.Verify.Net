@@ -5,7 +5,7 @@ namespace Recaptcha.Verify.Net.TokenExtraction;
 /// <summary>
 /// Service for extracting extract
 /// </summary>
-public interface ITokenExtractor
+public interface IRecaptchaTokenExtractor
 {
     /// <summary>
     /// Extracts reCAPTCHA token from <see cref="ActionExecutingContext"/>
