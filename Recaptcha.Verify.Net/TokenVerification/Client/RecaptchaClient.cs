@@ -1,7 +1,4 @@
-﻿using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.TokenVerification.Client.Models.Request;
-using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace Recaptcha.Verify.Net.TokenVerification.Client;
 

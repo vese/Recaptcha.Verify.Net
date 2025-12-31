@@ -1,10 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Recaptcha.Verify.Net.Exceptions.Configuration;
-using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.Logging;
-using Recaptcha.Verify.Net.TokenVerification.Client;
-using Recaptcha.Verify.Net.TokenVerification.Client.Models.Request;
-using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
 
 namespace Recaptcha.Verify.Net.TokenVerification;
 

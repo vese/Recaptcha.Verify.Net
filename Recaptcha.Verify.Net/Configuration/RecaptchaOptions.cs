@@ -1,6 +1,4 @@
-﻿using Recaptcha.Verify.Net.VerificationResultValidation;
-
-namespace Recaptcha.Verify.Net.Configuration;
+﻿namespace Recaptcha.Verify.Net.Configuration;
 
 /// <summary>
 /// Recaptcha options.

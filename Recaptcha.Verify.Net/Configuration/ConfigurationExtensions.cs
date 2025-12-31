@@ -2,10 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Recaptcha.Verify.Net.TokenExtraction;
-using Recaptcha.Verify.Net.TokenVerification;
-using Recaptcha.Verify.Net.TokenVerification.Client;
-using Recaptcha.Verify.Net.VerificationResultValidation;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

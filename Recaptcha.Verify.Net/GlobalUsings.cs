@@ -1,0 +1,12 @@
+﻿global using Recaptcha.Verify.Net.Configuration;
+global using Recaptcha.Verify.Net.Exceptions;
+global using Recaptcha.Verify.Net.Exceptions.Configuration;
+global using Recaptcha.Verify.Net.Exceptions.Processing;
+global using Recaptcha.Verify.Net.Logging;
+global using Recaptcha.Verify.Net.TokenExtraction;
+global using Recaptcha.Verify.Net.TokenVerification;
+global using Recaptcha.Verify.Net.TokenVerification.Client;
+global using Recaptcha.Verify.Net.TokenVerification.Client.Models.Request;
+global using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
+global using Recaptcha.Verify.Net.VerificationResultValidation;
+global using Recaptcha.Verify.Net.VerificationResultValidation.Models;

@@ -1,6 +1,4 @@
-﻿using Recaptcha.Verify.Net.TokenExtraction;
-
-namespace Recaptcha.Verify.Net.Exceptions.Configuration;
+﻿namespace Recaptcha.Verify.Net.Exceptions.Configuration;
 
 /// <summary>
 /// This exception is thrown when no <see cref="IRecaptchaTokenExtractor"/> implementation is registered in DI.

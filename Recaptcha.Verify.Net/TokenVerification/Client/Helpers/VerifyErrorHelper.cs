@@ -1,7 +1,4 @@
-﻿using Recaptcha.Verify.Net.Exceptions.Processing;
-using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
-
-namespace Recaptcha.Verify.Net.TokenVerification.Client.Helpers;
+﻿namespace Recaptcha.Verify.Net.TokenVerification.Client.Helpers;
 
 internal static class VerifyErrorHelper
 {
