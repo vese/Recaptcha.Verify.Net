@@ -8,7 +8,7 @@ public class RecaptchaOptions
     /// <summary>
     /// The shared key between your site and reCAPTCHA.
     /// </summary>
-    public string? SecretKey { get; set; }
+    public string SecretKey { get; set; } = null!;
 
     /// <summary>
     /// Optional. Action to check for V3 Recaptcha request.
