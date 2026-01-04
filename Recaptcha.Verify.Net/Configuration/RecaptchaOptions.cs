@@ -1,4 +1,6 @@
-﻿namespace Recaptcha.Verify.Net.Configuration;
+﻿using Recaptcha.Verify.Net.Attribute;
+
+namespace Recaptcha.Verify.Net.Configuration;
 
 /// <summary>
 /// Recaptcha options.
@@ -29,7 +31,7 @@ public class RecaptchaOptions
     /// <para>Score threshold specified in <see cref="IRecaptchaVerificationResultValidationService.Validate"/>
     /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
     /// </summary>
-    public Dictionary<string, float>? ActionsScoreThresholds { get; set; }
+    public IReadOnlyDictionary<string, float>? ActionsScoreThresholds { get; set; }
 
     /// <summary>
     /// Default returning message for unsuccessful validation and checking.

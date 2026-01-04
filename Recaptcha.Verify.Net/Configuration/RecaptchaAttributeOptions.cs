@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Recaptcha.Verify.Net.Attribute;
 
 namespace Recaptcha.Verify.Net.Configuration;
 

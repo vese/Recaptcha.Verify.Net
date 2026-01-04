@@ -5,7 +5,7 @@ namespace Recaptcha.Verify.Net.VerificationResultValidation;
 
 /// <inheritdoc />
 /// <summary>
-/// Recaptcha service constructor.
+/// Recaptcha verification result validation service constructor.
 /// </summary>
 /// <param name="recaptchaOptions">Recaptcha options.</param>
 /// <param name="logger">Logger.</param>

@@ -1,27 +1,38 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Recaptcha.Verify.Net.TokenVerification;
 
-internal class RecaptchaVerificationService(IRecaptchaClient recaptchaClient, ILogger<RecaptchaVerificationService> logger) : IRecaptchaVerificationService
+/// <inheritdoc />
+/// <summary>
+/// Recaptcha verification service constructor.
+/// </summary>
+/// <param name="recaptchaOptions">Recaptcha options.</param>
+/// <param name="recaptchaClient">Recaptcha client.</param>
+/// <param name="logger">Logger.</param>
+internal class RecaptchaVerificationService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILogger<RecaptchaVerificationService> logger) : IRecaptchaVerificationService
 {
-    /// <inheritdoc />
-    public Task<VerifyResponse> VerifyAsync(string response, string secret, string? remoteIp = null, CancellationToken cancellationToken = default) =>
-        VerifyAsync(
-            new VerifyRequest()
-            {
-                Response = response,
-                Secret = secret,
-                RemoteIp = remoteIp
-            },
-            cancellationToken);
+    private readonly RecaptchaOptions _recaptchaOptions = recaptchaOptions.Value;
 
     /// <inheritdoc />
-    public async Task<VerifyResponse> VerifyAsync(VerifyRequest request, CancellationToken cancellationToken = default)
+    public async Task<VerifyResponse> VerifyAsync(string response, string? remoteIp = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(request.Secret))
+        if (string.IsNullOrWhiteSpace(_recaptchaOptions.SecretKey))
         {
             throw new SecretKeyNotSpecifiedException();
         }
+
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            throw new EmptyCaptchaAnswerException();
+        }
+
+        var request = new VerifyRequest
+        {
+            Secret = _recaptchaOptions.SecretKey,
+            Response = response,
+            RemoteIp = remoteIp
+        };
 
         logger.SendingRequest(request);
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Recaptcha.Verify.Net;
+namespace Recaptcha.Verify.Net.Attribute;
 
 /// <summary>
 /// Verifies reCAPTCHA response token and checks score (for v3) and action.
@@ -60,18 +60,13 @@ public class RecaptchaAttribute : ActionFilterAttribute
         }
         catch (Exception e) when (e is not RecaptchaServiceException)
         {
-            if (recaptchaOptions.AttributeOptions.OnException is not null || recaptchaOptions.AttributeOptions.OnRecaptchaServiceException is not null || recaptchaOptions.AttributeOptions.OnReturnBadRequest is not null)
-            {
-                context.Result =
-                    recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, null, e) ??
-                    recaptchaOptions.AttributeOptions.OnException?.Invoke(context, _action, null, e) ??
-                    new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
-                return;
-            }
-
-            throw new RecaptchaUnknownException(e);
+            context.Result =
+                recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, null, e) ??
+                recaptchaOptions.AttributeOptions.OnException?.Invoke(context, _action, null, e) ??
+                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
+            return;
         }
-        catch (RecaptchaServiceException e) when (recaptchaOptions.AttributeOptions.OnException is not null || recaptchaOptions.AttributeOptions.OnRecaptchaServiceException is not null || recaptchaOptions.AttributeOptions.OnReturnBadRequest is not null)
+        catch (RecaptchaServiceException e)
         {
             context.Result =
                 recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, e, null) ??
@@ -94,14 +89,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
         var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
             context.HttpContext.RequestAborted : CancellationToken.None;
 
-        var verifyRequest = new VerifyRequest()
-        {
-            Secret = recaptchaOptions.SecretKey,
-            Response = recaptchaToken,
-            RemoteIp = remoteIp
-        };
-
-        var verifyResponse = await verificationService.VerifyAsync(verifyRequest, cancellationToken);
+        var verifyResponse = await verificationService.VerifyAsync(recaptchaToken, remoteIp, cancellationToken);
 
         var validationResult = validationService.Validate(verifyResponse, _action, _score);
 
