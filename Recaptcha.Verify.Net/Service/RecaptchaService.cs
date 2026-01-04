@@ -130,7 +130,7 @@ namespace Recaptcha.Verify.Net
                 {
                     scoreThreshold = score.Value;
                 }
-                else if (_recaptchaOptions?.ActionsScoreThresholds != null && _recaptchaOptions.ActionsScoreThresholds.TryGetValue(action, out scoreThreshold))
+                else if (_recaptchaOptions?.ActionsScoreThresholds != null && _recaptchaOptions.ActionsScoreThresholds.TryGetValue(actionToCheck, out scoreThreshold))
                 {
                 }
                 else if (_recaptchaOptions != null && _recaptchaOptions.ScoreThreshold.HasValue)
