@@ -1,5 +1,5 @@
 # Recaptcha.Verify.Net
-[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net) [![Build](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml)
+[![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net) [![Build](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=release/v2.3&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml?query=branch%3Arelease%2Fv2.3)
 
 Library for server-side verification of Google reCAPTCHA v2/v3 response token for ASP.NET.
 
