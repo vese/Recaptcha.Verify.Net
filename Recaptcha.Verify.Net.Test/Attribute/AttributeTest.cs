@@ -14,7 +14,9 @@ namespace Recaptcha.Verify.Net.Test.Attribute;
 public class AttributeTest
 {
     public static TheoryData<string?> EmptyStrings => new(null, string.Empty, "   ");
+
     public static TheoryData<bool> BooleanValues => new(false, true);
+
     public static TheoryData<bool, string?, float?> GetExecuteParameters()
     {
         var theoryData = new TheoryData<bool, string?, float?>();
@@ -36,7 +38,7 @@ public class AttributeTest
     [Fact]
     public async Task Execute_NoTokenExtractorRegistered_ReturnsBadRequest()
     {
-        var options = new RecaptchaOptions { };
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
 
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(options, null, null, null);
 
@@ -55,14 +57,12 @@ public class AttributeTest
     [MemberData(nameof(EmptyStrings))]
     public async Task Execute_TokenExtractorReturnsEmpty_ReturnsBadRequest(string? token)
     {
-        var options = new RecaptchaOptions { };
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices([token]);
 
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(token!);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
 
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = new RecaptchaAttribute();
 
@@ -79,30 +79,19 @@ public class AttributeTest
     [MemberData(nameof(BooleanValues))]
     public async Task Execute_v2_Successful(bool useCancellationToken)
     {
-        var options = new RecaptchaOptions
-        {
-            AttributeOptions = new RecaptchaAttributeOptions
-            {
-                UseCancellationToken = useCancellationToken
-            }
-        };
-
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new VerifyResponse());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Returns(new ValidationResult
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [RecaptchaAttributeFixture.Token],
+            new VerifyResponse(),
+            new ValidationResult
             {
                 ResponseSuccessful = true,
                 IsV3 = false
             });
 
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
+
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = new RecaptchaAttribute();
 
@@ -119,32 +108,21 @@ public class AttributeTest
     [MemberData(nameof(GetExecuteParameters))]
     public async Task Execute_v3_Successful(bool useCancellationToken, string? action, float? score)
     {
-        var options = new RecaptchaOptions
-        {
-            AttributeOptions = new RecaptchaAttributeOptions
-            {
-                UseCancellationToken = useCancellationToken
-            }
-        };
-
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new VerifyResponse());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Returns(new ValidationResult
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [RecaptchaAttributeFixture.Token],
+            new VerifyResponse(),
+            new ValidationResult
             {
                 ResponseSuccessful = true,
                 IsV3 = true,
                 ScoreSatisfies = true,
-                ActionMatches = true,
+                ActionMatches = true
             });
 
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
+
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
@@ -161,27 +139,21 @@ public class AttributeTest
     [MemberData(nameof(EmptyStrings))]
     public async Task Execute_v3_MultipleTokenExtractors_Successful(string? emptyToken)
     {
-        var options = new RecaptchaOptions { };
-
-        var tokenExtractorEmpty = ActionExecutingContextFixture.CreateTokenExtractor(emptyToken);
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new VerifyResponse());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Returns(new ValidationResult
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [emptyToken, RecaptchaAttributeFixture.Token],
+            new VerifyResponse(),
+            new ValidationResult
             {
                 ResponseSuccessful = true,
                 IsV3 = true,
                 ScoreSatisfies = true,
-                ActionMatches = true,
+                ActionMatches = true
             });
 
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
+
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = new RecaptchaAttribute();
 
@@ -198,30 +170,19 @@ public class AttributeTest
     [MemberData(nameof(GetExecuteParameters))]
     public async Task Execute_Unuccessful_ReturnsBadRequest(bool useCancellationToken, string? action, float? score)
     {
-        var options = new RecaptchaOptions
-        {
-            AttributeOptions = new RecaptchaAttributeOptions
-            {
-                UseCancellationToken = useCancellationToken
-            }
-        };
-
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new VerifyResponse());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Returns(new ValidationResult
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [RecaptchaAttributeFixture.Token],
+            new VerifyResponse(),
+            new ValidationResult
             {
                 ResponseSuccessful = false,
                 IsV3 = true
             });
 
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
+
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
@@ -240,30 +201,20 @@ public class AttributeTest
     [MemberData(nameof(GetExecuteParameters))]
     public async Task Execute_VerificationThrows_ReturnsBadRequest(bool useCancellationToken, string? action, float? score)
     {
-        var options = new RecaptchaOptions
-        {
-            AttributeOptions = new RecaptchaAttributeOptions
-            {
-                UseCancellationToken = useCancellationToken
-            }
-        };
-
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Returns(new ValidationResult
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [RecaptchaAttributeFixture.Token],
+            null,
+            new ValidationResult
             {
                 ResponseSuccessful = false,
                 IsV3 = true
-            });
+            },
+            new Exception());
+
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
 
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
@@ -282,26 +233,17 @@ public class AttributeTest
     [MemberData(nameof(GetExecuteParameters))]
     public async Task Execute_ValidationThrows_ReturnsBadRequest(bool useCancellationToken, string? action, float? score)
     {
-        var options = new RecaptchaOptions
-        {
-            AttributeOptions = new RecaptchaAttributeOptions
-            {
-                UseCancellationToken = useCancellationToken
-            }
-        };
+        (var tokenExtractors, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            [RecaptchaAttributeFixture.Token],
+            new VerifyResponse(),
+            null,
+            null,
+            new Exception());
 
-        var tokenExtractor = ActionExecutingContextFixture.CreateTokenExtractor(RecaptchaAttributeFixture.Token);
-        var verificationService = new Mock<IRecaptchaVerificationService>();
-        verificationService
-            .Setup(x => x.VerifyAsync(It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new VerifyResponse());
-        var validationService = new Mock<IRecaptchaVerificationResultValidationService>();
-        validationService
-            .Setup(x => x.Validate(It.IsAny<VerifyResponse>(), It.IsAny<string?>(), It.IsAny<float?>()))
-            .Throws(new Exception());
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
 
         (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
-            options, [tokenExtractor], verificationService.Object, validationService.Object);
+            options, tokenExtractors, verificationService.Object, validationService.Object);
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
