@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32113.165
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11312.210
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net", "Recaptcha.Verify.Net\Recaptcha.Verify.Net.csproj", "{9AA8EA96-1D15-42C9-9FC7-5E5E91E3770C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.ConsoleApp", "examples\Recaptcha.Verify.Net.ConsoleApp\Recaptcha.Verify.Net.ConsoleApp.csproj", "{57EDE79D-BD99-4F2F-B34C-5FF130960F83}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.AspNetCoreAngular", "examples\Recaptcha.Verify.Net.AspNetCoreAngular\Recaptcha.Verify.Net.AspNetCoreAngular.csproj", "{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A9748EE-0AE6-4271-86D4-A13A32FF3601}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +16,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recaptcha.Verify.Net.Test", "Recaptcha.Verify.Net.Test\Recaptcha.Verify.Net.Test.csproj", "{5AF48B4C-82B6-4231-AA07-BC98D26D96EF}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "recaptcha.verify.net.aspnetcoreangular.client", "examples\Recaptcha.Verify.Net.AspNetCoreAngular\recaptcha.verify.net.aspnetcoreangular.client\recaptcha.verify.net.aspnetcoreangular.client.esproj", "{649B22BA-3345-3E78-A3EC-319B50AB9DA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recaptcha.Verify.Net.AspNetCoreAngular.Server", "examples\Recaptcha.Verify.Net.AspNetCoreAngular\Recaptcha.Verify.Net.AspNetCoreAngular.Server\Recaptcha.Verify.Net.AspNetCoreAngular.Server.csproj", "{621326DF-6619-4951-826E-51D24F5BC9FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +35,20 @@ Global
 		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57EDE79D-BD99-4F2F-B34C-5FF130960F83}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26AC23CB-639A-4D4A-92E6-AB74A4EE3F1A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AF48B4C-82B6-4231-AA07-BC98D26D96EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AF48B4C-82B6-4231-AA07-BC98D26D96EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AF48B4C-82B6-4231-AA07-BC98D26D96EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AF48B4C-82B6-4231-AA07-BC98D26D96EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{649B22BA-3345-3E78-A3EC-319B50AB9DA5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{621326DF-6619-4951-826E-51D24F5BC9FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{621326DF-6619-4951-826E-51D24F5BC9FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{621326DF-6619-4951-826E-51D24F5BC9FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{621326DF-6619-4951-826E-51D24F5BC9FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,28 @@
+<br />
+<br />
+<div>Pass reCAPTCHA response token in body</div>
+<button (click)="login_InBody()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in header</div>
+<button (click)="login_InHeader()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in query</div>
+<button (click)="login_InQuery()">Login</button>
+
+<br />
+<br />
+<div>Pass reCAPTCHA response token in form</div>
+<button (click)="login_InForm()">Login</button>
+
+<br />
+<br />
+@if (success()) {
+    <span>Successfully logged</span>
+}
+@if (success() === false) {
+    <span>Recaptcha failed</span>
+}
