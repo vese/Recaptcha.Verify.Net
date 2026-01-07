@@ -9,20 +9,20 @@ namespace Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
 public class VerifyResponse
 {
     /// <summary>
-    /// <c>True</c> if successfully verified.
+    /// Indicates whether this request was a valid reCAPTCHA token for your site.
     /// </summary>
     [JsonPropertyName("success")]
     public bool Success { get; set; }
 
     /// <summary>
-    /// Used for reCAPTCHA V3.
+    /// Used for reCAPTCHA v3.
     /// The score for this request (0.0 - 1.0).
     /// </summary>
     [JsonPropertyName("score")]
     public float? Score { get; set; }
 
     /// <summary>
-    /// Used for reCAPTCHA V3.
+    /// Used for reCAPTCHA v3.
     /// The action name for this request (important to verify).
     /// </summary>
     [JsonPropertyName("action")]
@@ -80,7 +80,7 @@ public class VerifyResponse
     /// </list>
     /// </summary>
     [JsonPropertyName("error-codes")]
-    public List<string>? ErrorCodes { get; set; }
+    public IReadOnlyCollection<string>? ErrorCodes { get; set; }
 
     /// <summary>
     /// Returns list of the verify errors.
@@ -89,7 +89,7 @@ public class VerifyResponse
     /// This exception is thrown when verification response error key is unknown.
     /// </exception>
     [JsonIgnore]
-    public List<VerifyError>? Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
+    public IReadOnlyCollection<VerifyError>? Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
 
     /// <summary>
     /// <c>True</c> if reCAPTCHA v3 is used.

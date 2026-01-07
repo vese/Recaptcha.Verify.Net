@@ -12,7 +12,7 @@ internal static class VerifyErrorHelper
         { "timeout-or-duplicate", VerifyError.TimeoutOrDuplicate }
     };
 
-    internal static List<VerifyError>? GetVerifyErrors(List<string>? errors) =>
+    internal static IReadOnlyCollection<VerifyError>? GetVerifyErrors(IEnumerable<string>? errors) =>
         errors?.Select(error =>
         {
             if (VerifyErrorsDictionary.TryGetValue(error, out var verifyError))

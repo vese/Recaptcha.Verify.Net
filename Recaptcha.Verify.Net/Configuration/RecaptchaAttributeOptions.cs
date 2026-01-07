@@ -56,7 +56,7 @@ public class RecaptchaAttributeOptions
     /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
-    [Obsolete("Use error handler middleware instead")]
+    [Obsolete("Deprecated. Will be removed in future versions.")]
     public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException, IActionResult>? OnRecaptchaServiceException { get; set; }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class RecaptchaAttributeOptions
     /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
-    [Obsolete("Use error handler middleware instead")]
+    [Obsolete("Deprecated. Will be removed in future versions.")]
     public virtual Func<ActionExecutingContext, string?, ValidationResult?, Exception, IActionResult>? OnException { get; set; }
 
     /// <summary>
@@ -73,6 +73,6 @@ public class RecaptchaAttributeOptions
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// <para>Fires after <see cref="OnVerificationFailed"/>, <see cref="OnRecaptchaServiceException"/> and <see cref="OnException"/>.</para>
     /// </summary>
-    [Obsolete("Use OnVerificationFailed or error handler middleware instead")]
+    [Obsolete("Deprecated. Will be removed in future versions.")]
     public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException?, Exception?, IActionResult>? OnReturnBadRequest { get; set; }
 }
