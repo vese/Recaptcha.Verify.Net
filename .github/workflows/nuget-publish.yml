@@ -6,6 +6,7 @@ on:
 
 jobs:
   nuget-publish:
+    if: github.repository == 'vese/Recaptcha.Verify.Net'
     runs-on: windows-latest
     steps:
     - name: Checkout
