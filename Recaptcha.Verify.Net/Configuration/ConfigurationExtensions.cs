@@ -10,7 +10,7 @@ namespace Recaptcha.Verify.Net.Configuration;
 /// </summary>
 public static class ConfigurationExtensions
 {
-    private const string _baseUrl = "https://www.google.com/recaptcha/api";
+    private const string DefaultBaseUrl = "https://www.google.com/recaptcha/api";
 
     /// <summary>
     /// Registers <see cref="IRecaptchaVerificationResultValidationService"/> implementation for usage with dependency injection.
@@ -48,7 +48,7 @@ public static class ConfigurationExtensions
 
         services.AddTokenExtractorForOptions(recaptchaOptions);
 
-        services.ConfigureService();
+        services.ConfigureService(recaptchaOptions.BaseUrl);
 
         return services;
     }
@@ -136,10 +136,11 @@ public static class ConfigurationExtensions
     public static IServiceCollection AddRecaptchaQueryTokenExtractor(this IServiceCollection services, string parameterName) =>
         services.AddSingleton<IRecaptchaTokenExtractor, QueryTokenExtractor>(_ => new QueryTokenExtractor(parameterName));
 
-    private static void ConfigureService(this IServiceCollection services)
+    private static void ConfigureService(this IServiceCollection services, string? baseUrl)
     {
+        var url = !string.IsNullOrWhiteSpace(baseUrl) ? baseUrl : DefaultBaseUrl;
         services.AddHttpClient<IRecaptchaClient, RecaptchaClient>(client =>
-            client.BaseAddress = new Uri(_baseUrl.EndsWith('/') ? _baseUrl : $"{_baseUrl}/"));
+            client.BaseAddress = new Uri(url.EndsWith('/') ? url : $"{url}/"));
 
         services.AddScoped<IRecaptchaVerificationService, RecaptchaVerificationService>();
         services.AddScoped<IRecaptchaVerificationResultValidationService, RecaptchaVerificationResultValidationService>();
