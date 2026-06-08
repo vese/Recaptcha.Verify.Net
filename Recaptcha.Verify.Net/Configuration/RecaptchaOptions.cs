@@ -13,6 +13,13 @@ public class RecaptchaOptions
     public string SecretKey { get; set; } = null!;
 
     /// <summary>
+    /// Optional. Custom base URL for the reCAPTCHA verification API endpoint.
+    /// <para>When not specified, defaults to <c>https://www.google.com/recaptcha/api</c>.</para>
+    /// <para>Set this to use a custom endpoint, such as a reCAPTCHA mirror or proxy server.</para>
+    /// </summary>
+    public string? BaseUrl { get; set; }
+
+    /// <summary>
     /// Optional. Action to check for V3 Recaptcha request.
     /// <para>Action specified in <see cref="IRecaptchaVerificationResultValidationService.Validate"/>
     /// or in <see cref="RecaptchaAttribute"/> will be used instead of this value.</para>
