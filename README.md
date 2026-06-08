@@ -17,6 +17,7 @@ For .NET Framework or for other older .NET versions, please use a version below 
 - [Basic Usage](#basic-usage)
 - [Verification Process](#verification-process)
 - [Configuring Actions and Score Thresholds](#configuring-actions-and-score-thresholds)
+- [Custom Verification URL](#custom-verification-url)
 - [Response Customization](#response-customization)
 - [Handling Exceptions](#handling-exceptions)
 - [Examples](#examples)
@@ -156,7 +157,7 @@ The service returns a `ValidationResult` object with detailed validation status.
 |`IsV3`|`bool`|Indicates whether this is a reCAPTCHA v3 verification (based on score presence)|
 |`ActionMatches`|`bool`|Indicates whether the action matches the expected value|
 |`ScoreSatisfies`|`bool`|Indicates whether the score meets the required threshold|
-|`Success`|`bool`|**Overall validation result** — `true` only when all applicable checks pass|
+|`Success`|`bool`|**Overall validation result** â€” `true` only when all applicable checks pass|
 
 ## Configuring Actions and Score Thresholds
 For reCAPTCHA v3 validation, both an action and a score threshold must be specified.
@@ -206,6 +207,34 @@ public IActionResult Login() { ... }
 [Recaptcha("comment", 0.4)]
 public IActionResult AddComment() { ... }
 ```
+
+## Custom Verification URL
+By default, the library communicates with Google's reCAPTCHA API at `https://www.google.com/recaptcha/api`.
+To use a custom endpoint (e.g. a mirror or proxy), set the `BaseUrl` option in `RecaptchaOptions`:
+
+### Via appsettings.json
+```json
+{
+  "Recaptcha": {
+    "SecretKey": "<recaptcha secret key>",
+    "BaseUrl": "https://recaptcha-proxy.example.com/recaptcha/api",
+    "AttributeOptions": {
+      "ResponseTokenNameInHeader": "X-Recaptcha-Token"
+    }
+  }
+}
+```
+
+### Via code configuration
+```csharp
+services.AddRecaptcha(o =>
+{
+    o.SecretKey = "<recaptcha secret key>";
+    o.BaseUrl = "https://recaptcha-proxy.example.com/recaptcha/api";
+});
+```
+
+When `BaseUrl` is not specified, the default Google endpoint is used.
 
 ## Response Customization
 When reCAPTCHA verification fails or an exception occurs (will not catch exceptions in future versions), the library returns a `400 Bad Request` response by default.
