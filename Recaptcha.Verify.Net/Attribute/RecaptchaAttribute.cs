@@ -80,7 +80,8 @@ public class RecaptchaAttribute : ActionFilterAttribute
 
     private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context, RecaptchaOptions recaptchaOptions)
     {
-        var recaptchaToken = GetRecaptchaToken(context);
+        var tokenExtractionService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaTokenExtractionService>();
+        var recaptchaToken = tokenExtractionService.GetToken(context);
 
         var verificationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationService>();
         var validationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationResultValidationService>();
@@ -101,39 +102,5 @@ public class RecaptchaAttribute : ActionFilterAttribute
         }
 
         return null;
-    }
-
-    private static string GetRecaptchaToken(ActionExecutingContext context)
-    {
-        var tokenExtractors = context.HttpContext.RequestServices.GetServices<IRecaptchaTokenExtractor>();
-
-        string? recaptchaToken = null;
-        var recaptchaTokenExtracted = false;
-        var tokenExtractorsCount = 0;
-
-        foreach (var tokenExtractor in tokenExtractors)
-        {
-            tokenExtractorsCount++;
-
-            recaptchaToken = tokenExtractor.GetToken(context);
-
-            if (!string.IsNullOrWhiteSpace(recaptchaToken))
-            {
-                recaptchaTokenExtracted = true;
-                break;
-            }
-        }
-
-        if (tokenExtractorsCount == 0)
-        {
-            throw new TokenExtractorNotFound();
-        }
-
-        if (!recaptchaTokenExtracted)
-        {
-            throw new EmptyCaptchaAnswerException();
-        }
-
-        return recaptchaToken!;
     }
 }

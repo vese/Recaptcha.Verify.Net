@@ -141,6 +141,7 @@ public static class ConfigurationExtensions
         services.AddHttpClient<IRecaptchaClient, RecaptchaClient>(client =>
             client.BaseAddress = new Uri(_baseUrl.EndsWith('/') ? _baseUrl : $"{_baseUrl}/"));
 
+        services.AddScoped<IRecaptchaTokenExtractionService, RecaptchaTokenExtractionService>();
         services.AddScoped<IRecaptchaVerificationService, RecaptchaVerificationService>();
         services.AddScoped<IRecaptchaVerificationResultValidationService, RecaptchaVerificationResultValidationService>();
     }
