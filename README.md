@@ -27,15 +27,15 @@ The package is available on [NuGet](https://www.nuget.org/packages/Recaptcha.Ver
 
 - Via Package Manager Console
    ```powershell
-   PM> Install-Package Recaptcha.Verify.Net -Version 3.0.0
+   PM> Install-Package Recaptcha.Verify.Net -Version 3.0.1
    ```
 - Via .NET CLI
    ```bash
-   dotnet add package Recaptcha.Verify.Net --version 3.0.0
+   dotnet add package Recaptcha.Verify.Net --version 3.0.1
    ```
 - Adding reference to project file
    ```xml
-   <PackageReference Include="Recaptcha.Verify.Net" Version="3.0.0" />
+   <PackageReference Include="Recaptcha.Verify.Net" Version="3.0.1" />
    ```
 
 ## Basic Usage

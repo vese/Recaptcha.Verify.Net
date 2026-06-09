@@ -13,7 +13,7 @@
     <NeutralLanguage>en</NeutralLanguage>
     <Company>Vese</Company>
     <PackageProjectUrl>https://github.com/vese/Recaptcha.Verify.Net</PackageProjectUrl>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
