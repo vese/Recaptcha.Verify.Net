@@ -18,24 +18,15 @@ internal class ActionExecutingContextFixture
 {
     public static readonly IPAddress IPAddress = new(int.MaxValue);
 
-    public static IRecaptchaTokenExtractor CreateTokenExtractor(string? token)
-    {
-        var extractor = new Mock<IRecaptchaTokenExtractor>();
-
-        extractor.Setup(x => x.GetToken(It.IsAny<ActionExecutingContext>())).Returns(token);
-
-        return extractor.Object;
-    }
-
     public static (ActionExecutingContext context, Mock<ActionExecutionDelegate> nextMock) CreateActionExecutingContext(
         RecaptchaOptions? options,
-        IEnumerable<IRecaptchaTokenExtractor>? tokenExtractors,
+        IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
         IRecaptchaVerificationResultValidationService? validationService)
     {
         var actionsArguments = new Dictionary<string, object?>();
 
-        var httpContext = CreateHttpContext(options, tokenExtractors, verificationService, validationService);
+        var httpContext = CreateHttpContext(options, tokenExtractionService, verificationService, validationService);
 
         var actionContext = new ActionContext
         {
@@ -59,7 +50,7 @@ internal class ActionExecutingContextFixture
 
     private static HttpContextMock CreateHttpContext(
         RecaptchaOptions? options,
-        IEnumerable<IRecaptchaTokenExtractor>? tokenExtractors,
+        IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
         IRecaptchaVerificationResultValidationService? validationService)
     {
@@ -70,7 +61,10 @@ internal class ActionExecutingContextFixture
             httpContext.SetupRequestService(Options.Create(options));
         }
 
-        httpContext.SetupRequestService(tokenExtractors ?? []);
+        if (tokenExtractionService is not null)
+        {
+            httpContext.SetupRequestService(tokenExtractionService);
+        }
 
         if (verificationService is not null)
         {

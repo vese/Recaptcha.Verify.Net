@@ -1,11 +1,13 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Moq;
 using Recaptcha.Verify.Net.Configuration;
+using Recaptcha.Verify.Net.TokenExtraction;
 using Recaptcha.Verify.Net.TokenVerification;
 using Recaptcha.Verify.Net.TokenVerification.Client.Models.Response;
 using Recaptcha.Verify.Net.VerificationResultValidation;
 using Recaptcha.Verify.Net.VerificationResultValidation.Models;
 using RecaptchaServices = (
-    Recaptcha.Verify.Net.TokenExtraction.IRecaptchaTokenExtractor[] tokenExtractors,
+    Moq.Mock<Recaptcha.Verify.Net.TokenExtraction.IRecaptchaTokenExtractionService> tokenExtractionService,
     Moq.Mock<Recaptcha.Verify.Net.TokenVerification.IRecaptchaVerificationService> verificationService,
     Moq.Mock<Recaptcha.Verify.Net.VerificationResultValidation.IRecaptchaVerificationResultValidationService> validationService);
 
@@ -25,11 +27,20 @@ internal static class RecaptchaAttributeFixture
         }
     };
 
-    public static RecaptchaServices CreateServices(string?[] tokens,
+    public static RecaptchaServices CreateServices(string? token,
         VerifyResponse? verificationResult = null, ValidationResult? validationResult = null,
-        Exception? verificationException = null, Exception? validationException = null)
+        Exception? extractionException = null, Exception? verificationException = null, Exception? validationException = null)
     {
-        var tokenExtractors = tokens.Select(ActionExecutingContextFixture.CreateTokenExtractor).ToArray();
+        var tokenExtractionService = new Mock<IRecaptchaTokenExtractionService>();
+
+        if (extractionException is not null)
+        {
+            tokenExtractionService.Setup(x => x.GetToken(It.IsAny<ActionExecutingContext>())).Throws(extractionException);
+        }
+        else
+        {
+            tokenExtractionService.Setup(x => x.GetToken(It.IsAny<ActionExecutingContext>())).Returns(token!);
+        }
 
         var verificationService = new Mock<IRecaptchaVerificationService>();
 
@@ -61,6 +72,6 @@ internal static class RecaptchaAttributeFixture
                 .Throws(validationException);
         }
 
-        return (tokenExtractors, verificationService, validationService);
+        return (tokenExtractionService, verificationService, validationService);
     }
 }
