@@ -46,10 +46,10 @@ public class RecaptchaAttribute : ActionFilterAttribute
     /// <param name="next">A delegate that contains next action.</param>
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
-
         try
         {
+            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+
             var result = await ProcessRecaptchaAsync(context, recaptchaOptions);
 
             if (result is not null)
@@ -60,19 +60,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
         }
         catch (Exception e) when (e is not RecaptchaServiceException)
         {
-            context.Result =
-                recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, null, e) ??
-                recaptchaOptions.AttributeOptions.OnException?.Invoke(context, _action, null, e) ??
-                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
-            return;
-        }
-        catch (RecaptchaServiceException e)
-        {
-            context.Result =
-                recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, null, e, null) ??
-                recaptchaOptions.AttributeOptions.OnRecaptchaServiceException?.Invoke(context, _action, null, e) ??
-                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
-            return;
+            throw new RecaptchaUnknownException(e);
         }
 
         await base.OnActionExecutionAsync(context, next);
@@ -96,8 +84,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
 
         if (!validationResult.Success)
         {
-            return recaptchaOptions.AttributeOptions.OnReturnBadRequest?.Invoke(context, _action, validationResult, null, null) ??
-                recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, validationResult) ??
+            return recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, validationResult) ??
                 new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
         }
 

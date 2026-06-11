@@ -237,20 +237,16 @@ services.AddRecaptcha(o =>
 When `BaseUrl` is not specified, the default Google endpoint is used.
 
 ## Response Customization
-When reCAPTCHA verification fails or an exception occurs (will not catch exceptions in future versions), the library returns a `400 Bad Request` response by default.
+When reCAPTCHA verification fails, the library returns a `400 Bad Request` response by default.
 Message specified in `RecaptchaOptions.VerificationFailedMessage` which default value is "Recaptcha verification failed".
 
-|Delegate|Trigger|Status|
-|---|---|---|
-|`OnVerificationFailed`|When token verification or validation fails|Active|
-|`OnRecaptchaServiceException`|When `RecaptchaServiceException` is thrown|Deprecated|
-|`OnException`|When any unhandled exception occurs|Deprecated|
-|`OnReturnBadRequest`|When any failure or exception occurs|Deprecated|
+You can customize the response by setting the `RecaptchaOptions.OnVerificationFailed` delegate, which is called when token verification or validation fails.
+The `IActionResult` returned by this delegate is used as the HTTP response.
+Delegate may also throw exceptions, which will not be caught by `RecaptchaAttribute`.
 
-The `IActionResult` returned by these delegates is used as the HTTP response.
-Delegates may also throw exceptions, which will not be caught by `RecaptchaAttribute`.
-
-Deprecated delegates will be removed in future versions in favor of exception handling middleware.
+When an exception occurs during verification, a `RecaptchaServiceException`-derived exception is thrown (see [Handling Exceptions](#handling-exceptions) for the full list).
+These exceptions are not caught by `RecaptchaAttribute` and propagate up the ASP.NET request pipeline, where they are handled according to the application's configured exception handling rules.
+See the [ASP.NET Core example](https://github.com/vese/Recaptcha.Verify.Net/tree/release/v3.0/examples/Recaptcha.Verify.Net.AspNetCoreAngular) for a reference implementation.
 
 ## Handling Exceptions
 Library can produce following exceptions

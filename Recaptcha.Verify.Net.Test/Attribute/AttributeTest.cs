@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using Recaptcha.Verify.Net.Attribute;
 using Recaptcha.Verify.Net.Configuration;
+using Recaptcha.Verify.Net.Exceptions;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.TokenExtraction;
@@ -38,7 +39,7 @@ public class AttributeTest
     }
 
     [Fact]
-    public async Task Execute_NoTokenExtractionService_ReturnsBadRequest()
+    public async Task Execute_NoTokenExtractionService_ThrowsRecaptchaUnknownException()
     {
         var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
 
@@ -46,17 +47,14 @@ public class AttributeTest
 
         var attribute = new RecaptchaAttribute();
 
-        await attribute.OnActionExecutionAsync(context, next.Object);
+        var thrown = await Assert.ThrowsAsync<RecaptchaUnknownException>(() => attribute.OnActionExecutionAsync(context, next.Object));
+        Assert.IsType<InvalidOperationException>(thrown.InnerException);
 
         next.Verify(x => x.Invoke(), Times.Never);
-
-        Assert.NotNull(context.Result);
-        Assert.True(context.Result is BadRequestObjectResult);
-        Assert.Equal(StatusCodes.Status400BadRequest, (context.Result as BadRequestObjectResult)!.StatusCode);
     }
 
     [Fact]
-    public async Task Execute_TokenExtractionServiceThrowsTokenExtractorNotFound_ReturnsBadRequest()
+    public async Task Execute_TokenExtractionServiceThrowsTokenExtractorNotFound_PropagatesException()
     {
         (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
             null, extractionException: new TokenExtractorNotFound());
@@ -68,17 +66,13 @@ public class AttributeTest
 
         var attribute = new RecaptchaAttribute();
 
-        await attribute.OnActionExecutionAsync(context, next.Object);
+        await Assert.ThrowsAsync<TokenExtractorNotFound>(() => attribute.OnActionExecutionAsync(context, next.Object));
 
         next.Verify(x => x.Invoke(), Times.Never);
-
-        Assert.NotNull(context.Result);
-        Assert.True(context.Result is BadRequestObjectResult);
-        Assert.Equal(StatusCodes.Status400BadRequest, (context.Result as BadRequestObjectResult)!.StatusCode);
     }
 
     [Fact]
-    public async Task Execute_TokenExtractionServiceThrowsEmptyCaptchaAnswer_ReturnsBadRequest()
+    public async Task Execute_TokenExtractionServiceThrowsEmptyCaptchaAnswer_PropagatesException()
     {
         (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
             null, extractionException: new EmptyCaptchaAnswerException());
@@ -90,13 +84,9 @@ public class AttributeTest
 
         var attribute = new RecaptchaAttribute();
 
-        await attribute.OnActionExecutionAsync(context, next.Object);
+        await Assert.ThrowsAsync<EmptyCaptchaAnswerException>(() => attribute.OnActionExecutionAsync(context, next.Object));
 
         next.Verify(x => x.Invoke(), Times.Never);
-
-        Assert.NotNull(context.Result);
-        Assert.True(context.Result is BadRequestObjectResult);
-        Assert.Equal(StatusCodes.Status400BadRequest, (context.Result as BadRequestObjectResult)!.StatusCode);
     }
 
     [Theory]
@@ -192,8 +182,10 @@ public class AttributeTest
 
     [Theory]
     [MemberData(nameof(GetExecuteParameters))]
-    public async Task Execute_VerificationThrows_ReturnsBadRequest(bool useCancellationToken, string? action, float? score)
+    public async Task Execute_VerificationThrows_PropagatesException(bool useCancellationToken, string? action, float? score)
     {
+        var verificationException = new Exception();
+
         (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
             RecaptchaAttributeFixture.Token,
             null,
@@ -202,7 +194,7 @@ public class AttributeTest
                 ResponseSuccessful = false,
                 IsV3 = true
             },
-            verificationException: new Exception());
+            verificationException: verificationException);
 
         var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
 
@@ -211,25 +203,24 @@ public class AttributeTest
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
-        await attribute.OnActionExecutionAsync(context, next.Object);
+        var thrown = await Assert.ThrowsAsync<RecaptchaUnknownException>(() => attribute.OnActionExecutionAsync(context, next.Object));
+        Assert.Same(verificationException, thrown.InnerException);
 
-        VerifyServicesCalls(tokenExtractionService, verificationService, validationService, false, useCancellationToken, action, score);
+        tokenExtractionService.Verify(x => x.GetToken(It.IsAny<ActionExecutingContext>()), Times.Once);
 
         next.Verify(x => x.Invoke(), Times.Never);
-
-        Assert.NotNull(context.Result);
-        Assert.True(context.Result is BadRequestObjectResult);
-        Assert.Equal(StatusCodes.Status400BadRequest, (context.Result as BadRequestObjectResult)!.StatusCode);
     }
 
     [Theory]
     [MemberData(nameof(GetExecuteParameters))]
-    public async Task Execute_ValidationThrows_ReturnsBadRequest(bool useCancellationToken, string? action, float? score)
+    public async Task Execute_ValidationThrows_PropagatesException(bool useCancellationToken, string? action, float? score)
     {
+        var validationException = new Exception();
+
         (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
             RecaptchaAttributeFixture.Token,
             new VerifyResponse(),
-            validationException: new Exception());
+            validationException: validationException);
 
         var options = RecaptchaAttributeFixture.GetRecaptchaOptions(useCancellationToken);
 
@@ -238,15 +229,12 @@ public class AttributeTest
 
         var attribute = score.HasValue ? new RecaptchaAttribute(action!, score.Value) : new RecaptchaAttribute(action!);
 
-        await attribute.OnActionExecutionAsync(context, next.Object);
+        var thrown = await Assert.ThrowsAsync<RecaptchaUnknownException>(() => attribute.OnActionExecutionAsync(context, next.Object));
+        Assert.Same(validationException, thrown.InnerException);
 
-        VerifyServicesCalls(tokenExtractionService, verificationService, validationService, true, useCancellationToken, action, score);
+        tokenExtractionService.Verify(x => x.GetToken(It.IsAny<ActionExecutingContext>()), Times.Once);
 
         next.Verify(x => x.Invoke(), Times.Never);
-
-        Assert.NotNull(context.Result);
-        Assert.True(context.Result is BadRequestObjectResult);
-        Assert.Equal(StatusCodes.Status400BadRequest, (context.Result as BadRequestObjectResult)!.StatusCode);
     }
 
     private static void VerifyServicesCalls(
