@@ -50,29 +50,4 @@ public class RecaptchaAttributeOptions
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
     public virtual Func<ActionExecutingContext, string?, ValidationResult?, IActionResult>? OnVerificationFailed { get; set; }
-
-    /// <summary>
-    /// Delegate for handling thrown <see cref="RecaptchaServiceException"/> during verification of reCAPTCHA response token.
-    /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
-    /// <para>Any exception could be thrown and will be propagated further.</para>
-    /// </summary>
-    [Obsolete("Deprecated. Will be removed in future versions.")]
-    public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException, IActionResult>? OnRecaptchaServiceException { get; set; }
-
-    /// <summary>
-    /// Delegate for handling thrown <see cref="Exception"/> during verification of reCAPTCHA response token.
-    /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
-    /// <para>Any exception could be thrown and will be propagated further.</para>
-    /// </summary>
-    [Obsolete("Deprecated. Will be removed in future versions.")]
-    public virtual Func<ActionExecutingContext, string?, ValidationResult?, Exception, IActionResult>? OnException { get; set; }
-
-    /// <summary>
-    /// Delegate for handling any bad result of verification.
-    /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
-    /// <para>Any exception could be thrown and will be propagated further.</para>
-    /// <para>Fires after <see cref="OnVerificationFailed"/>, <see cref="OnRecaptchaServiceException"/> and <see cref="OnException"/>.</para>
-    /// </summary>
-    [Obsolete("Deprecated. Will be removed in future versions.")]
-    public virtual Func<ActionExecutingContext, string?, ValidationResult?, RecaptchaServiceException?, Exception?, IActionResult>? OnReturnBadRequest { get; set; }
 }
