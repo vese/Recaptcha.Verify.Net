@@ -1,3 +1,4 @@
+using Recaptcha.Verify.Net.AspNetCoreAngular.Server;
 using Recaptcha.Verify.Net.AspNetCoreAngular.Server.Models;
 using Recaptcha.Verify.Net.Configuration;
 
@@ -18,8 +19,12 @@ builder.Services
 builder.Services.AddLogging();
 
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<RecaptchaExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
