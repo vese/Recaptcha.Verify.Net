@@ -1,6 +1,6 @@
 # Recaptcha.Verify.Net
 [![NuGet](https://img.shields.io/nuget/v/Recaptcha.Verify.Net.svg)](https://www.nuget.org/packages/Recaptcha.Verify.Net)
-[![Build 3.0](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=release/v3.0&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml?query=branch%3Arelease%2Fv3.0)
+[![Build 3.1](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml/badge.svg?branch=release/v3.1&event=push)](https://github.com/vese/Recaptcha.Verify.Net/actions/workflows/build.yml?query=branch%3Arelease%2Fv3.1)
 
 A lightweight library for server-side verification of Google reCAPTCHA v2 and v3 response tokens in .NET applications.
 
@@ -8,6 +8,7 @@ Starting with version 3.0.0, Recaptcha.Verify.Net supports the following platfor
 - .NET 8
 - .NET 9
 - .NET 10
+- .NET 11
 
 For .NET Framework or for other older .NET versions, please use a version below 3.0.0.
 
@@ -116,6 +117,7 @@ The service returns a `VerifyResponse` object containing verification details.
 |Property|Type|Description|
 |---|---|---|
 |`Success`|`bool`|Indicates whether this request was a valid reCAPTCHA token for your site|
+|`IsV3`|`bool`|Indicates whether this is a reCAPTCHA v3 verification (based on score presence)|
 |`Score`|`float?`|**reCAPTCHA v3 only**: Confidence score from 0.0 (likely bot) to 1.0 (likely human)|
 |`Action`|`string?`|**reCAPTCHA v3 only**: The action name specified during client-side execution|
 |`ChallengeTs`|`DateTime`|Timestamp when the challenge was loaded|
@@ -246,7 +248,7 @@ Delegate may also throw exceptions, which will not be caught by `RecaptchaAttrib
 
 When an exception occurs during verification, a `RecaptchaServiceException`-derived exception is thrown (see [Handling Exceptions](#handling-exceptions) for the full list).
 These exceptions are not caught by `RecaptchaAttribute` and propagate up the ASP.NET request pipeline, where they are handled according to the application's configured exception handling rules.
-See the [ASP.NET Core example](https://github.com/vese/Recaptcha.Verify.Net/tree/release/v3.0/examples/Recaptcha.Verify.Net.AspNetCoreAngular) for a reference implementation.
+See the [ASP.NET Core example](https://github.com/vese/Recaptcha.Verify.Net/tree/release/v3.1/examples/Recaptcha.Verify.Net.AspNetCoreAngular) for a reference implementation.
 
 ## Handling Exceptions
 Library can produce following exceptions
@@ -267,5 +269,5 @@ Exception | Description
 
 ## Examples
 Examples could be found in library repository:
-- [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/v3.0/examples/Recaptcha.Verify.Net.ConsoleApp/Program.cs) (.NET 10)
-- [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/tree/release/v3.0/examples/Recaptcha.Verify.Net.AspNetCoreAngular) (ASP.NET + Angular)
+- [**Recaptcha.Verify.Net.ConsoleApp**](https://github.com/vese/Recaptcha.Verify.Net/blob/release/v3.1/examples/Recaptcha.Verify.Net.ConsoleApp/Program.cs) (.NET 10)
+- [**Recaptcha.Verify.Net.AspNetCoreAngular**](https://github.com/vese/Recaptcha.Verify.Net/tree/release/v3.1/examples/Recaptcha.Verify.Net.AspNetCoreAngular) (ASP.NET + Angular)

@@ -1,0 +1,80 @@
+# Test Cases
+
+## Attribute Tests (`Attribute/AttributeTest.cs`)
+
+Tests for `RecaptchaAttribute` behavior in various scenarios.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `Execute_NoTokenExtractionService_ThrowsRecaptchaUnknownException` | Fact | When no `IRecaptchaTokenExtractionService` is registered, throws `RecaptchaUnknownException` with inner `InvalidOperationException`. Action pipeline is not invoked. |
+| 2 | `Execute_TokenExtractionServiceThrowsTokenExtractorNotFound_PropagatesException` | Fact | When token extraction service throws `TokenExtractorNotFound`, the exception propagates. Action pipeline is not invoked. |
+| 3 | `Execute_TokenExtractionServiceThrowsEmptyCaptchaAnswer_PropagatesException` | Fact | When token extraction service throws `EmptyCaptchaAnswerException`, the exception propagates. Action pipeline is not invoked. |
+| 4 | `Execute_v2_Successful` | Theory | Successful v2 flow: token extracted, verification succeeds, validation passes. Action pipeline invoked once, no result set. Parameters: `useCancellationToken` ∈ {false, true}. |
+| 5 | `Execute_v3_Successful` | Theory | Successful v3 flow with all combinations of `useCancellationToken` × `action` × `score`. Action pipeline invoked once, no result set. 8 parameter combinations. |
+| 6 | `Execute_Unsuccessful_ReturnsBadRequest` | Theory | When validation returns unsuccessful, sets `BadRequestObjectResult` (400). Action pipeline not invoked. 8 parameter combinations. |
+| 7 | `Execute_VerificationThrows_PropagatesException` | Theory | When verification service throws, it is wrapped in `RecaptchaUnknownException` with original as `InnerException`. Token extraction was called, action pipeline not invoked. 8 parameter combinations. |
+| 8 | `Execute_ValidationThrows_PropagatesException` | Theory | When validation service throws, it is wrapped in `RecaptchaUnknownException` with original as `InnerException`. Token extraction was called, action pipeline not invoked. 8 parameter combinations. |
+
+## Configuration Extensions Tests (`Configuration/ConfigurationExtensionsTest.cs`)
+
+Tests for `AddRecaptcha` service registration and `RecaptchaClient` base URL configuration.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `AddRecaptcha_DefaultBaseUrl_WhenNotSpecified` | Fact | When `BaseUrl` is not set, `RecaptchaClient` uses default Google URL `https://www.google.com/recaptcha/api/`. |
+| 2 | `AddRecaptcha_CustomBaseUrl_WhenSpecified` | Fact | When custom `BaseUrl` is specified, `RecaptchaClient` is configured with that URL (trailing slash appended). |
+| 3 | `AddRecaptcha_DefaultBaseUrl_WhenNullOrEmpty` | Theory | When `BaseUrl` is null, empty, or whitespace, `RecaptchaClient` falls back to default Google URL. Parameters: `baseUrl` ∈ {null, "", "   "}. |
+| 4 | `AddRecaptcha_AppendsTrailingSlash_WhenMissing` | Fact | If custom `BaseUrl` does not end with `/`, one is automatically appended. |
+| 5 | `AddRecaptcha_PreservesTrailingSlash_WhenPresent` | Fact | If custom `BaseUrl` already ends with `/`, it is preserved as-is (no double slash). |
+
+## Token Extraction Tests (`TokenExtraction/TokenExtractionTest.cs`)
+
+Tests for individual token extractor implementations.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `Extract_FromActionArguments_WithAction` | Fact | `ActionArgumentsTokenExtractor` with lambda extracts token from action arguments. |
+| 2 | `Extract_FromActionArguments_WithName` | Fact | `ActionArgumentsTokenExtractor` with parameter name extracts token from action arguments by key. |
+| 3 | `Extract_FromExecutingContext` | Fact | `ExecutingContextTokenExtractor` extracts token from `ActionExecutingContext`. |
+| 4 | `Extract_FromForm` | Fact | `FormTokenExtractor` extracts token from HTTP form data by field name. |
+| 5 | `Extract_FromHeader` | Fact | `HeaderTokenExtractor` extracts token from HTTP request headers by header name. |
+| 6 | `Extract_FromQuery` | Fact | `QueryTokenExtractor` extracts token from HTTP query string by parameter name. |
+
+## Token Extraction Service Tests (`TokenExtraction/TokenExtractionServiceTest.cs`)
+
+Tests for `RecaptchaTokenExtractionService` — first-wins token extraction strategy.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `GetToken_NoExtractors_ThrowsTokenExtractorNotFound` | Fact | Calling `GetToken` with no registered extractors throws `TokenExtractorNotFound`. |
+| 2 | `GetToken_AllExtractorsReturnEmpty_ThrowsEmptyCaptchaAnswer` | Fact | When all extractors return null/empty/whitespace, throws `EmptyCaptchaAnswerException`. |
+| 3 | `GetToken_SingleExtractorReturnsToken_ReturnsToken` | Fact | When a single extractor returns a valid token, the service returns it. |
+| 4 | `GetToken_FirstEmptySecondReturnsToken_ReturnsToken` | Fact | When the first extractor returns null and the second returns a valid token, the service returns the second one (fallback). |
+| 5 | `GetToken_FirstWins_SecondExtractorNotCalled` | Fact | When the first extractor returns a valid token, the second extractor is never called (short-circuit). |
+
+## Verification Service Tests (`TokenVerification/VerificationServiceTest.cs`)
+
+Tests for `RecaptchaVerificationService` — token verification via Google's API.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `Verify_MissingSecretKey_Throws` | Theory | Calling `VerifyAsync` with null/empty/whitespace secret key throws `SecretKeyNotSpecifiedException`. Parameters: `secretKey` ∈ {null, "", "   "}. |
+| 2 | `Verify_EmptyResponse_Throws` | Theory | Calling `VerifyAsync` with null/empty/whitespace response token throws `EmptyCaptchaAnswerException`. Parameters: `response` ∈ {null, "", "   "}. |
+| 3 | `Verify_ClientException_Throws` | Fact | When the HTTP client throws during verification, the service wraps it in `VerifyRequestException`. |
+| 4 | `Verify_InvalidResponseToken_ReturnsVerificationResult` | Fact | Using an invalid response token returns `VerifyResponse` with `Success=false`. |
+| 5 | `Verify_ValidResponseToken_ReturnsVerificationResult` | Theory | Using a valid response token returns `VerifyResponse` with `Success=true` and expected score. Parameters: valid tokens from fixture. |
+
+## Validation Service Tests (`VerificationResultValidation/ValidationServiceTest.cs`)
+
+Tests for `RecaptchaVerificationResultValidationService` — verification result validation logic.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `Validate_v3_EmptyAction_Throws` | Theory | Calling `Validate` with empty/null/whitespace action on v3 result throws `EmptyActionException`. Tests both direct and constructor-based action passing. Parameters: `action` ∈ {null, "", "   "}. |
+| 2 | `Validate_v3_ScoreNotSpecified_Throws` | Fact | When no score threshold is configured (globally or per-action), validating a v3 result throws `MinScoreNotSpecifiedException`. Tests both options-based and direct-call paths. |
+| 3 | `Validate_v3_UnsuccessfulVerification` | Fact | Unsuccessful verification produces `ValidationResult` with all flags false: `IsV3=false`, `ResponseSuccessful=false`, `ActionMatches=false`, `ScoreSatisfies=false`, `Success=false`. |
+| 4 | `Validate_v2_SuccessfulVerification` | Fact | Successful v2 verification (no score/action) produces `IsV3=false`, `ResponseSuccessful=true`, `ActionMatches=false`, `ScoreSatisfies=false`, `Success=true`. |
+| 5 | `Validate_v3_SuccessfulVerification_WithScoreThreshold` | Theory | v3 validation with global score threshold via options. Checks `IsV3=true`, `ResponseSuccessful=true`, `ActionMatches=true`, and `ScoreSatisfies`/`Success` based on score vs threshold. Parameters: verification results with varying scores. |
+| 6 | `Validate_v3_SuccessfulVerification_WithActionsScoreThresholds` | Theory | v3 validation with per-action score thresholds via `ActionsScoreThresholds`. Same assertions as above but using action-to-score mappings. Parameters: verification results with varying scores. |
+| 7 | `Validate_v3_SuccessfulVerification_WithScoreThresholdDirectly` | Theory | v3 validation when action and score are passed directly to `Validate`. Confirms score-satisfies logic with direct parameters. Parameters: verification results with varying scores. |
+| 8 | `Validate_v3_SuccessfulVerification_WithScoreThresholdDirectly_OverridesFromOptions` | Theory | Directly passed action/score override values from options. Service is initialized with different options but direct parameters take precedence. Parameters: verification results with varying scores. |

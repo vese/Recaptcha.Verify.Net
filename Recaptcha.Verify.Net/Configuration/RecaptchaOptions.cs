@@ -43,9 +43,7 @@ public class RecaptchaOptions
     /// <summary>
     /// Default returning message for unsuccessful validation and checking.
     /// <para>
-    /// This message would be replaced by value processed by <see cref="RecaptchaAttributeOptions.OnVerificationFailed"/>, 
-    /// <see cref="RecaptchaAttributeOptions.OnRecaptchaServiceException"/>, <see cref="RecaptchaAttributeOptions.OnException"/>
-    /// or <see cref="RecaptchaAttributeOptions.OnReturnBadRequest"/>.
+    /// This message would be replaced by value processed by <see cref="RecaptchaAttributeOptions.OnVerificationFailed"/>.
     /// </para>
     /// </summary>
     public string VerificationFailedMessage { get; set; } = "Recaptcha verification failed";
