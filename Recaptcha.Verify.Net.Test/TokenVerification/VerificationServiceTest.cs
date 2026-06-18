@@ -11,7 +11,7 @@ public class VerificationServiceTest
     public static TheoryData<string, float> GetResponseTokens()
     {
         var theoryData = new TheoryData<string, float>();
-        
+
         foreach (var tokenScore in TokenVerificationFixture.ValidResponseTokens)
         {
             theoryData.Add(tokenScore.Key, tokenScore.Value);
