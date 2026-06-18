@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Moq;
 using Recaptcha.Verify.Net.Attribute;
-using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Configuration;
 using Recaptcha.Verify.Net.Exceptions.Processing;
 using Recaptcha.Verify.Net.TokenExtraction;
