@@ -7,17 +7,17 @@ namespace Recaptcha.Verify.Net.TokenVerification;
 /// <summary>
 /// Recaptcha verification service constructor.
 /// </summary>
-/// <param name="recaptchaOptions">Recaptcha options.</param>
+/// <param name="options">Recaptcha verification options.</param>
 /// <param name="recaptchaClient">Recaptcha client.</param>
 /// <param name="logger">Logger.</param>
-internal class RecaptchaVerificationService(IOptions<RecaptchaOptions> recaptchaOptions, IRecaptchaClient recaptchaClient, ILogger<RecaptchaVerificationService> logger) : IRecaptchaVerificationService
+internal class RecaptchaVerificationService(IOptions<RecaptchaVerificationOptions> options, IRecaptchaClient recaptchaClient, ILogger<RecaptchaVerificationService> logger) : IRecaptchaVerificationService
 {
-    private readonly RecaptchaOptions _recaptchaOptions = recaptchaOptions.Value;
+    private readonly RecaptchaVerificationOptions options = options.Value;
 
     /// <inheritdoc />
     public async Task<VerifyResponse> VerifyAsync(string response, string? remoteIp = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_recaptchaOptions.SecretKey))
+        if (string.IsNullOrWhiteSpace(options.SecretKey))
         {
             throw new SecretKeyNotSpecifiedException();
         }
@@ -29,7 +29,7 @@ internal class RecaptchaVerificationService(IOptions<RecaptchaOptions> recaptcha
 
         var request = new VerifyRequest
         {
-            Secret = _recaptchaOptions.SecretKey,
+            Secret = options.SecretKey,
             Response = response,
             RemoteIp = remoteIp
         };

@@ -11,7 +11,7 @@ internal static class ValidationServiceFixture
     public static IRecaptchaVerificationResultValidationService Create(string? action, float? scoreThreshold,
         IReadOnlyDictionary<string, float>? actionsScoreThresholds)
     {
-        var recaptchaOptions = new RecaptchaOptions
+        var validationOptions = new RecaptchaValidationOptions
         {
             Action = action,
             ScoreThreshold = scoreThreshold,
@@ -19,7 +19,7 @@ internal static class ValidationServiceFixture
         };
 
         return new RecaptchaVerificationResultValidationService(
-            Options.Create(recaptchaOptions),
+            Options.Create(validationOptions),
             NullLoggerFactory.Instance.CreateLogger<RecaptchaVerificationResultValidationService>());
     }
 }

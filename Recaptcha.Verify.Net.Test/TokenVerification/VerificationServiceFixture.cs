@@ -10,13 +10,13 @@ internal static class VerificationServiceFixture
 {
     public static IRecaptchaVerificationService Create(string secretKey, bool clientThrowException = false)
     {
-        var recaptchaOptions = new RecaptchaOptions
+        var verificationOptions = new RecaptchaVerificationOptions
         {
             SecretKey = secretKey
         };
 
         return new RecaptchaVerificationService(
-            Options.Create(recaptchaOptions),
+            Options.Create(verificationOptions),
             RecaptchaClientFixture.Create(clientThrowException),
             NullLoggerFactory.Instance.CreateLogger<RecaptchaVerificationService>());
     }

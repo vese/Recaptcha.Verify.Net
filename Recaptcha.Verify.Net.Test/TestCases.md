@@ -17,15 +17,29 @@ Tests for `RecaptchaAttribute` behavior in various scenarios.
 
 ## Configuration Extensions Tests (`Configuration/ConfigurationExtensionsTest.cs`)
 
-Tests for `AddRecaptcha` service registration and `RecaptchaClient` base URL configuration.
+Tests for `AddRecaptcha` service registration: nested options wiring, `RecaptchaClient` base URL configuration, token-extractor auto-registration, and backward compatibility.
 
 | # | Test | Type | Description |
 |---|---|---|---|
-| 1 | `AddRecaptcha_DefaultBaseUrl_WhenNotSpecified` | Fact | When `BaseUrl` is not set, `RecaptchaClient` uses default Google URL `https://www.google.com/recaptcha/api/`. |
-| 2 | `AddRecaptcha_CustomBaseUrl_WhenSpecified` | Fact | When custom `BaseUrl` is specified, `RecaptchaClient` is configured with that URL (trailing slash appended). |
-| 3 | `AddRecaptcha_DefaultBaseUrl_WhenNullOrEmpty` | Theory | When `BaseUrl` is null, empty, or whitespace, `RecaptchaClient` falls back to default Google URL. Parameters: `baseUrl` ∈ {null, "", "   "}. |
-| 4 | `AddRecaptcha_AppendsTrailingSlash_WhenMissing` | Fact | If custom `BaseUrl` does not end with `/`, one is automatically appended. |
-| 5 | `AddRecaptcha_PreservesTrailingSlash_WhenPresent` | Fact | If custom `BaseUrl` already ends with `/`, it is preserved as-is (no double slash). |
+| 1 | `AddRecaptcha_DefaultBaseUrl_WhenNotSpecified` | Fact | When `Verification.BaseUrl` is not set, `RecaptchaClient` uses default Google URL `https://www.google.com/recaptcha/api/`. |
+| 2 | `AddRecaptcha_CustomBaseUrl_WhenSpecified` | Fact | When custom `Verification.BaseUrl` is specified, `RecaptchaClient` is configured with that URL (trailing slash appended). |
+| 3 | `AddRecaptcha_DefaultBaseUrl_WhenNullOrEmpty` | Theory | When `Verification.BaseUrl` is null, empty, or whitespace, `RecaptchaClient` falls back to default Google URL. Parameters: `baseUrl` ∈ {null, "", "   "}. |
+| 4 | `AddRecaptcha_AppendsTrailingSlash_WhenMissing` | Fact | If custom `Verification.BaseUrl` does not end with `/`, one is automatically appended. |
+| 5 | `AddRecaptcha_PreservesTrailingSlash_WhenPresent` | Fact | If custom `Verification.BaseUrl` already ends with `/`, it is preserved as-is (no double slash). |
+| 6 | `AddRecaptcha_RegistersNestedOptionsAsFocused` | Fact | Settings on the nested `Verification`/`Validation`/`Attribute` groups are registered as the corresponding focused `IOptions<>` (`SecretKey`, `Action`/`ScoreThreshold`, `UseCancellationToken`/`VerificationFailedMessage`). |
+| 7 | `AddRecaptcha_LegacyFlatOptions_FlowThroughObsoleteProxy` | Fact | The obsolete flat root fields still flow through the proxies into the same focused options (backward compatibility). |
+| 8 | `AddRecaptcha_TokenExtractors_Header_RegistersHeaderExtractor` | Fact | Setting `TokenExtractors.Header` registers a single `HeaderTokenExtractor`. |
+| 9 | `AddRecaptcha_TokenExtractors_Form_RegistersFormExtractor` | Fact | Setting `TokenExtractors.Form` registers a single `FormTokenExtractor`. |
+| 10 | `AddRecaptcha_TokenExtractors_Query_RegistersQueryExtractor` | Fact | Setting `TokenExtractors.Query` registers a single `QueryTokenExtractor` (not recommended for security; covered for backward compatibility). |
+| 11 | `AddRecaptcha_TokenExtractors_ActionArgumentsDelegate_RegistersExtractor` | Fact | Setting `TokenExtractors.GetResponseTokenFromActionArguments` registers a single `ActionArgumentsTokenExtractor`. |
+| 12 | `AddRecaptcha_TokenExtractors_ActionArgumentName_RegistersExtractor` | Fact | Setting `TokenExtractors.ActionArgument` registers a single `ActionArgumentsTokenExtractor` (extracts token by action argument name). |
+| 13 | `AddRecaptcha_TokenExtractors_ExecutingContextDelegate_RegistersExtractor` | Fact | Setting `TokenExtractors.GetResponseTokenFromExecutingContext` registers a single `ExecutingContextTokenExtractor`. |
+| 14 | `AddRecaptcha_TokenExtractors_TakesPrecedenceOverAttributeOptions` | Fact | When both `TokenExtractors.Header` and legacy `AttributeOptions.ResponseTokenNameInHeader` are set, only one extractor is registered (new value wins). |
+| 15 | `AddRecaptcha_FallsBackToAttributeOptions_WhenTokenExtractorsEmpty` | Fact | When `TokenExtractors.Header` is empty, the legacy `AttributeOptions.ResponseTokenNameInHeader` is used (backward compatibility). |
+| 16 | `AddRecaptcha_TokenExtractors_FromConfigurationSection` | Fact | `Verification:SecretKey` and `TokenExtractors:Header`/`Form`/`Query`/`ActionArgument` bind from an `IConfigurationSection` and register the corresponding extractors. |
+| 17 | `AddRecaptcha_ActionsScoreThresholds_BindsFromNestedConfigurationSection` | Fact | `Validation:ActionsScoreThresholds` binds automatically from an `IConfigurationSection` into `RecaptchaValidationOptions.ActionsScoreThresholds` (no explicit bind line needed). |
+| 18 | `AddRecaptcha_ActionsScoreThresholds_BindsFromLegacyFlatConfigurationSection` | Fact | Legacy flat `ActionsScoreThresholds` at root binds into `RecaptchaValidationOptions.ActionsScoreThresholds` via the obsolete root proxy (backward compatibility). |
+| 19 | `AddRecaptcha_NoExtractors_WhenNothingConfigured` | Fact | With no token-extractor configuration, no `IRecaptchaTokenExtractor` is registered. |
 
 ## Token Extraction Tests (`TokenExtraction/TokenExtractionTest.cs`)
 

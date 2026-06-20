@@ -30,7 +30,6 @@ public static class ConfigurationExtensions
     {
         var recaptchaOptions = new RecaptchaOptions();
         section.Bind(recaptchaOptions);
-        section.GetSection(nameof(RecaptchaOptions.ActionsScoreThresholds)).Bind(recaptchaOptions.ActionsScoreThresholds);
 
         return services.AddRecaptcha(recaptchaOptions, configuration);
     }
@@ -44,41 +43,66 @@ public static class ConfigurationExtensions
     public static IServiceCollection AddRecaptcha(this IServiceCollection services, RecaptchaOptions recaptchaOptions, Action<RecaptchaOptions>? configuration = null)
     {
         configuration?.Invoke(recaptchaOptions);
-        services.AddSingleton(Options.Create(recaptchaOptions));
+
+        services.AddOptionsForServices(recaptchaOptions);
 
         services.AddTokenExtractorForOptions(recaptchaOptions);
 
-        services.ConfigureService(recaptchaOptions.BaseUrl);
+        services.ConfigureService(recaptchaOptions.Verification.BaseUrl);
 
         return services;
     }
 
+    private static void AddOptionsForServices(this IServiceCollection services, RecaptchaOptions options)
+    {
+        services.AddSingleton(Options.Create(options.Verification));
+        services.AddSingleton(Options.Create(options.Validation));
+        services.AddSingleton(Options.Create(options.Attribute));
+    }
+
     private static void AddTokenExtractorForOptions(this IServiceCollection services, RecaptchaOptions options)
     {
-        if (!string.IsNullOrEmpty(options.AttributeOptions.ResponseTokenNameInHeader))
+        var tokenExtractors = options.TokenExtractors;
+
+#pragma warning disable CS0618 // Suppress obsolete warnings for legacy backward-compatibility fallbacks
+        var legacy = options.AttributeOptions;
+
+        var headerName = tokenExtractors.Header ?? legacy.ResponseTokenNameInHeader;
+        if (!string.IsNullOrEmpty(headerName))
         {
-            services.AddRecaptchaHeaderTokenExtractor(options.AttributeOptions.ResponseTokenNameInHeader);
+            services.AddRecaptchaHeaderTokenExtractor(headerName);
         }
 
-        if (!string.IsNullOrEmpty(options.AttributeOptions.ResponseTokenNameInQuery))
+        var formName = tokenExtractors.Form ?? legacy.ResponseTokenNameInForm;
+        if (!string.IsNullOrEmpty(formName))
         {
-            services.AddRecaptchaQueryTokenExtractor(options.AttributeOptions.ResponseTokenNameInQuery);
+            services.AddRecaptchaFormTokenExtractor(formName);
         }
 
-        if (!string.IsNullOrEmpty(options.AttributeOptions.ResponseTokenNameInForm))
+        var queryName = tokenExtractors.Query ?? legacy.ResponseTokenNameInQuery;
+        if (!string.IsNullOrEmpty(queryName))
         {
-            services.AddRecaptchaFormTokenExtractor(options.AttributeOptions.ResponseTokenNameInForm);
+            services.AddRecaptchaQueryTokenExtractor(queryName);
         }
 
-        if (options.AttributeOptions.GetResponseTokenFromActionArguments is not null)
+        var actionArgumentName = tokenExtractors.ActionArgument;
+        if (!string.IsNullOrEmpty(actionArgumentName))
         {
-            services.AddRecaptchaActionArgumentsTokenExtractor(options.AttributeOptions.GetResponseTokenFromActionArguments);
+            services.AddRecaptchaActionArgumentsTokenExtractor(actionArgumentName);
         }
 
-        if (options.AttributeOptions.GetResponseTokenFromExecutingContext is not null)
+        var fromActionArguments = tokenExtractors.GetResponseTokenFromActionArguments ?? legacy.GetResponseTokenFromActionArguments;
+        if (fromActionArguments is not null)
         {
-            services.AddRecaptchaExecutingContextTokenExtractor(options.AttributeOptions.GetResponseTokenFromExecutingContext);
+            services.AddRecaptchaActionArgumentsTokenExtractor(fromActionArguments);
         }
+
+        var fromExecutingContext = tokenExtractors.GetResponseTokenFromExecutingContext ?? legacy.GetResponseTokenFromExecutingContext;
+        if (fromExecutingContext is not null)
+        {
+            services.AddRecaptchaExecutingContextTokenExtractor(fromExecutingContext);
+        }
+#pragma warning restore CS0618
     }
 
     /// <summary>

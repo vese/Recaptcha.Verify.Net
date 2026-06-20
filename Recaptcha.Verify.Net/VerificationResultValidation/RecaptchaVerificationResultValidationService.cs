@@ -7,11 +7,11 @@ namespace Recaptcha.Verify.Net.VerificationResultValidation;
 /// <summary>
 /// Recaptcha verification result validation service constructor.
 /// </summary>
-/// <param name="recaptchaOptions">Recaptcha options.</param>
+/// <param name="options">Recaptcha validation options.</param>
 /// <param name="logger">Logger.</param>
-public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOptions> recaptchaOptions, ILogger<RecaptchaVerificationResultValidationService> logger) : IRecaptchaVerificationResultValidationService
+public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaValidationOptions> options, ILogger<RecaptchaVerificationResultValidationService> logger) : IRecaptchaVerificationResultValidationService
 {
-    private readonly RecaptchaOptions _recaptchaOptions = recaptchaOptions.Value;
+    private readonly RecaptchaValidationOptions options = options.Value;
 
     /// <inheritdoc />
     public ValidationResult Validate(VerifyResponse response, string? action = null, float? score = null)
@@ -51,9 +51,9 @@ public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOpti
             return action;
         }
 
-        if (!string.IsNullOrWhiteSpace(_recaptchaOptions.Action))
+        if (!string.IsNullOrWhiteSpace(options.Action))
         {
-            return _recaptchaOptions.Action;
+            return options.Action;
         }
 
         throw new EmptyActionException();
@@ -66,14 +66,14 @@ public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaOpti
             return score.Value;
         }
 
-        if (_recaptchaOptions.ActionsScoreThresholds is not null && _recaptchaOptions.ActionsScoreThresholds.TryGetValue(action, out var scoreThreshold))
+        if (options.ActionsScoreThresholds is not null && options.ActionsScoreThresholds.TryGetValue(action, out var scoreThreshold))
         {
             return scoreThreshold;
         }
 
-        if (_recaptchaOptions is not null && _recaptchaOptions.ScoreThreshold.HasValue)
+        if (options.ScoreThreshold.HasValue)
         {
-            return _recaptchaOptions.ScoreThreshold.Value;
+            return options.ScoreThreshold.Value;
         }
 
         throw new MinScoreNotSpecifiedException(action);
