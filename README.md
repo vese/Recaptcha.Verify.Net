@@ -44,9 +44,11 @@ The package is available on [NuGet](https://www.nuget.org/packages/Recaptcha.Ver
    ```json
    {
      "Recaptcha": {
-       "SecretKey": "<recaptcha secret key>",
-       "AttributeOptions": {
-         "ResponseTokenNameInHeader": "X-Recaptcha-Token",
+       "Verification": {
+         "SecretKey": "<recaptcha secret key>"
+       },
+       "TokenExtractors": {
+         "Header": "X-Recaptcha-Token"
        }
      }
    }
@@ -73,8 +75,7 @@ The verification of a reCAPTCHA response token consists of three sequential step
 1. Validating the verification result
 
 ### Extracting reCAPTCHA Response Token
-Token extraction is performed by services implementing the `IRecaptchaTokenExtractor` interface.
-The `RecaptchaAttribute` uses registered extractors sequentially until the first one successfully retrieves a token.
+Token extraction is coordinated by the `RecaptchaTokenExtractionService`, which iterates the registered `IRecaptchaTokenExtractor` implementations and returns the first non-empty token (first-wins strategy).
 
 #### Built-in Extractors
 The library provides these extractors out of the box:
@@ -88,16 +89,20 @@ The library provides these extractors out of the box:
 |`ExecutingContextTokenExtractor`|Extracts token from the executing context|`services.AddRecaptchaExecutingContextTokenExtractor(delegate)`|
 
 #### Auto-registration via Configuration
-When using `services.AddRecaptcha()`, extractors are automatically registered based on provided configuration `RecaptchaOptions.AttributeOptions`:
-- if `ResponseTokenNameInForm` is not empty then registers `FormTokenExtractor`;
-- if `ResponseTokenNameInHeader` is not empty then registers `HeaderTokenExtractor`;
-- if `ResponseTokenNameInQuery` is not empty then registers `QueryTokenExtractor`;
-- if `GetResponseTokenFromActionArguments` delegate is not empty then registers `ActionArgumentsTokenExtractor`;
-- if `GetResponseTokenFromExecutingContext` delegate is not empty then registers `ExecutingContextTokenExtractor`.
+When using `services.AddRecaptcha()`, extractors are automatically registered based on provided configuration.
+Configure token extractors in `RecaptchaOptions.TokenExtractors`:
+- if `TokenExtractors.Header` is not empty then registers `HeaderTokenExtractor`;
+- if `TokenExtractors.Form` is not empty then registers `FormTokenExtractor`;
+- if `TokenExtractors.Query` is not empty then registers `QueryTokenExtractor` (not recommended for security reasons);
+- if `TokenExtractors.ActionArgument` is not empty then registers `ActionArgumentsTokenExtractor`.
+
+For delegate-based extractors that cannot be configured via JSON, set them in code on `RecaptchaOptions.TokenExtractors`:
+- if `TokenExtractors.GetResponseTokenFromActionArguments` delegate is not empty then registers `ActionArgumentsTokenExtractor`;
+- if `TokenExtractors.GetResponseTokenFromExecutingContext` delegate is not empty then registers `ExecutingContextTokenExtractor`.
 
 #### Important Notes
-- Query Parameters: Avoid using `QueryTokenExtractor` as tokens in URLs may be logged or cached. Prefer headers or body.
-- Request Body: Use `ActionArgumentsTokenExtractor` for body tokens, since the request stream is already read and models are populated by this stage.
+- Query Parameters: Avoid using `QueryTokenExtractor`, as tokens in URLs may be logged or cached. Prefer headers or the request body.
+- Request Body: For tokens sent in the request body, use `ActionArgumentsTokenExtractor`. By the time the attribute runs, model binding has already parsed the body into the controller method arguments, so the token can be read from a bound argument (or a property of a bound model) without re-reading the request stream. To read raw fields from form-encoded data instead, use `FormTokenExtractor` (`Request.Form`).
 - Custom Logic: For complex extraction scenarios, either:
   - Use `ExecutingContextTokenExtractor` with delegate;
   - Implement your own `IRecaptchaTokenExtractor` and register it in the DI container.
@@ -144,11 +149,11 @@ This is performed by the `RecaptchaVerificationResultValidationService`.
 For reCAPTCHA v3 (detected by the presence of a Score value), the service checks:
 - **Action Matching**: Ensures the returned action matches the expected value
   - Provided in the `RecaptchaAttribute` constructor
-  - Global action `RecaptchaOptions.Action`
+  - Global action `RecaptchaOptions.Validation.Action`
 - **Score Threshold**: Ensures the confidence score meets the required threshold
   - Provided in the `RecaptchaAttribute` constructor
-  - Global threshold `RecaptchaOptions.ScoreThreshold`
-  - Action-specific threshold specified in `RecaptchaOptions.ActionsScoreThresholds` dictionary
+  - Global threshold `RecaptchaOptions.Validation.ScoreThreshold`
+  - Action-specific threshold specified in `RecaptchaOptions.Validation.ActionsScoreThresholds` dictionary
 
 The service returns a `ValidationResult` object with detailed validation status.
 
@@ -172,22 +177,24 @@ The system follows this priority order (highest to lowest):
 
 **For Actions**:
 1. `RecaptchaAttribute` constructor value
-1. `RecaptchaOptions.Action` - global default action for all v3 validations
+1. `RecaptchaOptions.Validation.Action` - global default action for all v3 validations
 
 **For Score Thresholds**:
 - `RecaptchaAttribute` constructor value
-- `RecaptchaOptions.ActionsScoreThresholds[action]` - action-specific thresholds map
-- `RecaptchaOptions.ScoreThreshold` - global default score threshold (By default, you can use a threshold of 0.5)
+- `RecaptchaOptions.Validation.ActionsScoreThresholds[action]` - action-specific thresholds map
+- `RecaptchaOptions.Validation.ScoreThreshold` - global default score threshold (By default, you can use a threshold of 0.5)
 
 ### Configuring Actions and Score Thresholds Example
 ```json
 {
   "Recaptcha": {
-    "Action": "default_action",
-    "ScoreThreshold": 0.5,
-    "ActionsScoreThresholds": {
-      "login": 0.8,
-      "comment": 0.3
+    "Validation": {
+      "Action": "default_action",
+      "ScoreThreshold": 0.5,
+      "ActionsScoreThresholds": {
+        "login": 0.8,
+        "comment": 0.3
+      }
     }
   }
 }
@@ -212,16 +219,18 @@ public IActionResult AddComment() { ... }
 
 ## Custom Verification URL
 By default, the library communicates with Google's reCAPTCHA API at `https://www.google.com/recaptcha/api`.
-To use a custom endpoint (e.g. a mirror or proxy), set the `BaseUrl` option in `RecaptchaOptions`:
+To use a custom endpoint (e.g. a mirror or proxy), set the `BaseUrl` option in `RecaptchaOptions.Verification`:
 
 ### Via appsettings.json
 ```json
 {
   "Recaptcha": {
-    "SecretKey": "<recaptcha secret key>",
-    "BaseUrl": "https://recaptcha-proxy.example.com/recaptcha/api",
-    "AttributeOptions": {
-      "ResponseTokenNameInHeader": "X-Recaptcha-Token"
+    "Verification": {
+      "SecretKey": "<recaptcha secret key>",
+      "BaseUrl": "https://recaptcha-proxy.example.com/recaptcha/api"
+    },
+    "TokenExtractors": {
+      "Header": "X-Recaptcha-Token"
     }
   }
 }
@@ -231,8 +240,8 @@ To use a custom endpoint (e.g. a mirror or proxy), set the `BaseUrl` option in `
 ```csharp
 services.AddRecaptcha(o =>
 {
-    o.SecretKey = "<recaptcha secret key>";
-    o.BaseUrl = "https://recaptcha-proxy.example.com/recaptcha/api";
+    o.Verification.SecretKey = "<recaptcha secret key>";
+    o.Verification.BaseUrl = "https://recaptcha-proxy.example.com/recaptcha/api";
 });
 ```
 
@@ -240,9 +249,9 @@ When `BaseUrl` is not specified, the default Google endpoint is used.
 
 ## Response Customization
 When reCAPTCHA verification fails, the library returns a `400 Bad Request` response by default.
-Message specified in `RecaptchaOptions.VerificationFailedMessage` which default value is "Recaptcha verification failed".
+Message specified in `RecaptchaOptions.Attribute.VerificationFailedMessage` which default value is "Recaptcha verification failed".
 
-You can customize the response by setting the `RecaptchaOptions.OnVerificationFailed` delegate, which is called when token verification or validation fails.
+You can customize the response by setting the `RecaptchaOptions.Attribute.OnVerificationFailed` delegate, which is called when token verification or validation fails.
 The `IActionResult` returned by this delegate is used as the HTTP response.
 Delegate may also throw exceptions, which will not be caught by `RecaptchaAttribute`.
 
@@ -260,7 +269,7 @@ Exception | Description
 `MinScoreNotSpecifiedException` | This exception is thrown when minimal score was not specified and request had score value (used V3 reCAPTCHA).
 `SecretKeyNotSpecifiedException` | This exception is thrown when secret key was not specified in options or request params.
 `TokenExtractorNotFound` | This exception is thrown when no ITokenExtractor implementation is registered in DI.
-`RecaptchaServiceProcessingException` | Base recaptcha exception for errors while processing token verification and result checking.
+`RecaptchaServiceProcessingException` | Base recaptcha exception for errors while processing token verification and result verification.
 `EmptyCaptchaAnswerException` | This exception is thrown when captcha answer passed in function is empty.
 `EmptyResponseException` | This exception is thrown when verification request response is empty. When thrown, it is wrapped in VerifyRequestException.
 `VerifyRequestException` | This exception is thrown when verification request failed. Stores inner exception.
