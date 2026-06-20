@@ -19,12 +19,9 @@ internal static class RecaptchaAttributeFixture
     public const string Action = "Action";
     public const float Score = 0.5f;
 
-    public static RecaptchaOptions GetRecaptchaOptions(bool useCancellationToken = false) => new()
+    public static RecaptchaAttributeOptions GetRecaptchaOptions(bool useCancellationToken = false) => new()
     {
-        AttributeOptions = new()
-        {
-            UseCancellationToken = useCancellationToken
-        }
+        UseCancellationToken = useCancellationToken
     };
 
     public static RecaptchaServices CreateServices(string? token,

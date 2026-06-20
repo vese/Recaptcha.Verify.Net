@@ -19,7 +19,7 @@ internal class ActionExecutingContextFixture
     public static readonly IPAddress IPAddress = new(int.MaxValue);
 
     public static (ActionExecutingContext context, Mock<ActionExecutionDelegate> nextMock) CreateActionExecutingContext(
-        RecaptchaOptions? options,
+        RecaptchaAttributeOptions? options,
         IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
         IRecaptchaVerificationResultValidationService? validationService)
@@ -49,7 +49,7 @@ internal class ActionExecutingContextFixture
     }
 
     private static HttpContextMock CreateHttpContext(
-        RecaptchaOptions? options,
+        RecaptchaAttributeOptions? options,
         IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
         IRecaptchaVerificationResultValidationService? validationService)

@@ -48,9 +48,9 @@ public class RecaptchaAttribute : ActionFilterAttribute
     {
         try
         {
-            var recaptchaOptions = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaOptions>>().Value;
+            var options = context.HttpContext.RequestServices.GetRequiredService<IOptions<RecaptchaAttributeOptions>>().Value;
 
-            var result = await ProcessRecaptchaAsync(context, recaptchaOptions);
+            var result = await ProcessRecaptchaAsync(context, options);
 
             if (result is not null)
             {
@@ -66,7 +66,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
         await base.OnActionExecutionAsync(context, next);
     }
 
-    private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context, RecaptchaOptions recaptchaOptions)
+    private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context, RecaptchaAttributeOptions options)
     {
         var tokenExtractionService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaTokenExtractionService>();
         var recaptchaToken = tokenExtractionService.GetToken(context);
@@ -75,7 +75,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
         var validationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationResultValidationService>();
 
         var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-        var cancellationToken = recaptchaOptions.AttributeOptions.UseCancellationToken ?
+        var cancellationToken = options.UseCancellationToken ?
             context.HttpContext.RequestAborted : CancellationToken.None;
 
         var verifyResponse = await verificationService.VerifyAsync(recaptchaToken, remoteIp, cancellationToken);
@@ -84,8 +84,8 @@ public class RecaptchaAttribute : ActionFilterAttribute
 
         if (!validationResult.Success)
         {
-            return recaptchaOptions.AttributeOptions.OnVerificationFailed?.Invoke(context, _action, validationResult) ??
-                new BadRequestObjectResult(recaptchaOptions.VerificationFailedMessage);
+            return options.OnVerificationFailed?.Invoke(context, _action, validationResult) ??
+                new BadRequestObjectResult(options.VerificationFailedMessage);
         }
 
         return null;

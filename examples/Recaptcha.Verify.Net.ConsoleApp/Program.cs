@@ -70,6 +70,6 @@ static ServiceProvider CreateServiceProvider() =>
         })
         .AddRecaptcha(o =>
         {
-            o.ScoreThreshold = 0.5f;
+            o.Validation.ScoreThreshold = 0.5f;
         })
         .BuildServiceProvider();

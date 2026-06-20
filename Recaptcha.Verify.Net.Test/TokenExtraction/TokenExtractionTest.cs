@@ -64,10 +64,12 @@ public class TokenExtractionTest
     [Fact]
     public void Extract_FromQuery()
     {
+#pragma warning disable CS0618 // QueryTokenExtractor is obsolete (not secure)
         var context = ActionExecutingContextFixture.CreateActionExecutingContext();
 
         var extractor = new QueryTokenExtractor(ActionExecutingContextFixture.QueryTokenName);
         var resultToken = extractor.GetToken(context);
+#pragma warning restore CS0618
 
         Assert.Equal(ActionExecutingContextFixture.QueryTokenValue, resultToken);
     }

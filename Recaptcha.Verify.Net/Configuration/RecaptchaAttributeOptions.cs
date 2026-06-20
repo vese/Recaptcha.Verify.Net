@@ -1,53 +1,29 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Recaptcha.Verify.Net.Attribute;
 
 namespace Recaptcha.Verify.Net.Configuration;
 
 /// <summary>
-/// <see cref="RecaptchaAttribute"/> options.
+/// Options for <see cref="RecaptchaAttribute"/>.
 /// </summary>
 public class RecaptchaAttributeOptions
 {
     /// <summary>
-    /// <c>True</c> if need to use cancellation token for validation and checking.
+    /// <c>True</c> if need to use cancellation token for validation and verification.
     /// <para>Default value is <c>True</c>.</para>
     /// </summary>
     public bool UseCancellationToken { get; set; } = true;
 
     /// <summary>
-    /// Name of reCAPTCHA response token param in request header.
+    /// Default returning message for unsuccessful validation and verification.
     /// </summary>
-    public string? ResponseTokenNameInHeader { get; set; }
-
-    /// <summary>
-    /// Name of reCAPTCHA response token param in request query.
-    /// </summary>
-    [Obsolete("Do not pass token in query parameters. It is not secure.")]
-    public string? ResponseTokenNameInQuery { get; set; }
-
-    /// <summary>
-    /// Name of reCAPTCHA response token param in request form data.
-    /// </summary>
-    public string? ResponseTokenNameInForm { get; set; }
-
-    /// <summary>
-    /// Delegate for getting reCAPTCHA response token from action arguments.
-    /// Actions argumets are mapped arguments of controller method.
-    /// </summary>
-    [Obsolete("Use AddRecaptchaActionArgumentsTokenExtractor instead")]
-    public Func<IDictionary<string, object?>, string>? GetResponseTokenFromActionArguments { get; set; }
-
-    /// <summary>
-    /// Delegate for getting reCAPTCHA response token from executing context.
-    /// </summary>
-    [Obsolete("Use AddRecaptchaExecutingContextTokenExtractor instead")]
-    public Func<ActionExecutingContext, string>? GetResponseTokenFromExecutingContext { get; set; }
+    public string VerificationFailedMessage { get; set; } = "Recaptcha verification failed";
 
     /// <summary>
     /// Delegate for handling failed verification of reCAPTCHA response token.
     /// <para>Returned <see cref="IActionResult"/> will be returned for whole request.</para>
     /// <para>Any exception could be thrown and will be propagated further.</para>
     /// </summary>
-    public virtual Func<ActionExecutingContext, string?, ValidationResult?, IActionResult>? OnVerificationFailed { get; set; }
+    public Func<ActionExecutingContext, string?, ValidationResult?, IActionResult>? OnVerificationFailed { get; set; }
 }
