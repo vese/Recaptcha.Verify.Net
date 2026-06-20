@@ -74,7 +74,8 @@ public class RecaptchaAttribute : ActionFilterAttribute
         var verificationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationService>();
         var validationService = context.HttpContext.RequestServices.GetRequiredService<IRecaptchaVerificationResultValidationService>();
 
-        var remoteIp = context.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+        var remote = context.HttpContext.Connection.RemoteIpAddress;
+        var remoteIp = remote is null ? null : (remote.IsIPv4MappedToIPv6 ? remote.MapToIPv4().ToString() : remote.ToString());
         var cancellationToken = options.UseCancellationToken ?
             context.HttpContext.RequestAborted : CancellationToken.None;
 
