@@ -39,7 +39,7 @@ public class LoginController(
     public async Task<IActionResult> Login_ServicesExample([FromBody] Credentials credentials, CancellationToken cancellationToken)
     {
         var verificationResult = await recaptchaVerificationService.VerifyAsync(
-            credentials.RecaptchaToken,
+            credentials.RecaptchaToken!,
             HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString(),
             cancellationToken);
 
