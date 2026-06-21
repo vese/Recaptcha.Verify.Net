@@ -9,7 +9,7 @@ namespace Recaptcha.Verify.Net.Attribute;
 /// Verifies reCAPTCHA response token and checks score (for v3) and action.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public class RecaptchaAttribute : ActionFilterAttribute
+public class RecaptchaAttribute : System.Attribute, IAsyncActionFilter
 {
     private readonly string? _action;
     private readonly float? _score;
@@ -44,7 +44,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
     /// </summary>
     /// <param name="context">A context for executing action.</param>
     /// <param name="next">A delegate that contains next action.</param>
-    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         try
         {
@@ -63,7 +63,7 @@ public class RecaptchaAttribute : ActionFilterAttribute
             throw new RecaptchaUnknownException(e);
         }
 
-        await base.OnActionExecutionAsync(context, next);
+        await next();
     }
 
     private async Task<IActionResult?> ProcessRecaptchaAsync(ActionExecutingContext context, RecaptchaAttributeOptions options)
