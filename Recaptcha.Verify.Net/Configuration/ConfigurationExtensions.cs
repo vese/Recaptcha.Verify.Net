@@ -48,6 +48,8 @@ public static class ConfigurationExtensions
     {
         configuration?.Invoke(recaptchaOptions);
 
+        services.ApplyLegacyAttributeOptions(recaptchaOptions);
+
         services.AddOptionsForServices(recaptchaOptions);
 
         services.AddTokenExtractorForOptions(recaptchaOptions);
@@ -62,6 +64,28 @@ public static class ConfigurationExtensions
         services.AddSingleton(Options.Create(options.Verification));
         services.AddSingleton(Options.Create(options.Validation));
         services.AddSingleton(Options.Create(options.Attribute));
+    }
+
+    /// <summary>
+    /// Propagates the legacy <see cref="RecaptchaLegacyAttributeOptions"/> values (otherwise read nowhere)
+    /// onto <see cref="RecaptchaOptions.Attribute"/> so legacy appsettings keep working.
+    /// </summary>
+    private static void ApplyLegacyAttributeOptions(this IServiceCollection services, RecaptchaOptions options)
+    {
+#pragma warning disable CS0618 // Suppress obsolete warnings for legacy backward-compatibility propagation
+        var legacy = options.AttributeOptions;
+
+        // OnVerificationFailed: the new (canonical) delegate wins; legacy fills the gap when new is unset.
+        options.Attribute.OnVerificationFailed ??= legacy.OnVerificationFailed;
+
+        // UseCancellationToken: bool has no "unset" sentinel, so we cannot tell whether the new value was
+        // explicitly set. To avoid the legacy default (true) clobbering an explicit new value, only the
+        // non-default legacy value (false) propagates; the new value wins in every other case.
+        if (!legacy.UseCancellationToken)
+        {
+            options.Attribute.UseCancellationToken = false;
+        }
+#pragma warning restore CS0618
     }
 
     private static void AddTokenExtractorForOptions(this IServiceCollection services, RecaptchaOptions options)
