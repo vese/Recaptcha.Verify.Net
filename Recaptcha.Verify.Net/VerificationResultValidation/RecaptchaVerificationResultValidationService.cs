@@ -9,7 +9,7 @@ namespace Recaptcha.Verify.Net.VerificationResultValidation;
 /// </summary>
 /// <param name="options">Recaptcha validation options.</param>
 /// <param name="logger">Logger.</param>
-public class RecaptchaVerificationResultValidationService(IOptions<RecaptchaValidationOptions> options, ILogger<RecaptchaVerificationResultValidationService> logger) : IRecaptchaVerificationResultValidationService
+internal class RecaptchaVerificationResultValidationService(IOptions<RecaptchaValidationOptions> options, ILogger<RecaptchaVerificationResultValidationService> logger) : IRecaptchaVerificationResultValidationService
 {
     private readonly RecaptchaValidationOptions options = options.Value;
 
