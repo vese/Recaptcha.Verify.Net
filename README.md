@@ -273,7 +273,6 @@ Exception | Description
 `EmptyCaptchaAnswerException` | This exception is thrown when captcha answer passed in function is empty.
 `EmptyResponseException` | This exception is thrown when verification request response is empty. When thrown, it is wrapped in VerifyRequestException.
 `VerifyRequestException` | This exception is thrown when verification request failed. Stores inner exception.
-`UnknownErrorKeyException` | This exception is thrown when verification response error key is unknown.
 `RecaptchaUnknownException` | This exception is thrown when an unexpected exception is catched during processing captcha.
 
 ## Examples
