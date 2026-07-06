@@ -236,6 +236,66 @@ public class AttributeTest
         next.Verify(x => x.Invoke(), Times.Never);
     }
 
+    [Fact]
+    public async Task Execute_PureIPv6RemoteIp_IsPassedThroughUnchanged()
+    {
+        var ipv6 = System.Net.IPAddress.Parse("2001:db8::1");
+
+        (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            RecaptchaAttributeFixture.Token,
+            new VerifyResponse(),
+            new ValidationResult
+            {
+                ResponseSuccessful = true,
+                IsV3 = false
+            });
+
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
+
+        (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
+            options, tokenExtractionService.Object, verificationService.Object, validationService.Object, ipv6);
+
+        var attribute = new RecaptchaAttribute();
+
+        await attribute.OnActionExecutionAsync(context, next.Object);
+
+        verificationService.Verify(
+            x => x.VerifyAsync(RecaptchaAttributeFixture.Token, ipv6.ToString(), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        next.Verify(x => x.Invoke(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Execute_IPv4MappedToIPv6RemoteIp_IsMappedToIPv4()
+    {
+        var mapped = System.Net.IPAddress.Parse("::ffff:1.2.3.4");
+
+        (var tokenExtractionService, var verificationService, var validationService) = RecaptchaAttributeFixture.CreateServices(
+            RecaptchaAttributeFixture.Token,
+            new VerifyResponse(),
+            new ValidationResult
+            {
+                ResponseSuccessful = true,
+                IsV3 = false
+            });
+
+        var options = RecaptchaAttributeFixture.GetRecaptchaOptions();
+
+        (var context, var next) = ActionExecutingContextFixture.CreateActionExecutingContext(
+            options, tokenExtractionService.Object, verificationService.Object, validationService.Object, mapped);
+
+        var attribute = new RecaptchaAttribute();
+
+        await attribute.OnActionExecutionAsync(context, next.Object);
+
+        verificationService.Verify(
+            x => x.VerifyAsync(RecaptchaAttributeFixture.Token, "1.2.3.4", It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        next.Verify(x => x.Invoke(), Times.Once);
+    }
+
     private static void VerifyServicesCalls(
         Mock<IRecaptchaTokenExtractionService> tokenExtractionService,
         Mock<IRecaptchaVerificationService> verificationService,

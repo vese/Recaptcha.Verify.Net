@@ -22,11 +22,12 @@ internal class ActionExecutingContextFixture
         RecaptchaAttributeOptions? options,
         IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
-        IRecaptchaVerificationResultValidationService? validationService)
+        IRecaptchaVerificationResultValidationService? validationService,
+        IPAddress? remoteIpAddress = null)
     {
         var actionsArguments = new Dictionary<string, object?>();
 
-        var httpContext = CreateHttpContext(options, tokenExtractionService, verificationService, validationService);
+        var httpContext = CreateHttpContext(options, tokenExtractionService, verificationService, validationService, remoteIpAddress);
 
         var actionContext = new ActionContext
         {
@@ -52,7 +53,8 @@ internal class ActionExecutingContextFixture
         RecaptchaAttributeOptions? options,
         IRecaptchaTokenExtractionService? tokenExtractionService,
         IRecaptchaVerificationService? verificationService,
-        IRecaptchaVerificationResultValidationService? validationService)
+        IRecaptchaVerificationResultValidationService? validationService,
+        IPAddress? remoteIpAddress)
     {
         var httpContext = new HttpContextMock();
 
@@ -76,7 +78,7 @@ internal class ActionExecutingContextFixture
             httpContext.SetupRequestService(validationService);
         }
 
-        httpContext.ConnectionMock.Mock.SetupGet(x => x.RemoteIpAddress).Returns(IPAddress);
+        httpContext.ConnectionMock.Mock.SetupGet(x => x.RemoteIpAddress).Returns(remoteIpAddress ?? IPAddress);
 
         return httpContext;
     }
