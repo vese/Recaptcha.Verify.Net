@@ -28,5 +28,10 @@ public enum VerifyError
     /// <summary>
     /// The response is no longer valid: either is too old or has been used previously.
     /// </summary>
-    TimeoutOrDuplicate
+    TimeoutOrDuplicate,
+    /// <summary>
+    /// An error code that is not part of the known set of verification errors.
+    /// Used when Google introduces new error codes that this library does not yet map explicitly.
+    /// </summary>
+    Unknown
 }

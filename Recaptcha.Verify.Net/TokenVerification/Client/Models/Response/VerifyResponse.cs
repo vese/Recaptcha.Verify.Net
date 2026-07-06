@@ -83,11 +83,10 @@ public class VerifyResponse
     public IReadOnlyCollection<string>? ErrorCodes { get; set; }
 
     /// <summary>
-    /// Returns list of the verify errors.
+    /// Returns the parsed verify errors. Unrecognized error codes map to
+    /// <see cref="VerifyError.Unknown"/> (the raw authoritative codes remain on
+    /// <see cref="ErrorCodes"/>).
     /// </summary>
-    /// <exception cref="UnknownErrorKeyException">
-    /// This exception is thrown when verification response error key is unknown.
-    /// </exception>
     [JsonIgnore]
     public IReadOnlyCollection<VerifyError>? Errors => VerifyErrorHelper.GetVerifyErrors(ErrorCodes);
 
