@@ -20,6 +20,6 @@ internal static class VerifyErrorHelper
                 return verifyError;
             }
 
-            throw new UnknownErrorKeyException(error);
+            return VerifyError.Unknown;
         }).ToList();
 }
