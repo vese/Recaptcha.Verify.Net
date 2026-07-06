@@ -15,42 +15,43 @@ var InvalidSecretKey = "<invalid secret key>";
 
 try
 {
-    var serviceProvider = CreateServiceProvider();
-    var recaptchaVerificationServiceWithInvalidKey = serviceProvider.GetRequiredService<IRecaptchaVerificationService>();
+    var invalidServiceProvider = CreateServiceProvider(InvalidSecretKey);
+    var recaptchaVerificationServiceWithInvalidKey = invalidServiceProvider.GetRequiredService<IRecaptchaVerificationService>();
 
     // Token verification with invalid secret key
-    var failureResponse = await recaptchaVerificationServiceWithInvalidKey.VerifyAsync("<response token>", InvalidSecretKey);
+    var failureResponse = await recaptchaVerificationServiceWithInvalidKey.VerifyAsync("<response token>");
     Console.WriteLine("Result of verification with invalid secret key:");
     Console.WriteLine(JsonSerializer.Serialize(failureResponse));
 
-    var recaptchaVerificationService = serviceProvider.GetRequiredService<IRecaptchaVerificationService>();
-    var recaptchaValidationService = serviceProvider.GetRequiredService<IRecaptchaVerificationResultValidationService>();
+    var validServiceProvider = CreateServiceProvider(ValidSecretKey);
+    var recaptchaVerificationService = validServiceProvider.GetRequiredService<IRecaptchaVerificationService>();
+    var recaptchaValidationService = validServiceProvider.GetRequiredService<IRecaptchaVerificationResultValidationService>();
 
     // Token verification with valid secret key
-    var successResponse = await recaptchaVerificationService.VerifyAsync("<response token>", ValidSecretKey);
+    var successResponse = await recaptchaVerificationService.VerifyAsync("<response token>");
     Console.WriteLine("Result of verification with valid secret key:");
     Console.WriteLine(JsonSerializer.Serialize(successResponse));
 
     // Validation of successful verification result
-    var checkResult = recaptchaValidationService.Validate(successResponse, "test");
+    var validationResult = recaptchaValidationService.Validate(successResponse, "test");
     Console.WriteLine("Result of verification result validation:");
-    Console.WriteLine(JsonSerializer.Serialize(checkResult));
+    Console.WriteLine(JsonSerializer.Serialize(validationResult));
 
-    if (checkResult.Success)
+    if (validationResult.Success)
     {
         // Handle successful validation
     }
-    else if (!checkResult.ActionMatches)
+    else if (!validationResult.ResponseSuccessful)
+    {
+        // Handle negative verification result
+    }
+    else if (!validationResult.ActionMatches)
     {
         // Handle action not matches for v3
     }
-    else if (!checkResult.ScoreSatisfies)
+    else if (!validationResult.ScoreSatisfies)
     {
         // Handle score less than specified threshold for v3
-    }
-    else
-    {
-        // Handle negative verification result
     }
 }
 catch (RecaptchaServiceException e)
@@ -61,7 +62,7 @@ catch (RecaptchaServiceException e)
 
 Console.ReadLine();
 
-static ServiceProvider CreateServiceProvider() =>
+static ServiceProvider CreateServiceProvider(string secretKey) =>
     new ServiceCollection()
         .AddLogging(builder =>
         {
@@ -70,6 +71,7 @@ static ServiceProvider CreateServiceProvider() =>
         })
         .AddRecaptcha(o =>
         {
+            o.Verification.SecretKey = secretKey;
             o.Validation.ScoreThreshold = 0.5f;
         })
         .BuildServiceProvider();
