@@ -33,23 +33,23 @@ try
     Console.WriteLine(JsonSerializer.Serialize(successResponse));
 
     // Validation of successful verification result
-    var checkResult = recaptchaValidationService.Validate(successResponse, "test");
+    var validationResult = recaptchaValidationService.Validate(successResponse, "test");
     Console.WriteLine("Result of verification result validation:");
-    Console.WriteLine(JsonSerializer.Serialize(checkResult));
+    Console.WriteLine(JsonSerializer.Serialize(validationResult));
 
-    if (checkResult.Success)
+    if (validationResult.Success)
     {
         // Handle successful validation
     }
-    else if (!checkResult.ResponseSuccessful)
+    else if (!validationResult.ResponseSuccessful)
     {
         // Handle negative verification result
     }
-    else if (!checkResult.ActionMatches)
+    else if (!validationResult.ActionMatches)
     {
         // Handle action not matches for v3
     }
-    else if (!checkResult.ScoreSatisfies)
+    else if (!validationResult.ScoreSatisfies)
     {
         // Handle score less than specified threshold for v3
     }
