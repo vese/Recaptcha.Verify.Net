@@ -43,6 +43,7 @@ Tests for `AddRecaptcha` service registration: nested options wiring, `Recaptcha
 | 20 | `AddRecaptcha_AppliesTimeoutToHttpClient_WhenConfigured` | Fact | A configured `Verification.Timeout` is applied to the `HttpClient.Timeout`. |
 | 21 | `AddRecaptcha_DefaultTimeout_IsTenSeconds` | Fact | The default `Verification.Timeout` is 10 seconds. |
 | 22 | `AddRecaptcha_KeepsHttpClientDefaultTimeout_WhenTimeoutIsZero` | Fact | `Verification.Timeout = TimeSpan.Zero` keeps the `HttpClient` default timeout (100s). |
+| 23 | `AddRecaptcha_AppliesConfigureHttpClientAction` | Fact | The optional `configureHttpClient` action runs after the library defaults, so it can add default request headers and override `Timeout`. |
 
 ## Token Extraction Tests (`TokenExtraction/TokenExtractionTest.cs`)
 

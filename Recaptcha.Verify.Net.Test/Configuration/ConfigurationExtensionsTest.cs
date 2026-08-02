@@ -393,6 +393,27 @@ public class ConfigurationExtensionsTest
         Assert.Equal(TimeSpan.FromSeconds(100), GetHttpClient(client).Timeout);
     }
 
+    [Fact]
+    public void AddRecaptcha_AppliesConfigureHttpClientAction()
+    {
+        var services = new ServiceCollection();
+        services.AddRecaptcha(
+            o => o.Verification.SecretKey = SecretKey,
+            configureHttpClient: c =>
+            {
+                c.DefaultRequestHeaders.Add("X-Test", "rv-0004");
+                c.Timeout = TimeSpan.FromSeconds(3);
+            });
+
+        using var provider = services.BuildServiceProvider();
+        var client = (RecaptchaClient)provider.GetRequiredService<IRecaptchaClient>();
+        var http = GetHttpClient(client);
+
+        // The action runs after the library defaults, so it can add headers and override Timeout.
+        Assert.Equal("rv-0004", http.DefaultRequestHeaders.GetValues("X-Test").First());
+        Assert.Equal(TimeSpan.FromSeconds(3), http.Timeout);
+    }
+
     private static void AssertBaseAddress(string expectedUrl, Action<RecaptchaOptions> configure)
     {
         var services = new ServiceCollection();
