@@ -97,3 +97,11 @@ Tests for `RecaptchaVerificationResultValidationService` — verification result
 | 6 | `Validate_v3_SuccessfulVerification_WithActionsScoreThresholds` | Theory | v3 validation with per-action score thresholds via `ActionsScoreThresholds`. Same assertions as above but using action-to-score mappings. Parameters: verification results with varying scores. |
 | 7 | `Validate_v3_SuccessfulVerification_WithScoreThresholdDirectly` | Theory | v3 validation when action and score are passed directly to `Validate`. Confirms score-satisfies logic with direct parameters. Parameters: verification results with varying scores. |
 | 8 | `Validate_v3_SuccessfulVerification_WithScoreThresholdDirectly_OverridesFromOptions` | Theory | Directly passed action/score override values from options. Service is initialized with different options but direct parameters take precedence. Parameters: verification results with varying scores. |
+
+## Logger Extensions Tests (`Logging/LoggerExtensionsTest.cs`)
+
+Tests for `LoggerExtensions.SendingRequest` — verify the secret key is never leaked into logs, in either the formatted message text or the structured `Data` log property (which holds a redacted string projection rather than the `VerifyRequest` object).
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `SendingRequest_NeverEmitsSensitiveData` | Fact | The secret, response token, and remote IP never appear in the formatted message or the structured `Data` property; `Data` shows `Secret=***`, `Response=<length=…>`, and `RemoteIp=***`. |

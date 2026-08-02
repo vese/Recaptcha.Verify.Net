@@ -4,7 +4,7 @@ namespace Recaptcha.Verify.Net.Logging;
 
 internal static class LoggerExtensions
 {
-    private static readonly Action<ILogger, VerifyRequest, Exception?> _sendingRequest = LoggerMessage.Define<VerifyRequest>(
+    private static readonly Action<ILogger, string, Exception?> _sendingRequest = LoggerMessage.Define<string>(
         logLevel: LogLevel.Trace,
         eventId: CoreEventId.SendingRequest,
         formatString: "Sending verify request. Request data: {Data}.");
@@ -22,7 +22,7 @@ Response data: {Data}.");
 Request action {RequestAction}. Score threshold {ScoreThreshold}.
 Result: {Result}.");
 
-    public static void SendingRequest(this ILogger logger, VerifyRequest request) => _sendingRequest(logger, request, null);
+    public static void SendingRequest(this ILogger logger, VerifyRequest request) => _sendingRequest(logger, GetSafeRequestString(request), null);
 
     public static void RequestCompleted(this ILogger logger, VerifyResponse response) => _requestCompleted(
         logger,
@@ -42,4 +42,20 @@ Result: {Result}.");
         null);
 
     private static string GetVersionString(bool isV3) => isV3 ? "v3" : "v2";
+
+    /// <summary>
+    /// Produces a log-safe representation of a <see cref="VerifyRequest" /> that never emits the
+    /// shared <see cref="VerifyRequest.Secret" />. The actual HTTP serialization of
+    /// <see cref="VerifyRequest" /> is unaffected.
+    /// </summary>
+    private static string GetSafeRequestString(VerifyRequest request)
+    {
+        // Secret is fully redacted — it must never appear in logs.
+        // Response (the reCAPTCHA token) and RemoteIp (end-user PII) are also sensitive:
+        // emit only the response length and mask the IP value (keep "null" when absent).
+        var response = request.Response;
+        var remoteIp = request.RemoteIp;
+
+        return $"Secret=***, Response=<length={response?.Length ?? 0}>, RemoteIp={(remoteIp is null ? "null" : "***")}";
+    }
 }
