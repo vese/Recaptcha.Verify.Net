@@ -48,7 +48,7 @@ public static class ConfigurationExtensions
 
         services.AddTokenExtractorForOptions(recaptchaOptions);
 
-        services.ConfigureService(recaptchaOptions.Verification.BaseUrl);
+        services.ConfigureService(recaptchaOptions.Verification.BaseUrl, recaptchaOptions.Verification.Timeout);
 
         return services;
     }
@@ -160,11 +160,17 @@ public static class ConfigurationExtensions
     public static IServiceCollection AddRecaptchaQueryTokenExtractor(this IServiceCollection services, string parameterName) =>
         services.AddSingleton<IRecaptchaTokenExtractor, QueryTokenExtractor>(_ => new QueryTokenExtractor(parameterName));
 
-    private static void ConfigureService(this IServiceCollection services, string? baseUrl)
+    private static void ConfigureService(this IServiceCollection services, string? baseUrl, TimeSpan timeout)
     {
         var url = !string.IsNullOrWhiteSpace(baseUrl) ? baseUrl : DefaultBaseUrl;
         services.AddHttpClient<IRecaptchaClient, RecaptchaClient>(client =>
-            client.BaseAddress = new Uri(url.EndsWith('/') ? url : $"{url}/"));
+        {
+            client.BaseAddress = new Uri(url.EndsWith('/') ? url : $"{url}/");
+            if (timeout > TimeSpan.Zero)
+            {
+                client.Timeout = timeout;
+            }
+        });
 
         services.AddScoped<IRecaptchaTokenExtractionService, RecaptchaTokenExtractionService>();
         services.AddScoped<IRecaptchaVerificationService, RecaptchaVerificationService>();
