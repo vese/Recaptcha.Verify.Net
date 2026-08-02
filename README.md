@@ -227,7 +227,8 @@ To use a custom endpoint (e.g. a mirror or proxy), set the `BaseUrl` option in `
   "Recaptcha": {
     "Verification": {
       "SecretKey": "<recaptcha secret key>",
-      "BaseUrl": "https://recaptcha-proxy.example.com/recaptcha/api"
+      "BaseUrl": "https://recaptcha-proxy.example.com/recaptcha/api",
+      "Timeout": "00:00:10"
     },
     "TokenExtractors": {
       "Header": "X-Recaptcha-Token"
@@ -242,10 +243,23 @@ services.AddRecaptcha(o =>
 {
     o.Verification.SecretKey = "<recaptcha secret key>";
     o.Verification.BaseUrl = "https://recaptcha-proxy.example.com/recaptcha/api";
+    o.Verification.Timeout = TimeSpan.FromSeconds(10);
 });
 ```
 
 When `BaseUrl` is not specified, the default Google endpoint is used.
+
+`Verification.Timeout` (`TimeSpan`, default 10s) bounds the outbound siteverify HTTP call. In appsettings use the standard `TimeSpan` format, e.g. `"00:00:10"` (10s) or `"00:01:00"` (1m); `"00:00:00"`/`TimeSpan.Zero` keeps the `HttpClient` default.
+
+For additional control over the outbound `HttpClient` (e.g. default request headers), pass a `configureHttpClient` delegate to `AddRecaptcha`. It runs after the library defaults (`BaseAddress`, `Timeout`), so it can extend or override them:
+```csharp
+services.AddRecaptcha(
+    o => o.Verification.SecretKey = "<recaptcha secret key>",
+    configureHttpClient: client =>
+    {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("MyApp/1.0");
+    });
+```
 
 ## Response Customization
 When reCAPTCHA verification fails, the library returns a `400 Bad Request` response by default.

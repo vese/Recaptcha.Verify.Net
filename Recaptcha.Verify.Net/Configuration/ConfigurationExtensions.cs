@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Net.Http;
 
 namespace Recaptcha.Verify.Net.Configuration;
 
@@ -17,8 +18,9 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="configuration">Delegate for configuring options <see cref="RecaptchaOptions"/>.</param>
-    public static IServiceCollection AddRecaptcha(this IServiceCollection services, Action<RecaptchaOptions>? configuration = null) =>
-        services.AddRecaptcha(new RecaptchaOptions(), configuration);
+    /// <param name="configureHttpClient">Optional delegate to further configure the <see cref="HttpClient"/> used for the siteverify call (e.g. default request headers); applied after the library defaults (<c>BaseAddress</c>, <c>Timeout</c>).</param>
+    public static IServiceCollection AddRecaptcha(this IServiceCollection services, Action<RecaptchaOptions>? configuration = null, Action<HttpClient>? configureHttpClient = null) =>
+        services.AddRecaptcha(new RecaptchaOptions(), configuration, configureHttpClient);
 
     /// <summary>
     /// Registers <see cref="IRecaptchaVerificationResultValidationService"/> implementation for usage with dependency injection.
@@ -26,12 +28,13 @@ public static class ConfigurationExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="section">Configuration section for mapping to <see cref="RecaptchaOptions"/>.</param>
     /// <param name="configuration">Delegate for configuring options <see cref="RecaptchaOptions"/>.</param>
-    public static IServiceCollection AddRecaptcha(this IServiceCollection services, IConfigurationSection section, Action<RecaptchaOptions>? configuration = null)
+    /// <param name="configureHttpClient">Optional delegate to further configure the <see cref="HttpClient"/> used for the siteverify call (e.g. default request headers); applied after the library defaults (<c>BaseAddress</c>, <c>Timeout</c>).</param>
+    public static IServiceCollection AddRecaptcha(this IServiceCollection services, IConfigurationSection section, Action<RecaptchaOptions>? configuration = null, Action<HttpClient>? configureHttpClient = null)
     {
         var recaptchaOptions = new RecaptchaOptions();
         section.Bind(recaptchaOptions);
 
-        return services.AddRecaptcha(recaptchaOptions, configuration);
+        return services.AddRecaptcha(recaptchaOptions, configuration, configureHttpClient);
     }
 
     /// <summary>
@@ -40,7 +43,8 @@ public static class ConfigurationExtensions
     /// <param name="services">The <see cref="IServiceCollection"/> to add services.</param>
     /// <param name="recaptchaOptions">Recaptcha service options.</param>
     /// <param name="configuration">Delegate for configuring options <see cref="RecaptchaOptions"/>.</param>
-    public static IServiceCollection AddRecaptcha(this IServiceCollection services, RecaptchaOptions recaptchaOptions, Action<RecaptchaOptions>? configuration = null)
+    /// <param name="configureHttpClient">Optional delegate to further configure the <see cref="HttpClient"/> used for the siteverify call (e.g. default request headers); applied after the library defaults (<c>BaseAddress</c>, <c>Timeout</c>).</param>
+    public static IServiceCollection AddRecaptcha(this IServiceCollection services, RecaptchaOptions recaptchaOptions, Action<RecaptchaOptions>? configuration = null, Action<HttpClient>? configureHttpClient = null)
     {
         configuration?.Invoke(recaptchaOptions);
 
@@ -48,7 +52,7 @@ public static class ConfigurationExtensions
 
         services.AddTokenExtractorForOptions(recaptchaOptions);
 
-        services.ConfigureService(recaptchaOptions.Verification.BaseUrl);
+        services.ConfigureService(recaptchaOptions.Verification.BaseUrl, recaptchaOptions.Verification.Timeout, configureHttpClient);
 
         return services;
     }
@@ -160,11 +164,18 @@ public static class ConfigurationExtensions
     public static IServiceCollection AddRecaptchaQueryTokenExtractor(this IServiceCollection services, string parameterName) =>
         services.AddSingleton<IRecaptchaTokenExtractor, QueryTokenExtractor>(_ => new QueryTokenExtractor(parameterName));
 
-    private static void ConfigureService(this IServiceCollection services, string? baseUrl)
+    private static void ConfigureService(this IServiceCollection services, string? baseUrl, TimeSpan timeout, Action<HttpClient>? configureHttpClient = null)
     {
         var url = !string.IsNullOrWhiteSpace(baseUrl) ? baseUrl : DefaultBaseUrl;
         services.AddHttpClient<IRecaptchaClient, RecaptchaClient>(client =>
-            client.BaseAddress = new Uri(url.EndsWith('/') ? url : $"{url}/"));
+        {
+            client.BaseAddress = new Uri(url.EndsWith('/') ? url : $"{url}/");
+            if (timeout > TimeSpan.Zero)
+            {
+                client.Timeout = timeout;
+            }
+            configureHttpClient?.Invoke(client);
+        });
 
         services.AddScoped<IRecaptchaTokenExtractionService, RecaptchaTokenExtractionService>();
         services.AddScoped<IRecaptchaVerificationService, RecaptchaVerificationService>();

@@ -348,6 +348,72 @@ public class ConfigurationExtensionsTest
         Assert.Empty(extractors);
     }
 
+    [Fact]
+    public void AddRecaptcha_AppliesTimeoutToHttpClient_WhenConfigured()
+    {
+        var expected = TimeSpan.FromSeconds(7);
+        var services = new ServiceCollection();
+        services.AddRecaptcha(o =>
+        {
+            o.Verification.SecretKey = SecretKey;
+            o.Verification.Timeout = expected;
+        });
+
+        using var provider = services.BuildServiceProvider();
+        var client = (RecaptchaClient)provider.GetRequiredService<IRecaptchaClient>();
+
+        Assert.Equal(expected, GetHttpClient(client).Timeout);
+    }
+
+    [Fact]
+    public void AddRecaptcha_DefaultTimeout_IsTenSeconds()
+    {
+        var services = new ServiceCollection();
+        services.AddRecaptcha(o => o.Verification.SecretKey = SecretKey);
+
+        using var provider = services.BuildServiceProvider();
+        var client = (RecaptchaClient)provider.GetRequiredService<IRecaptchaClient>();
+
+        Assert.Equal(TimeSpan.FromSeconds(10), GetHttpClient(client).Timeout);
+    }
+
+    [Fact]
+    public void AddRecaptcha_KeepsHttpClientDefaultTimeout_WhenTimeoutIsZero()
+    {
+        var services = new ServiceCollection();
+        services.AddRecaptcha(o =>
+        {
+            o.Verification.SecretKey = SecretKey;
+            o.Verification.Timeout = TimeSpan.Zero; // opt out: keep HttpClient default
+        });
+
+        using var provider = services.BuildServiceProvider();
+        var client = (RecaptchaClient)provider.GetRequiredService<IRecaptchaClient>();
+
+        Assert.Equal(TimeSpan.FromSeconds(100), GetHttpClient(client).Timeout);
+    }
+
+    [Fact]
+    public void AddRecaptcha_AppliesConfigureHttpClientAction()
+    {
+        var services = new ServiceCollection();
+        services.AddRecaptcha(
+            o => o.Verification.SecretKey = SecretKey,
+            configureHttpClient: c =>
+            {
+                c.DefaultRequestHeaders.Add("X-Test", "rv-0004");
+                c.Timeout = TimeSpan.FromSeconds(3);
+            });
+
+        using var provider = services.BuildServiceProvider();
+        var client = (RecaptchaClient)provider.GetRequiredService<IRecaptchaClient>();
+        var http = GetHttpClient(client);
+
+        // The action runs after the library defaults, so it can add headers and override Timeout.
+        Assert.Equal("rv-0004", http.DefaultRequestHeaders.GetValues("X-Test").First());
+        Assert.Equal(TimeSpan.FromSeconds(3), http.Timeout);
+    }
+
     private static void AssertBaseAddress(string expectedUrl, Action<RecaptchaOptions> configure)
     {
         var services = new ServiceCollection();
@@ -359,12 +425,13 @@ public class ConfigurationExtensionsTest
         Assert.Equal(new Uri(expectedUrl), GetBaseAddress(client));
     }
 
-    private static Uri GetBaseAddress(RecaptchaClient client)
+    private static HttpClient GetHttpClient(RecaptchaClient client)
     {
         var httpClientField = client.GetType().GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             .First(f => f.FieldType == typeof(HttpClient));
 
-        var httpClient = (HttpClient)httpClientField.GetValue(client)!;
-        return httpClient.BaseAddress!;
+        return (HttpClient)httpClientField.GetValue(client)!;
     }
+
+    private static Uri GetBaseAddress(RecaptchaClient client) => GetHttpClient(client).BaseAddress!;
 }

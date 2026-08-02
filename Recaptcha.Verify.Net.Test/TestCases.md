@@ -40,6 +40,10 @@ Tests for `AddRecaptcha` service registration: nested options wiring, `Recaptcha
 | 17 | `AddRecaptcha_ActionsScoreThresholds_BindsFromNestedConfigurationSection` | Fact | `Validation:ActionsScoreThresholds` binds automatically from an `IConfigurationSection` into `RecaptchaValidationOptions.ActionsScoreThresholds` (no explicit bind line needed). |
 | 18 | `AddRecaptcha_ActionsScoreThresholds_BindsFromLegacyFlatConfigurationSection` | Fact | Legacy flat `ActionsScoreThresholds` at root binds into `RecaptchaValidationOptions.ActionsScoreThresholds` via the obsolete root proxy (backward compatibility). |
 | 19 | `AddRecaptcha_NoExtractors_WhenNothingConfigured` | Fact | With no token-extractor configuration, no `IRecaptchaTokenExtractor` is registered. |
+| 20 | `AddRecaptcha_AppliesTimeoutToHttpClient_WhenConfigured` | Fact | A configured `Verification.Timeout` is applied to the `HttpClient.Timeout`. |
+| 21 | `AddRecaptcha_DefaultTimeout_IsTenSeconds` | Fact | The default `Verification.Timeout` is 10 seconds. |
+| 22 | `AddRecaptcha_KeepsHttpClientDefaultTimeout_WhenTimeoutIsZero` | Fact | `Verification.Timeout = TimeSpan.Zero` keeps the `HttpClient` default timeout (100s). |
+| 23 | `AddRecaptcha_AppliesConfigureHttpClientAction` | Fact | The optional `configureHttpClient` action runs after the library defaults, so it can add default request headers and override `Timeout`. |
 
 ## Token Extraction Tests (`TokenExtraction/TokenExtractionTest.cs`)
 
@@ -77,6 +81,7 @@ Tests for `RecaptchaVerificationService` — token verification via Google's API
 | 3 | `Verify_ClientException_Throws` | Fact | When the HTTP client throws during verification, the service wraps it in `VerifyRequestException`. |
 | 4 | `Verify_InvalidResponseToken_ReturnsVerificationResult` | Fact | Using an invalid response token returns `VerifyResponse` with `Success=false`. |
 | 5 | `Verify_ValidResponseToken_ReturnsVerificationResult` | Theory | Using a valid response token returns `VerifyResponse` with `Success=true` and expected score. Parameters: valid tokens from fixture. |
+| 6 | `Verify_HttpTimeout_ThrowsVerifyRequestException` | Fact | When the siteverify HTTP call exceeds the configured timeout, it surfaces as `VerifyRequestException` (inner `OperationCanceledException`). |
 
 ## Validation Service Tests (`VerificationResultValidation/ValidationServiceTest.cs`)
 
