@@ -105,3 +105,11 @@ Tests for `LoggerExtensions.SendingRequest` — verify the secret key is never l
 | # | Test | Type | Description |
 |---|---|---|---|
 | 1 | `SendingRequest_NeverEmitsSensitiveData` | Fact | The secret, response token, and remote IP never appear in the formatted message or the structured `Data` property; `Data` shows `Secret=***`, `Response=<length=…>`, and `RemoteIp=***`. |
+
+## HTTP Error Tests (`TokenVerification/HttpErrorTest.cs`)
+
+Tests for HTTP transport-failure handling in `RecaptchaClient` / `RecaptchaVerificationService` — non-success status codes preserve the status code and a response-body snippet in the surfaced exception.
+
+| # | Test | Type | Description |
+|---|---|---|---|
+| 1 | `Verify_HttpFailure_PreservesStatusAndBodyInException` | Fact | An HTTP failure (e.g. `500`) through `RecaptchaVerificationService` is wrapped in a `VerifyRequestException` whose message carries the status code and a (capped) body snippet, with the `HttpRequestException` as `InnerException`; a long body is truncated. |
