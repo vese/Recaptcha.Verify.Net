@@ -44,6 +44,8 @@ Tests for `AddRecaptcha` service registration: nested options wiring, `Recaptcha
 | 21 | `AddRecaptcha_DefaultTimeout_IsTenSeconds` | Fact | The default `Verification.Timeout` is 10 seconds. |
 | 22 | `AddRecaptcha_KeepsHttpClientDefaultTimeout_WhenTimeoutIsZero` | Fact | `Verification.Timeout = TimeSpan.Zero` keeps the `HttpClient` default timeout (100s). |
 | 23 | `AddRecaptcha_AppliesConfigureHttpClientAction` | Fact | The optional `configureHttpClient` action runs after the library defaults, so it can add default request headers and override `Timeout`. |
+| 24 | `AddRecaptcha_LegacyAttributeOptions_PropagateOntoAttribute` | Fact | The obsolete `AttributeOptions.UseCancellationToken` and `AttributeOptions.OnVerificationFailed` still flow through the proxy into the focused `RecaptchaAttributeOptions` (backward compatibility). |
+| 25 | `AddRecaptcha_LegacyOnVerificationFailed_LosesToNewAttribute` | Fact | When both the new `Attribute.OnVerificationFailed` and the legacy `AttributeOptions.OnVerificationFailed` are set, the new (canonical) delegate wins and the legacy one is used only as a fallback. |
 
 ## Token Extraction Tests (`TokenExtraction/TokenExtractionTest.cs`)
 

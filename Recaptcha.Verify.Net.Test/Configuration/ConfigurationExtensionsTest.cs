@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Recaptcha.Verify.Net.Configuration;
 using Recaptcha.Verify.Net.TokenExtraction;
 using Recaptcha.Verify.Net.TokenVerification.Client;
+using Recaptcha.Verify.Net.VerificationResultValidation.Models;
 using Xunit;
 
 namespace Recaptcha.Verify.Net.Test.Configuration;
@@ -114,6 +116,53 @@ public class ConfigurationExtensionsTest
 
         var attributeOptions = provider.GetRequiredService<IOptions<RecaptchaAttributeOptions>>().Value;
         Assert.Equal("Custom message", attributeOptions.VerificationFailedMessage);
+    }
+
+    [Fact]
+    public void AddRecaptcha_LegacyAttributeOptions_PropagateOntoAttribute()
+    {
+        Func<ActionExecutingContext, string?, ValidationResult?, IActionResult> legacyHandler = (_, _, _) => new EmptyResult();
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+#pragma warning disable CS0618 // Verify backward compatibility of the obsolete legacy attribute options
+        services.AddRecaptcha(o =>
+        {
+            o.Verification.SecretKey = SecretKey;
+            o.AttributeOptions.UseCancellationToken = false;
+            o.AttributeOptions.OnVerificationFailed = legacyHandler;
+        });
+#pragma warning restore CS0618
+
+        using var provider = services.BuildServiceProvider();
+        var attributeOptions = provider.GetRequiredService<IOptions<RecaptchaAttributeOptions>>().Value;
+
+        Assert.False(attributeOptions.UseCancellationToken);
+        Assert.Same(legacyHandler, attributeOptions.OnVerificationFailed);
+    }
+
+    [Fact]
+    public void AddRecaptcha_LegacyOnVerificationFailed_LosesToNewAttribute()
+    {
+        Func<ActionExecutingContext, string?, ValidationResult?, IActionResult> legacyHandler = (_, _, _) => new BadRequestResult();
+        Func<ActionExecutingContext, string?, ValidationResult?, IActionResult> newHandler = (_, _, _) => new EmptyResult();
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+#pragma warning disable CS0618 // Verify backward compatibility of the obsolete legacy attribute options
+        services.AddRecaptcha(o =>
+        {
+            o.Verification.SecretKey = SecretKey;
+            o.Attribute.OnVerificationFailed = newHandler;
+            o.AttributeOptions.OnVerificationFailed = legacyHandler;
+        });
+#pragma warning restore CS0618
+
+        using var provider = services.BuildServiceProvider();
+        var attributeOptions = provider.GetRequiredService<IOptions<RecaptchaAttributeOptions>>().Value;
+
+        // The new (canonical) delegate wins; the legacy delegate is the fallback only.
+        Assert.Same(newHandler, attributeOptions.OnVerificationFailed);
     }
 
     [Fact]
